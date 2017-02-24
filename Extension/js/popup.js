@@ -1,0 +1,1 @@
+// Just in here in case we implement anything that needs to display when we click the extension icon

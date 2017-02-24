@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+
+  "name": "UW Course Guide+",
+  "description": "View additional information in the UW-Madison Course Guide, like Rate My Professor data and historical grade distributions.",
+  "version": "1.0",
+
+  "icons": {
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
+  },
+
+  "page_action": {
+    "default_icon": "img/icon48.png",
+    "default_popup": "html/popup.html",
+    "default_title": "Go to UW Course Guide"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=courseDetail*"],
+      "css": ["css/main.css"],
+      "js": ["js/course_page.js"]
+    },
+    {
+      "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=advancedSearch*"],
+      "css": ["css/main.css"],
+      "js": ["js/course_list.js"]
+    }
+  ],
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "https://www.ratemyprofessors.com/*",
+    "*www.map.wisc.edu/*"
+    "https://ajax.googleapis.com/"
+  ]
+
+}
