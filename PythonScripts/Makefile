@@ -7,4 +7,4 @@ venv:
 deps:
 	pip install -r requirements.txt
 runspider:
-	scrapy runspider mapSpider.py -t json --nolog -o - > result.json
+	scrapy runspider mapSpider.py -t json --nolog -o - > mapResult.json
