@@ -11,27 +11,27 @@
     "128": "img/icon128.png"
   },
 
-  "page_action": {
+  "browser_action": {
     "default_icon": "img/icon48.png",
     "default_popup": "html/popup.html",
     "default_title": "Go to UW Course Guide"
   },
 
   "background": {
-    "scripts": ["model.js", "data_access.js"],
+    "scripts": ["js/model.js", "js/data_access.js"],
     "persistent": false
   },
 
   "content_scripts": [
     {
-      "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=courseDetail*"],
-      "css": ["css/main.css"],
-      "js": ["js/course_page.js"]
-    },
-    {
       "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=advancedSearch*"],
       "css": ["css/main.css"],
-      "js": ["js/course_list.js"]
+      "js": ["js/jquery-3.1.1.js", "js/course_list.js"]
+    },
+    {
+      "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=courseDetail*"],
+      "css": ["css/main.css"],
+      "js": ["js/jquery-3.1.1.js", "js/course_page.js"]
     }
   ],
 
@@ -39,7 +39,7 @@
     "activeTab",
     "tabs",
     "https://www.ratemyprofessors.com/*",
-    "*www.map.wisc.edu/*",
+    "*map.wisc.edu/*",
     "https://ajax.googleapis.com/"
   ]
 
