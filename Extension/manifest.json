@@ -26,7 +26,7 @@
     {
       "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=advancedSearch*"],
       "css": ["css/main.css"],
-      "js": ["js/jquery-3.1.1.js", "js/course_list.js"]
+      "js": ["js/jquery-3.1.1.js", "js/jquery.initialize.min.js", "js/course_list.js"]
     },
     {
       "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=courseDetail*"],

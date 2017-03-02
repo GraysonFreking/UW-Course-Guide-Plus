@@ -11,11 +11,9 @@ function listSetup() {
 }
 
 function averageGPASetup() {
-    // var aveGPAs = {};
 
-    // Iterates over each class -- sections button used as selector since it has an href with the corresponding course number inside
-    $('a.sectionExpand').each(function() {
-        // Table cell to eventually append the average GPA to
+    // Will run for every class card inserted into DOM (including realtime insertions)
+    $.initialize('a.sectionExpand', function() {
         var addlInfoTD = $(this).parent().parent().prev().prev().children('td:nth-child(7)');
 
         // Extracts course ID
