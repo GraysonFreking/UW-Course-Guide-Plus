@@ -14,6 +14,7 @@ function averageGPASetup() {
 
     // Will run for every class card inserted into DOM (including realtime insertions)
     $.initialize('a.sectionExpand', function() {
+        // Table cell to eventaully put append average GPA to
         var addlInfoTD = $(this).parent().parent().prev().prev().children('td:nth-child(7)');
 
         // Extracts course ID
@@ -41,7 +42,9 @@ function distributionSetup() {
 }
 
 function sectionsListenerSetup() {
-
+    $.initialize('table.sectionDetailList', function() {
+        // All sections table actions done in here
+    });
 }
 
 
@@ -55,6 +58,7 @@ function listLoaded() {
 
 }
 
+// Probably deprecated, anything done in the sections table that needs to be done can be done in the sectionsListenerSetup's initialize function
 function sectionsExpanded(sectionsTable) {
 
 }
