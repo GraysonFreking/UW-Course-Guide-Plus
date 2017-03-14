@@ -73,6 +73,12 @@ with con:
             name TEXT,
             FOREIGN KEY(deptID) REFERENCES Department(deptID))""")
 
+    cur.execute("""
+        CREATE TABLE Map(
+            mapID INTEGER PRIMARY KEY,
+            name TEXT,
+            link TEXT)""")
+
     con.commit()
 
     # this constructs a string of previously executed SQL commands.

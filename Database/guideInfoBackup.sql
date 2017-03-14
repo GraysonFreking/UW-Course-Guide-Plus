@@ -19,6 +19,10 @@ CREATE TABLE Grades(
             dPercent REAL,
             fPercent REAL,
             iPercent REAL);
+CREATE TABLE Map(
+            mapID INTEGER PRIMARY KEY,
+            name TEXT,
+            link TEXT);
 CREATE TABLE Professor(
             profID INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT);
