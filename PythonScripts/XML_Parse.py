@@ -6,7 +6,6 @@
 # IN CONSOLE, navigate to directory and type the following: $ python PDF_Parse.py
 
 # Known bugs:
-#   Class name sometimes gets merged with "Other" GPA
 #   Older files sometimes crash due to  "Section Total" field, which has multiple sections per section number.
 #       If we only go back 10 years, this isnt a problem.
 
@@ -16,10 +15,9 @@ import json
 import re
 import copy
 
-tree = ET.parse('./XMLs/2006_2007_Fall.xml') #XML being read
+tree = ET.parse('./XMLs/2007_2008_Fall.xml') #XML being read
 root = tree.getroot()
 line = ''
-grades = ['A', 'AB', 'B', 'BC', 'C', 'D', 'F', 'S', 'U', 'CR', 'N', 'P', 'I', 'NW', 'NR', 'Other']
 
 text_data = [] # Data being read from XML
 
@@ -85,10 +83,10 @@ for item in text_data: # For each newly created line, parse that shit
         if re.search('^[*]', item[2]): # Case for when GPA Average is not available
             temp_item['Class_Name'] = re.sub('^\*\*\*', '', ' '.join(item[2:]))
         else:
-            if item[2] == '.': # Case for when _____
-                temp_item['Class_Name'] = ' '.join(item[18:])
-            else: # Case for _____
-                temp_item['Class_Name'] = re.sub('^\d\.\d+', '', ' '.join(item[18:]))
+            #if item[2] == '.': # Case for when _____
+           #     temp_item['Class_Name'] = ' '.join(item[18:])
+          #  else: # Case for _____
+            temp_item['Class_Name'] = re.sub('^\d\.\d+', '', ' '.join(item[18:]))
         continue
 
     if len(item) <= 10: # Case for when subject line is being read instead of Class line. If found, continues on next iteration of loop
@@ -120,16 +118,33 @@ for item in text_data: # For each newly created line, parse that shit
         temp_item['Sections'][0]['Grades']['I'] = item[14]
         temp_item['Sections'][0]['Grades']['NW'] = item[15]
         temp_item['Sections'][0]['Grades']['NR'] = item[16]
-        temp_item['Sections'][0]['Grades']['Other'] = item[17]
-        split = re.split('^(0|[1-9][0-9]*)+', ' '.join(item[18:]), flags=re.IGNORECASE) # Splits remaining pieces into Class Name and Number. Use Cases follow.
-        if len(split) == 1:
-            temp_item['Class_Num'] = split[0]
-        elif len(split) == 2:
-            temp_item['Class_Num'] = split[0]
-            temp_item['Class_Name'] = split[1]
+        
+        if item[17] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
+            temp_item['Sections'][0]['Grades']['Other'] = item[17]
+            split = re.split('^([1-9][0-9]*)+', ' '.join(item[18:]), flags=re.IGNORECASE)
+            
+            if len(split) == 1:
+                temp_item['Class_Num'] = split[0]
+            elif len(split) == 2:
+                temp_item['Class_Num'] = split[0]
+                temp_item['Class_Name'] = split[1]
+            else:
+                temp_item['Class_Num'] = split[1]
+                temp_item['Class_Name'] = split[2]
         else:
-            temp_item['Class_Num'] = split[1]
-            temp_item['Class_Name'] = split[2]
+            split = re.split('(^\d+\.\d)(\d+)(.*)', ' '.join(item[17:]), flags=re.IGNORECASE)
+            if len(split) == 2:
+                temp_item['Sections'][0]['Grades']['Other'] = split[0]
+                temp_item['Class_Num'] = split[1]
+            elif len(split) == 3:
+                temp_item['Sections'][0]['Grades']['Other'] = split[0]
+                temp_item['Class_Num'] = split[1]
+                temp_item['Class_Name'] = split[2]
+            else:
+                temp_item['Sections'][0]['Grades']['Other'] = split[1]
+                temp_item['Class_Num'] = split[2]
+                temp_item['Class_Name'] = split[3]
+
     elif temp_item['Sections'][0]['Avg_GPA'] != '***': # Case for when GPA Average is not available
         temp_item['Sections'][0]['Grades']['A'] = item[3]
         temp_item['Sections'][0]['Grades']['AB'] = item[4]
@@ -146,16 +161,33 @@ for item in text_data: # For each newly created line, parse that shit
         temp_item['Sections'][0]['Grades']['I'] = item[15]
         temp_item['Sections'][0]['Grades']['NW'] = item[16]
         temp_item['Sections'][0]['Grades']['NR'] = item[17]
-        temp_item['Sections'][0]['Grades']['Other'] = item[18]
-        split = re.split('^(0|[1-9][0-9]*)+', ' '.join(item[19:]), flags=re.IGNORECASE) # Splits remaining pieces into Class Name and Number. Use Cases follow.
-        if len(split) == 1:
-            temp_item['Class_Num'] = split[0]
-        elif len(split) == 2:
-            temp_item['Class_Num'] = split[0]
-            temp_item['Class_Name'] = split[1]
+        
+        if item[18] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
+            temp_item['Sections'][0]['Grades']['Other'] = item[18]
+            split = re.split('^([1-9][0-9]*)+', ' '.join(item[19:]), flags=re.IGNORECASE)
+            
+            if len(split) == 1:
+                temp_item['Class_Num'] = split[0]
+            elif len(split) == 2:
+                temp_item['Class_Num'] = split[0]
+                temp_item['Class_Name'] = split[1]
+            else:
+                temp_item['Class_Num'] = split[1]
+                temp_item['Class_Name'] = split[2]
         else:
-            temp_item['Class_Num'] = split[1]
-            temp_item['Class_Name'] = split[2]
+            split = re.split('(^\d+\.\d)(\d+)(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+            if len(split) == 2:
+                temp_item['Sections'][0]['Grades']['Other'] = split[0]
+                temp_item['Class_Num'] = split[1]
+            elif len(split) == 3:
+                temp_item['Sections'][0]['Grades']['Other'] = split[0]
+                temp_item['Class_Num'] = split[1]
+                temp_item['Class_Name'] = split[2]
+            else:
+                temp_item['Sections'][0]['Grades']['Other'] = split[1]
+                temp_item['Class_Num'] = split[2]
+                temp_item['Class_Name'] = split[3]
+        
     else: # Case for when lines DO NOT include periods for all of the A-F data
         temp_item['Sections'][0]['Grades']['A'] = '.'
         temp_item['Sections'][0]['Grades']['AB'] = '.'
@@ -172,23 +204,39 @@ for item in text_data: # For each newly created line, parse that shit
         temp_item['Sections'][0]['Grades']['I'] = item[6]
         temp_item['Sections'][0]['Grades']['NW'] = item[7]
         temp_item['Sections'][0]['Grades']['NR'] = item[8]
-        temp_item['Sections'][0]['Grades']['Other'] = item[9]
-        split = re.split('^(0|[1-9][0-9]*)+', ' '.join(item[10:]), flags=re.IGNORECASE) # Splits remaining pieces into Class Name and Number. Use Cases follow.
-        if len(split) == 1:
-            temp_item['Class_Num'] = split[0]
-        elif len(split) == 2:
-            temp_item['Class_Num'] = split[0]
-            temp_item['Class_Name'] = split[1]
+        
+        if item[9] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
+            temp_item['Sections'][0]['Grades']['Other'] = item[9]
+            split = re.split('^([1-9][0-9]*)+', ' '.join(item[10:]), flags=re.IGNORECASE)
+            
+            if len(split) == 1:
+                temp_item['Class_Num'] = split[0]
+            elif len(split) == 2:
+                temp_item['Class_Num'] = split[0]
+                temp_item['Class_Name'] = split[1]
+            else:
+                temp_item['Class_Num'] = split[1]
+                temp_item['Class_Name'] = split[2]
         else:
-            temp_item['Class_Num'] = split[1]
-            temp_item['Class_Name'] = split[2]
+            split = re.split('(^\d+\.\d)(\d+)(.*)', ' '.join(item[9:]), flags=re.IGNORECASE)
+            if len(split) == 2:
+                temp_item['Sections'][0]['Grades']['Other'] = split[0]
+                temp_item['Class_Num'] = split[1]
+            elif len(split) == 3:
+                temp_item['Sections'][0]['Grades']['Other'] = split[0]
+                temp_item['Class_Num'] = split[1]
+                temp_item['Class_Name'] = split[2]
+            else:
+                temp_item['Sections'][0]['Grades']['Other'] = split[1]
+                temp_item['Class_Num'] = split[2]
+                temp_item['Class_Name'] = split[3]
 
 #    print temp_item # Prints temporary item to the console
     json_data.append(temp_item) # Add the temp_item to the json_data element
 
 curr_item = '' # Defines the current element
 
-for item in reversed(json_data): # Reverse the json_data (TRUST ME). This finds classes without class names, and adds the correct class names to them.
+for item in reversed(json_data): # Reverse the json_data (TRUST ME on this). This finds classes without class names, and adds the correct class names to them.
     if item['Class_Name'] != '':
         curr_item = item
     else:
@@ -205,3 +253,273 @@ for item in reversed(json_data): # Reverse the json_data (TRUST ME). This finds 
 
 #with open('./JSONs/2006_2007_Fall.txt', 'wt') as outfile: #Creates new txt file and "pretty prints" it
 #    json.dump(json_data, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+
+
+
+# Testing statements for each item. Not PyUnit, but intuitive and complete for our purposes and the data we are collecting
+
+def testing(data):
+
+    for item in json_data:
+
+        # Tests for complete data entry
+        if item['Class_Name'] == '':
+            print "WARNING: No Class_Name found for item:"
+            print item
+            print
+
+        if item['Class_Num'] == '':
+            print "WARNING: No Class_Num found for item:"
+            print item
+            print
+
+        if item['Subject_Num'] == '':
+            print "WARNING: No Subject_Num found for item:"
+            print item
+            print
+
+        if item['Term'] == '':
+            print "WARNING: No Term found for item:"
+            print item
+            print
+    
+        if len(item['Sections']) == 0:
+            print "WARNING: No Section data found for item:"
+            print item
+            print
+        else:
+            for sect in item['Sections']:
+                if sect['Sec_Num'] == '':
+                    print "WARNING: No Sec_Num found for item:"
+                    print item
+                    print
+           
+                if sect['Num_Grades'] == '':
+                    print "WARNING: No Num_Grades found for item:"
+                    print item
+                    print
+           
+                if sect['Avg_GPA'] == '':
+                    print "WARNING: No Avg_GPA found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['A'] == '':
+                    print "WARNING: No A found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['AB'] == '':
+                    print "WARNING: No AB found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['B'] == '':
+                    print "WARNING: No B found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['BC'] == '':
+                    print "WARNING: No BC found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['C'] == '':
+                    print "WARNING: No C found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['D'] == '':
+                    print "WARNING: No D found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['F'] == '':
+                    print "WARNING: No F found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['S'] == '':
+                    print "WARNING: No S found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['U'] == '':
+                    print "WARNING: No U found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['CR'] == '':
+                    print "WARNING: No CR found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['N'] == '':
+                    print "WARNING: No N found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['P'] == '':
+                    print "WARNING: No P found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['I'] == '':
+                    print "WARNING: No I found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['NW'] == '':
+                    print "WARNING: No NW found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['NR'] == '':
+                    print "WARNING: No NR found for item:"
+                    print item
+                    print
+               
+                if sect['Grades']['Other'] == '':
+                    print "WARNING: No Other found for item:"
+                    print item
+                    print
+    
+        # Tests for validity of data entry
+        
+        if bool(re.search(r'^\d', item['Class_Name'])): #This is the only WARNING that can sometimes be ignored, as some class names have numbers in them
+            print "WARNING: Class_Name has numbers:"
+            print item
+            print
+
+        if bool(re.search(r'^\D', item['Class_Num'])):
+            print "WARNING: Class_Num has letters:"
+            print item
+            print
+
+        if bool(re.search(r'^\d\d\d', item['Subject_Num'])) == False:
+            print "WARNING: Subject_Num is not valid:"
+            print item
+            print
+
+        if bool(re.search(r'^\d\d\d\d', item['Term'])) == False:
+            print "WARNING: Term is not valid:"
+            print item
+            print
+    
+        if len(item['Sections']) != 0:
+            for sect in item['Sections']:
+                if bool(re.search(r'^\d\d\d', sect['Sec_Num'])) == False:
+                    print "WARNING: Sec_Num is not valid:"
+                    print item
+                    print
+           
+                if bool(re.search(r'^\D', sect['Num_Grades'])):
+                    print "WARNING: Num_Grades is not valid:"
+                    print item
+                    print
+           
+                if bool(re.search(r'^\D', sect['Avg_GPA'])):
+                    if bool(re.search(r'^\*\*\*', sect['Avg_GPA'])) == False:
+                        print "WARNING: Avg_GPA is not valid:"
+                        print item
+                        print
+               
+                if bool(re.search(r'^\D', sect['Grades']['A'])):
+                    if bool(re.search(r'^\.', sect['Grades']['A'])) == False:
+                        print "WARNING: A is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['AB'])):
+                    if bool(re.search(r'^\.', sect['Grades']['AB'])) == False:
+                        print "WARNING: AB is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['B'])):
+                    if bool(re.search(r'^\.', sect['Grades']['B'])) == False:
+                        print "WARNING: B is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['BC'])):
+                    if bool(re.search(r'^\.', sect['Grades']['BC'])) == False:
+                        print "WARNING: BC is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['C'])):
+                    if bool(re.search(r'^\.', sect['Grades']['C'])) == False:
+                        print "WARNING: C is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['D'])):
+                    if bool(re.search(r'^\.', sect['Grades']['D'])) == False:
+                        print "WARNING: D is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['F'])):
+                    if bool(re.search(r'^\.', sect['Grades']['F'])) == False:
+                        print "WARNING: F is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['S'])):
+                    if bool(re.search(r'^\.', sect['Grades']['S'])) == False:
+                        print "WARNING: S is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['U'])):
+                    if bool(re.search(r'^\.', sect['Grades']['U'])) == False:
+                        print "WARNING: U is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['CR'])):
+                    if bool(re.search(r'^\.', sect['Grades']['CR'])) == False:
+                        print "WARNING: CR is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['N'])):
+                    if bool(re.search(r'^\.', sect['Grades']['N'])) == False:
+                        print "WARNING: N is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['P'])):
+                    if bool(re.search(r'^\.', sect['Grades']['P'])) == False:
+                        print "WARNING: P is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['I'])):
+                    if bool(re.search(r'^\.', sect['Grades']['I'])) == False:
+                        print "WARNING: I is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['NW'])):
+                    if bool(re.search(r'^\.', sect['Grades']['NW'])) == False:
+                        print "WARNING: NW is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['NR'])):
+                    if bool(re.search(r'^\.', sect['Grades']['NR'])) == False:
+                        print "WARNING: NR is not valid:"
+                        print item
+                        print
+
+                if bool(re.search(r'^\D', sect['Grades']['Other'])):
+                    if bool(re.search(r'^\.', sect['Grades']['Other'])) == False:
+                        print "WARNING: Other is not valid:"
+                        print item
+                        print
+
+
+testing(json_data) # Comment this line out to ignore testing
+
