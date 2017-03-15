@@ -39,6 +39,46 @@ function filteringFieldsSetup() {
 
 function distributionSetup() {
 
+    //Runs for every class card in DOM -- same as averageGPA() setup
+    $.initialize('a.sectionExpand', function() {
+        //make sure it's not one of the links we inserted
+        if ($(this).attr('href') !== "javascript:void(0)") {
+            //creating the new link to be appended
+            var newLink = document.createElement("a");
+            newLink.href = "javascript:void(0)";
+            newLink.innerHTML = "grades";
+            newLink.className = "sectionExpand hide collapsibleCriteria enabled";
+            newLink.onclick = function () {
+                //write the expandSection function here
+                
+                //create skeleton table
+                var distTable = document.createElement("table");
+                //append skeleton table to section
+                $(this).parent().append(distTable);
+                
+                //get courseID
+                var courseURL = $(this).attr('href');
+                var courseID = courseURL.match(/courseID=([0-9]*)/)[1];
+                courseID.replace("courseID=", "");
+                
+                //call distributionExpanded which makes DB request
+                distributionExpanded(courseID);
+            }
+            
+            //quick create the arrow icon
+            var arrowIcon = document.createElement("img");
+            //this is not working at the moment, we might have to put a copy in our extension
+            arrowIcon.source = "./MyUW_files/left-arrow.png";
+            arrowIcon.className = "expandCollapseIcon";
+            arrowIcon.width = "15";
+            arrowIcon.height = "15";
+            newLink.appendChild(arrowIcon);
+            
+            //append newLink to the section, below the sections link
+            $(this).parent().append(newLink);
+        }
+    })
+    
 }
 
 function sectionsListenerSetup() {
