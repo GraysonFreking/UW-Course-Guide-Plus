@@ -68,7 +68,7 @@ function distributionSetup() {
             //quick create the arrow icon
             var arrowIcon = document.createElement("img");
             //this is not working at the moment, we might have to put a copy in our extension
-            arrowIcon.source = "./MyUW_files/left-arrow.png";
+            arrowIcon.source = "../img/left-arrow.png";
             arrowIcon.className = "expandCollapseIcon";
             arrowIcon.width = "15";
             arrowIcon.height = "15";
