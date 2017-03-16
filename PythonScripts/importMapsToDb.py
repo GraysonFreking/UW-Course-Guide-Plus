@@ -8,22 +8,20 @@ To import to production database, modify the database connection.
 '''
 
 def main(argv):
-	con = sqlite3.connect("../Database/testDB.db")
-	c = con.cursor()
+	
 
-	if (len(argv) != 2):
+	if (len(argv) != 3):
 		print(len(argv))
 		print(usage())
-	elif (len(argv) == 2 and argv[1] == "--clean"):
+		sys.exit()
+	con = sqlite3.connect(argv[1])
+	c = con.cursor()
+	if (len(argv) == 3 and argv[2] == "--clean"):
 		c.execute("delete from Map")
 		con.commit()
-	elif (len(argv) == 2 and argv[1] == "--add"):
+	elif (len(argv) == 3 and argv[2] == "--add"):
 	
 		maps = json.load(open('mapResult.json'))
-		
-		
-		
-		
 		query = "insert into Map values (?, ?, ?)"
 		columns = ['building', 'link']
 		mapId = 0
@@ -32,15 +30,21 @@ def main(argv):
 			keys = (mapId,) + tuple(m[col] for col in columns)
 			c.execute(query, keys)
 			#print(keys)
+		backupData = '\n'.join(con.iterdump())
+		write(backupData)
 		con.commit()
-		#c.execute("insert into people values (?, ?)", (who, age))
 		
-		#c.execute("select * from people where name_last=:who and age=:age", {"who": who, "age": age})
 	else:
 		print(usage())		
 
 def usage():
-	return "Usage: \nimportMapsToDb.py --clean\nimportMapsToDb.py --add"
+	return "Usage: \nimportMapsToDb.py ../Database/dbname.db --clean\nimportMapsToDb.py ../Database/dbname.db --add"
+def write(data):
+    f = open(sys.argv[1].split('.db')[0] + 'Backup.sql', 'w+')
+
+    with f:
+        f.write(data)
+
 
 if __name__ == "__main__":
 	main(sys.argv)
