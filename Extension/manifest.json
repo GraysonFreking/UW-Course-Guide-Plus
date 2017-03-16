@@ -41,6 +41,8 @@
     "https://www.ratemyprofessors.com/*",
     "*map.wisc.edu/*",
     "https://ajax.googleapis.com/"
-  ]
+  ],
+    
+  "web_accessible_resources": ["img/*.png"]
 
 }
