@@ -44,7 +44,7 @@ def json_to_sql(file, db):
                 cur.execute("""INSERT OR IGNORE INTO
                         Department (deptID, name, shortName)
                         VALUES (?,?,?)
-                    """, (course['Subject_Num'], 'N', 'S'))
+                    """, (course['Subject_Num'], '', ''))
                 _dept = cur.lastrowid
 
                 cur.execute("""INSERT OR IGNORE INTO
