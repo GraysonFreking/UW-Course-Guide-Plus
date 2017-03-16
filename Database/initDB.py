@@ -32,6 +32,7 @@ with con:
     cur.execute("""
         CREATE TABLE Grades(
             gradesID INTEGER PRIMARY KEY AUTOINCREMENT,
+            avgGPA REAL,
             aPercent REAL,
             abPercent REAL,
             bPercent REAL,
@@ -49,7 +50,7 @@ with con:
     cur.execute("""
         CREATE TABLE Section(
             sectionID INTEGER PRIMARY KEY AUTOINCREMENT,
-            section INTEGER,
+            section TEXT,
             courseID INTEGER,
             profID INTEGER,
             gradesID INTEGER,
