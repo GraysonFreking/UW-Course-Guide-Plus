@@ -18,7 +18,7 @@
   },
 
   "background": {
-    "scripts": ["js/data_access.js", "js/model.js"],
+    "scripts": ["js/data_access.js", "js/model.js", "js/sql.js"],
     "persistent": false
   },
 

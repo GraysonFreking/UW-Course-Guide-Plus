@@ -46,6 +46,6 @@ function getLocationLinks(locations) {
 
 
 function getDistribution(course, count) {
-
+	// TODO: worry about specific count when we have more in db
+	return getDistributions(course);
 }
-
