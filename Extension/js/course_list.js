@@ -6,7 +6,7 @@ filteringFieldsSetup();
 
 function listSetup() {
   averageGPASetup();
-  distributionSetup();
+  // distributionSetup();
   sectionsListenerSetup();
 }
 
@@ -19,15 +19,25 @@ function averageGPASetup() {
 
         // Extracts course ID
         var courseURL = $(this).attr('href');
-        var courseID = courseURL.match(/courseID=([0-9]*)/)[1];
-        courseID.replace("courseID=", "");
+        var subjectID = courseURL.match(/subjectId=([0-9]*)/)[1];
+        subjectID.replace("subjectId=", "");
+        var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)')
+            .html().trim().match(/([0-9]*)/)[1];
+        console.log(courseNum);
+
+        // console.log(subjectID + ": " + courseNum);
 
         // Ask the model for the average GPA for this class, append it to the TD
         chrome.runtime.sendMessage( {
             action: "getAverageGPA",
-            course: courseID
+            course: subjectID + "-" + courseNum
         }, function(response) {
-            addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
+            console.log(response);
+            if (response) {
+                console.log("Appending: " + response.aveGPA);
+                addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
+            }
+
         })
     })
 
@@ -50,21 +60,21 @@ function distributionSetup() {
             newLink.className = "sectionExpand hide collapsibleCriteria enabled";
             newLink.onclick = function () {
                 //write the expandSection function here
-                
+
                 //create skeleton table
                 var distTable = document.createElement("table");
                 //append skeleton table to section
                 $(this).parent().append(distTable);
-                
+
                 //get courseID
                 var courseURL = $(this).attr('href');
                 var courseID = courseURL.match(/courseID=([0-9]*)/)[1];
                 courseID.replace("courseID=", "");
-                
+
                 //call distributionExpanded which makes DB request
                 distributionExpanded(courseID);
             }
-            
+
             //quick create the arrow icon
             var arrowIcon = document.createElement("img");
             //this is not working at the moment, we might have to put a copy in our extension
@@ -73,12 +83,12 @@ function distributionSetup() {
             arrowIcon.width = "15";
             arrowIcon.height = "15";
             newLink.appendChild(arrowIcon);
-            
+
             //append newLink to the section, below the sections link
             $(this).parent().append(newLink);
         }
     })
-    
+
 }
 
 function sectionsListenerSetup() {
