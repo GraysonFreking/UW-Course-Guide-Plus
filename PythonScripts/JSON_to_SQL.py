@@ -35,11 +35,11 @@ def json_to_sql(file, db):
             for course in json_data:
                 cur = con.cursor()
                 
-                cur.execute("""INSERT OR IGNORE INTO
-                        Professor (name)
-                        VALUES (?)
-                    """, ('P'))
-                _prof = cur.lastrowid
+#                cur.execute("""INSERT OR IGNORE INTO
+#                        Professor (name)
+#                        VALUES (?)
+#                    """, ('P'))
+#                _prof = cur.lastrowid
 
                 cur.execute("""INSERT OR IGNORE INTO
                         Department (deptID, name, shortName)
@@ -77,9 +77,9 @@ def json_to_sql(file, db):
                     _grade = cur.lastrowid
 
                     cur.execute("""INSERT OR IGNORE INTO
-                            Section (section, courseID, profID, gradesID, termID)
-                            VALUES (?,?,?,?,?)
-                        """, (sect['Sec_Num'], _course, _prof, _grade, _term))
+                            Section (section, courseID, gradesID, termID)
+                            VALUES (?,?,?,?)
+                        """, (sect['Sec_Num'], _course, _grade, _term))
 
 
 def testing(data):
