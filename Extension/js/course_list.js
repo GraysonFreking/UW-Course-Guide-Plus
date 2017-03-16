@@ -6,7 +6,7 @@ filteringFieldsSetup();
 
 function listSetup() {
   averageGPASetup();
-  // distributionSetup();
+  distributionSetup();
   sectionsListenerSetup();
 }
 
@@ -21,23 +21,21 @@ function averageGPASetup() {
         var courseURL = $(this).attr('href');
         var subjectID = courseURL.match(/subjectId=([0-9]*)/)[1];
         subjectID.replace("subjectId=", "");
+
+        // Extract course number from a specific TD. Some trimming and RegEx magic needed to filter out ocassional "Cross-listed" or "Term" text in that same TD
         var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)')
             .html().trim().match(/([0-9]*)/)[1];
         console.log(courseNum);
 
-        // console.log(subjectID + ": " + courseNum);
-
         // Ask the model for the average GPA for this class, append it to the TD
         chrome.runtime.sendMessage( {
             action: "getAverageGPA",
-            course: subjectID + "-" + courseNum
+            course: subjectID + courseNum
         }, function(response) {
-            console.log(response);
             if (response) {
                 console.log("Appending: " + response.aveGPA);
                 addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
             }
-
         })
     })
 
@@ -49,7 +47,7 @@ function filteringFieldsSetup() {
 
 function distributionSetup() {
 
-    //Runs for every class card in DOM -- same as averageGPA() setup
+    // Runs for every class card in DOM -- same as averageGPA() setup
     $.initialize('a.sectionExpand', function() {
         //make sure it's not one of the links we inserted
         if ($(this).attr('href') !== "javascript:void(0)") {
@@ -57,7 +55,7 @@ function distributionSetup() {
             var newLink = document.createElement("a");
             newLink.href = "javascript:void(0)";
             newLink.innerHTML = "grades";
-            newLink.className = "sectionExpand hide collapsibleCriteria enabled";
+            newLink.className = "gradesExpand hide collapsibleCriteria enabled";
             newLink.onclick = function () {
                 //write the expandSection function here
 
@@ -67,7 +65,7 @@ function distributionSetup() {
                 $(this).parent().append(distTable);
 
                 //get courseID
-                var courseURL = $(this).attr('href');
+                var courseURL = $(this).prev().attr('href');
                 var courseID = courseURL.match(/courseID=([0-9]*)/)[1];
                 courseID.replace("courseID=", "");
 

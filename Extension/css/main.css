@@ -1,0 +1,8 @@
+.CG_Results td.sectionExpandColumn a.gradesExpand {
+    margin: 0 0 0 5px;
+    display: block;
+    text-decoration: none;
+    width: 70px;
+    height: 18px;
+    color: black!important;
+}
