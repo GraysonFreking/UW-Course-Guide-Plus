@@ -1,7 +1,7 @@
 
 ## HOW TO USE THIS FILE ##
 
-# IN CONSOLE, navigate to directory and type the following: $ python XML_Parse.py <xml file path> <JSON output path> <-t invoke testing>
+# IN CONSOLE, navigate to directory and type the following: $ python XML_Parse.py <xml file path> <JSON output path> <-t invoke testing> <-p pretty-print json>
 
 import xml.etree.ElementTree as ET
 import json
@@ -9,8 +9,16 @@ import re
 import copy
 import sys
 
+def export_data(out_file, json_data, field):
+    if field == '-p':
+        with open(out_file, 'wt') as outfile: #Appends txt file to add this list and "pretty print"s it
+            outfile.write(json.dumps(json_data, sort_keys=True, indent=4, separators=(',', ': ')))
+    
+    else:
+        with open(out_file, 'w') as outfile: #Creates new json file
+            outfile.write(json.dumps(json_data))
 
-def xml_parse(in_file, out_file):
+def xml_parse(in_file):
     tree = ET.parse(in_file) #XML being read
     root = tree.getroot()
     line = ''
@@ -104,7 +112,7 @@ def xml_parse(in_file, out_file):
         temp_item['Sections'][0]['Num_Grades'] = item[1]
         temp_item['Sections'][0]['Avg_GPA'] = item[2]
 
-        if temp_item['Sections'][0]['Avg_GPA'] == '.': # Case for when GPA Average is available
+        if temp_item['Sections'][0]['Avg_GPA'] == '.': # Case for when GPA Average is not available
             temp_item['Sections'][0]['Avg_GPA'] = '***'
             temp_item['Sections'][0]['Grades']['A'] = item[2]
             temp_item['Sections'][0]['Grades']['AB'] = item[3]
@@ -124,8 +132,8 @@ def xml_parse(in_file, out_file):
             
             if item[17] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
                 temp_item['Sections'][0]['Grades']['Other'] = item[17]
-                split = re.split('^([1-9][0-9]*)+', ' '.join(item[18:]), flags=re.IGNORECASE)
-                
+                split = re.split('(^\d{0,3})(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+
                 if len(split) == 1:
                     temp_item['Class_Num'] = split[0]
                 elif len(split) == 2:
@@ -135,7 +143,8 @@ def xml_parse(in_file, out_file):
                     temp_item['Class_Num'] = split[1]
                     temp_item['Class_Name'] = split[2]
             else:
-                split = re.split('(^\d+\.\d)(\d+)(.*)', ' '.join(item[17:]), flags=re.IGNORECASE)
+                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[17:]), flags=re.IGNORECASE)
+
                 if len(split) == 2:
                     temp_item['Sections'][0]['Grades']['Other'] = split[0]
                     temp_item['Class_Num'] = split[1]
@@ -148,7 +157,7 @@ def xml_parse(in_file, out_file):
                     temp_item['Class_Num'] = split[2]
                     temp_item['Class_Name'] = split[3]
 
-        elif temp_item['Sections'][0]['Avg_GPA'] != '***': # Case for when GPA Average is not available
+        elif temp_item['Sections'][0]['Avg_GPA'] != '***': # Case for when GPA Average is available
             temp_item['Sections'][0]['Grades']['A'] = item[3]
             temp_item['Sections'][0]['Grades']['AB'] = item[4]
             temp_item['Sections'][0]['Grades']['B'] = item[5]
@@ -167,8 +176,8 @@ def xml_parse(in_file, out_file):
             
             if item[18] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
                 temp_item['Sections'][0]['Grades']['Other'] = item[18]
-                split = re.split('^([1-9][0-9]*)+', ' '.join(item[19:]), flags=re.IGNORECASE)
-                
+                split = re.split('(^\d{0,3})(.*)', ' '.join(item[19:]), flags=re.IGNORECASE)
+
                 if len(split) == 1:
                     temp_item['Class_Num'] = split[0]
                 elif len(split) == 2:
@@ -178,7 +187,8 @@ def xml_parse(in_file, out_file):
                     temp_item['Class_Num'] = split[1]
                     temp_item['Class_Name'] = split[2]
             else:
-                split = re.split('(^\d+\.\d)(\d+)(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+
                 if len(split) == 2:
                     temp_item['Sections'][0]['Grades']['Other'] = split[0]
                     temp_item['Class_Num'] = split[1]
@@ -210,8 +220,8 @@ def xml_parse(in_file, out_file):
             
             if item[9] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
                 temp_item['Sections'][0]['Grades']['Other'] = item[9]
-                split = re.split('^([1-9][0-9]*)+', ' '.join(item[10:]), flags=re.IGNORECASE)
-                
+                split = re.split('(^\d{0,3})(.*)', ' '.join(item[10:]), flags=re.IGNORECASE)
+
                 if len(split) == 1:
                     temp_item['Class_Num'] = split[0]
                 elif len(split) == 2:
@@ -221,7 +231,8 @@ def xml_parse(in_file, out_file):
                     temp_item['Class_Num'] = split[1]
                     temp_item['Class_Name'] = split[2]
             else:
-                split = re.split('(^\d+\.\d)(\d+)(.*)', ' '.join(item[9:]), flags=re.IGNORECASE)
+                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[9:]), flags=re.IGNORECASE) #(^\d+\.\d)(\d{0,3})(.*)
+
                 if len(split) == 2:
                     temp_item['Sections'][0]['Grades']['Other'] = split[0]
                     temp_item['Class_Num'] = split[1]
@@ -246,17 +257,9 @@ def xml_parse(in_file, out_file):
             curr_item['Sections'].append(item['Sections'][0])
             json_data.remove(item)
 
-
     #for item in json_data: #Prints each item in console
     #    print item
     #    print
-
-#    with open(out_file, 'at') as outfile: #Appends txt file to add this list and "pretty print"s it
-#        json.dump(json_data, outfile, sort_keys=True, indent=4, separators=(',', ': '))
-
-    with open(out_file, 'w') as outfile: #Creates new json file
-#        json.dumps(json_data)
-        outfile.write(json.dumps(json_data))
 
     return json_data
 
@@ -407,7 +410,7 @@ def testing(data):
             print item
             print
 
-        if not re.search(r'^\d{0,3}', item['Class_Num']):
+        if re.search(r'^\d{4,}', item['Class_Num']):
             print "WARNING: Class_Num is not valid:"
             print item
             print
@@ -439,115 +442,112 @@ def testing(data):
                     print item
                     print
            
-                if re.search(r'^\D', sect['Num_Grades']):
+                if re.search(r'\D', sect['Num_Grades']):
                     print "WARNING: Num_Grades is not valid:"
                     print item
                     print
            
-                if re.search(r'^\D', sect['Avg_GPA']):
+                if re.search(r'[^\d.]', sect['Avg_GPA']):
                     if not re.search(r'^\*\*\*', sect['Avg_GPA']):
                         print "WARNING: Avg_GPA is not valid:"
                         print item
                         print
                
-                if re.search(r'^\D', sect['Grades']['A']):
-                    if not re.search(r'^\.', sect['Grades']['A']):
-                        print "WARNING: A is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['A']):
+                    print "WARNING: A is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['AB']):
-                    if not re.search(r'^\.', sect['Grades']['AB']):
-                        print "WARNING: AB is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['AB']):
+                    print "WARNING: AB is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['B']):
-                    if not re.search(r'^\.', sect['Grades']['B']):
-                        print "WARNING: B is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['B']):
+                    print "WARNING: B is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['BC']):
-                    if not re.search(r'^\.', sect['Grades']['BC']):
-                        print "WARNING: BC is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['BC']):
+                    print "WARNING: BC is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['C']):
-                    if not re.search(r'^\.', sect['Grades']['C']):
-                        print "WARNING: C is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['C']):
+                    print "WARNING: C is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['D']):
-                    if not re.search(r'^\.', sect['Grades']['D']):
-                        print "WARNING: D is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['D']):
+                    print "WARNING: D is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['F']):
-                    if not re.search(r'^\.', sect['Grades']['F']):
-                        print "WARNING: F is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['F']):
+                    print "WARNING: F is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['S']):
-                    if not re.search(r'^\.', sect['Grades']['S']):
-                        print "WARNING: S is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['S']):
+                    print "WARNING: S is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['U']):
-                    if not re.search(r'^\.', sect['Grades']['U']):
-                        print "WARNING: U is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['U']):
+                    print "WARNING: U is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['CR']):
-                    if not re.search(r'^\.', sect['Grades']['CR']):
-                        print "WARNING: CR is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['CR']):
+                    print "WARNING: CR is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['N']):
-                    if not re.search(r'^\.', sect['Grades']['N']):
-                        print "WARNING: N is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['N']):
+                    print "WARNING: N is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['P']):
-                    if not re.search(r'^\.', sect['Grades']['P']):
-                        print "WARNING: P is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['P']):
+                    print "WARNING: P is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['I']):
-                    if not re.search(r'^\.', sect['Grades']['I']):
-                        print "WARNING: I is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['I']):
+                    print "WARNING: I is not valid:"
+                    print item
+                    print
 
-                if bool(re.search(r'^\D', sect['Grades']['NW'])):
-                    if not re.search(r'^\.', sect['Grades']['NW']):
-                        print "WARNING: NW is not valid:"
-                        print item
-                        print
+                if bool(re.search(r'[^\d.]', sect['Grades']['NW'])):
+                    print "WARNING: NW is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['NR']):
-                    if not re.search(r'^\.', sect['Grades']['NR']):
-                        print "WARNING: NR is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['NR']):
+                    print "WARNING: NR is not valid:"
+                    print item
+                    print
 
-                if re.search(r'^\D', sect['Grades']['Other']):
-                    if not re.search(r'^\.', sect['Grades']['Other']):
-                        print "WARNING: Other is not valid:"
-                        print item
-                        print
+                if re.search(r'[^\d.]', sect['Grades']['Other']):
+                    print "WARNING: Other is not valid:"
+                    print item
+                    print
 
-if len(sys.argv) > 3 and sys.argv[3] == "-t":
-    test_data = xml_parse(sys.argv[1], sys.argv[2])
-    testing(test_data)
+data = ''
+
+if '-t' in sys.argv:
+    data = xml_parse(sys.argv[1])
+    testing(data)
 else:
-    xml_parse(sys.argv[1], sys.argv[2])
+    data = xml_parse(sys.argv[1])
+
+
+if '-p' in sys.argv:
+    export_data(sys.argv[2], data, '-p')
+else:
+    export_data(sys.argv[2], data, '')
+
+
+
+
+
