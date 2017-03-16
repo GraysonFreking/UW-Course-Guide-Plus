@@ -41,7 +41,7 @@ with con:
             dPercent REAL,
             fPercent REAL,
             iPercent REAL,
-            count REAL)""")
+            count INTEGER)""")
 
     cur.execute("""
         CREATE TABLE Term(
