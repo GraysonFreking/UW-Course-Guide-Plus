@@ -1,0 +1,17 @@
+.CG_Results td.sectionExpandColumn a.gradesExpand {
+    margin: 0 0 0 5px;
+    display: inline-block !important;
+    text-decoration: none;
+    width: 70px;
+    height: 18px;
+    color: black!important;
+}
+
+.CG_Results td.sectionExpandColumn a.sectionExpand {
+    display: inline-block !important;
+}
+
+a.gradesExpand img.expandCollapseIcon {
+  margin-right: 3px !important;
+  margin-top: 1px !important;
+}

@@ -30,7 +30,7 @@ def json_to_sql(file, db):
                 """, (json_data[0]['Term_Num'], json_data[0]['Term_Name']))
         _term = cur.lastrowid
         
-        if not _term == 0:
+        if _term != 0:
         
             for course in json_data:
                 cur = con.cursor()
@@ -61,6 +61,7 @@ def json_to_sql(file, db):
 
                 for sect in course['Sections']:
                     _avgGPA = '' if sect['Avg_GPA'] == '***' else sect['Avg_GPA']
+                    _classSize = '' if sect['Num_Grades'] <=5 else sect['Num_Grades']
                     _a = '' if sect['Grades']['A'] == '.' else sect['Grades']['A']
                     _ab = '' if sect['Grades']['AB'] == '.' else sect['Grades']['AB']
                     _b = '' if sect['Grades']['B'] == '.' else sect['Grades']['B']
@@ -71,9 +72,9 @@ def json_to_sql(file, db):
                     _i = '' if sect['Grades']['I'] == '.' else sect['Grades']['I']
 
                     cur.execute("""INSERT OR IGNORE INTO
-                            Grades (avgGPA,aPercent,abPercent,bPercent,bcPercent,cPercent,dPercent,fPercent,iPercent)
-                            VALUES (?,?,?,?,?,?,?,?,?)
-                        """, (_avgGPA, _a, _ab, _b, _bc, _c, _d, _f, _i))
+                            Grades (avgGPA,aPercent,abPercent,bPercent,bcPercent,cPercent,dPercent,fPercent,iPercent, count)
+                            VALUES (?,?,?,?,?,?,?,?,?,?)
+                        """, (_avgGPA, _a, _ab, _b, _bc, _c, _d, _f, _i, _classSize))
                     _grade = cur.lastrowid
 
                     cur.execute("""INSERT OR IGNORE INTO

@@ -14,7 +14,7 @@ def main(argv):
 		print(len(argv))
 		print(usage())
 		sys.exit()
-	con = sqlite3.connect(argv[1])
+	con = sqlite3.connect('../Extension/db/' + argv[1])
 	c = con.cursor()
 	if (len(argv) == 3 and argv[2] == "--clean"):
 		c.execute("delete from Map")
@@ -38,9 +38,9 @@ def main(argv):
 		print(usage())		
 
 def usage():
-	return "Usage: \nimportMapsToDb.py ../Database/dbname.db --clean\nimportMapsToDb.py ../Database/dbname.db --add"
+	return "Usage: \nimportMapsToDb.py dbname.db --clean\nimportMapsToDb.py dbname.db --add"
 def write(data):
-    f = open(sys.argv[1].split('.db')[0] + 'Backup.sql', 'w+')
+    f = open('../Database/' + sys.argv[1].split('.db')[0] + 'Backup.sql', 'w+')
 
     with f:
         f.write(data)
