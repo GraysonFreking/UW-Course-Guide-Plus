@@ -25,15 +25,12 @@ function getAverageGPA(course) {
         totalGradePoints = 0,
         totalGrades = 0,
         aveGPA;
-    if (sections.length == 0) {
-        return undefined;
-    }
-    for (var section in sections) {
-        totalGradePoints += sections[section].avgGPA * sections[section].count;
-        totalGrades += sections[section].count;
+    for (var i = 0; i < sections.length; i++) {
+        totalGradePoints += sections[i].avgGPA * sections[i].count;
+        totalGrades += sections[i].count;
     }
     aveGPA = totalGradePoints / totalGrades;
-    if (aveGPA <= 0) {
+    if (aveGPA <= 0 || sections.length == 0) {
         return undefined;
     }
     return { aveGPA: aveGPA.toFixed(3) };
