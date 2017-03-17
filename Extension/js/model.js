@@ -12,8 +12,8 @@ chrome.runtime.onMessage.addListener(
         case "getLocationLinks":
 	        sendResponse(getLocationLinks(request.locations));
 	        break;
-        case "getDistributions":
-	        sendResponse(getDistributions(request.course, request.count));
+        case "getDistribution":
+	        sendResponse(getDistribution(request.course, request.count));
             break;
     }
   }
@@ -31,6 +31,7 @@ function getAverageGPA(course) {
     // }
     // aveGPA = totalGradePoints / totalGrades;
     // return { aveGPA: aveGPA };
+	getDistribution(course);
     return { aveGPA: course };
 }
 

@@ -6,10 +6,11 @@ function dbSetup() {
 
 	xhr.onload = function(e) {
 	  var uInt8Array = new Uint8Array(this.response);
-	  var db = new SQL.Database(uInt8Array);
+	  db = new SQL.Database(uInt8Array);
 	};
 	xhr.send();
 }
+var db;
 dbSetup();
 
 // close db connection on page suspend
