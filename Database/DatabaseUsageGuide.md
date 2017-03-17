@@ -58,7 +58,9 @@ We have 5 tables, and I'm about to walk you through their contents, and what sho
             
             fPercent REAL,
             
-            iPercent REAL
+            iPercent REAL,
+
+            count INT,                  // This is the number of grades in the distribution, to compute the average. e.g. 155
 
 #### Professor:  
             profID INT PRIMARY KEY,     // this is an arbitrary number that is automatically assigned to a unique professor.
@@ -84,6 +86,8 @@ We have 5 tables, and I'm about to walk you through their contents, and what sho
             name TEXT                   // this is the actual term. e.g. Fall 2015
 
 #### Map:        
+            mapID INT PRIMARY KEY       // this is an arbitrary number that is automatically assigned to a unique map.
+            
             name TEXT,                  // this is the name of the building as it appears on the course guide
 
             link TEXT,                  // this is the link we have stored for that building.
