@@ -25,15 +25,13 @@ function averageGPASetup() {
         // Extract course number from a specific TD. Some trimming and RegEx magic needed to filter out ocassional "Cross-listed" or "Term" text in that same TD
         var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)')
             .html().trim().match(/([0-9]*)/)[1];
-        console.log(courseNum);
 
         // Ask the model for the average GPA for this class, append it to the TD
         chrome.runtime.sendMessage( {
             action: "getAverageGPA",
             course: subjectID + courseNum
         }, function(response) {
-            if (response) {
-                console.log("Appending: " + response.aveGPA);
+            if (response != undefined) {
                 addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
             }
         })
@@ -51,7 +49,7 @@ function distributionSetup() {
     $.initialize('a.sectionExpand', function() {
         //make sure it's not one of the links we inserted
         if ($(this).attr('href') !== "javascript:void(0)") {
-            
+
             //creating the new link to be appended
             var newLink = document.createElement("a");
             newLink.href = "javascript:void(0)";
@@ -65,7 +63,7 @@ function distributionSetup() {
             arrowIcon.width = "15";
             arrowIcon.height = "15";
             newLink.appendChild(arrowIcon);
-            
+
             //add listener to newLink
             newLink.addEventListener('click', function () {
                 // Extracts course ID
@@ -75,24 +73,24 @@ function distributionSetup() {
 
                 // Extract course number from a specific TD. Some trimming and RegEx magic needed to filter out ocassional "Cross-listed" or "Term" text in that same TD
                 var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)').html().trim().match(/([0-9]*)/)[1];
-                
+
                 //combine subjectID and courseNum into a courseID
                 var courseID = subjectID + courseNum
-                
+
                 //call distributionExpanded which makes DB request
                 //distributionExpanded(courseID);
-                
+
                 //test
                 console.log("clicked the new link");
-                
+
                 //toggle the div
                 $(this).next().toggle();
             });
-            
+
             //append newLink to the section, below the sections link
             $(this).parent().append(newLink);
-            
-            
+
+
             //create the hidden div
             var tableDiv = $(document.createElement("div")).hide();
             tableDiv.className = "distTableDivClass";
@@ -107,7 +105,7 @@ function distributionSetup() {
             tableDiv.append(testNode);
             //append div into the page
             $(this).parent().append(tableDiv);
-            
+
         }
     });
 
@@ -146,6 +144,6 @@ function distributionExpanded(course) {
         console.log(response);
         var jsonObj = $.parseJSON(response);
     });
-    
+
 }
 

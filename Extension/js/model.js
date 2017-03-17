@@ -21,18 +21,22 @@ chrome.runtime.onMessage.addListener(
 
 
 function getAverageGPA(course) {
-    // var sections = getSectionData(course),
-    //     totalGradePoints = 0,
-    //     totalGrades = 0,
-    //     aveGPA;
-    // for (var section in sections) {
-    //     totalGradePoints += sections[section].avgGPA * sections[section].count;
-    //     totalGrades += sections[section].count;
-    // }
-    // aveGPA = totalGradePoints / totalGrades;
-    // return { aveGPA: aveGPA };
-	getDistribution(course);
-    return { aveGPA: course };
+    var sections = getDistributions(course).sections,
+        totalGradePoints = 0,
+        totalGrades = 0,
+        aveGPA;
+    if (sections.length == 0) {
+        return undefined;
+    }
+    for (var section in sections) {
+        totalGradePoints += sections[section].avgGPA * sections[section].count;
+        totalGrades += sections[section].count;
+    }
+    aveGPA = totalGradePoints / totalGrades;
+    if (aveGPA <= 0) {
+        return undefined;
+    }
+    return { aveGPA: aveGPA.toFixed(3) };
 }
 
 
