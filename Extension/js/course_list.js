@@ -50,6 +50,7 @@ function distributionSetup() {
         //make sure it's not one of the links we inserted
         if ($(this).attr('href') !== "javascript:void(0)") {
 
+            var currElement = $(this);
             //creating the new link to be appended
             var newLink = document.createElement("a");
             newLink.href = "javascript:void(0)";
@@ -79,6 +80,83 @@ function distributionSetup() {
 
                 //call distributionExpanded which makes DB request
                 //distributionExpanded(courseID);
+                chrome.runtime.sendMessage( {
+                    action: "getDistribution",
+                    course: courseID,
+                    count: 5
+                }, function(response) {
+                //do response handling here & fill build/fill table
+                console.log(response);
+                var jsonObj = response;
+                var table = document.createElement("table");
+                table.border = "1px solid black";
+                /*for (var i = 0, il = jsonObj.length; i < il; i++) {
+                    //create row
+                    var row = document.createElement('tr'),
+                        td;
+                    //create term column
+                    td = document.createElement('td');
+                    td.appendChild(document.createTextNode(value.term));
+                    row.appendChild(td);
+                    
+                    //append row to table
+                    table.appendChild(row);
+                    console.log("row appended...");
+                }*/
+                //create row
+                var row = document.createElement("tr");
+                //create term column
+                var tdTerm = document.createElement("td");
+                tdTerm.appendChild(document.createTextNode(jsonObj.sections[0].term));
+                row.appendChild(tdTerm);
+                //create count column
+                var tdCount = document.createElement("td");
+                tdCount.appendChild(document.createTextNode(jsonObj.sections[0].count));
+                row.appendChild(tdCount);
+                //create avg GPA column
+                var tdAvgGpa = document.createElement("td");
+                tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[0].avgGPA));
+                row.appendChild(tdAvgGpa);
+                //create aPercent column
+                var tdAPercent = document.createElement("td");
+                tdAPercent.appendChild(document.createTextNode(jsonObj.sections[0].aPercent));
+                row.appendChild(tdAPercent);
+                //create abPercent column
+                var tdABPercent = document.createElement("td");
+                tdABPercent.appendChild(document.createTextNode(jsonObj.sections[0].abPercent));
+                row.appendChild(tdABPercent);
+                //create bPercent column
+                var tdBPercent = document.createElement("td");
+                tdBPercent.appendChild(document.createTextNode(jsonObj.sections[0].bPercent));
+                row.appendChild(tdBPercent);
+                //create bcPercent column
+                var tdBCPercent = document.createElement("td");
+                tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[0].bcPercent));
+                row.appendChild(tdBCPercent);
+                //create cPercent column
+                var tdCPercent = document.createElement("td");
+                tdCPercent.appendChild(document.createTextNode(jsonObj.sections[0].cPercent));
+                row.appendChild(tdCPercent);
+                //create dPercent column
+                var tdDPercent = document.createElement("td");
+                tdDPercent.appendChild(document.createTextNode(jsonObj.sections[0].dPercent));
+                row.appendChild(tdDPercent);
+                //create fPercent column
+                var tdFPercent = document.createElement("td");
+                tdFPercent.appendChild(document.createTextNode(jsonObj.sections[0].fPercent));
+                row.appendChild(tdFPercent);
+                //create iPercent column
+                var tdIPercent = document.createElement("td");
+                tdIPercent.appendChild(document.createTextNode(jsonObj.sections[0].iPercent));
+                row.appendChild(tdIPercent);
+                    
+                //append row to table
+                table.appendChild(row);
+                    
+                currElement.parent().append(table);
+                console.log("table appended...");
+                
+                });
 
                 //test
                 console.log("clicked the new link");
@@ -91,7 +169,7 @@ function distributionSetup() {
             $(this).parent().append(newLink);
 
 
-            //create the hidden div
+            /*//create the hidden div
             var tableDiv = $(document.createElement("div")).hide();
             tableDiv.className = "distTableDivClass";
             ////tableDiv.display = "none";
@@ -104,7 +182,7 @@ function distributionSetup() {
             testNode.innerHTML = "Wow this is a neat test, check this out.";
             tableDiv.append(testNode);
             //append div into the page
-            $(this).parent().append(tableDiv);
+            //$(this).parent().append(tableDiv);*/
 
         }
     });
@@ -134,16 +212,6 @@ function sectionsExpanded(sectionsTable) {
 }
 
 function distributionExpanded(course) {
-
-    chrome.runtime.sendMessage( {
-        action: "getDistribution",
-        course: course,
-        count: 5
-    }, function(response) {
-        //do response handling here & fill build/fill table
-        console.log(response);
-        var jsonObj = $.parseJSON(response);
-    });
 
 }
 
