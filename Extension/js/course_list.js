@@ -57,22 +57,6 @@ function distributionSetup() {
             newLink.href = "javascript:void(0)";
             newLink.innerHTML = "grades";
             newLink.className = "gradesExpand hide collapsibleCriteria enabled";
-            /*newLink.onclick = function () {
-                //write the expandSection function here
-
-                //create skeleton table
-                var distTable = document.createElement("table");
-                //append skeleton table to section
-                $(this).parent().append(distTable);
-
-                //get courseID
-                var courseURL = $(this).prev().attr('href');
-                var courseID = courseURL.match(/courseID=([0-9]*)/)[1];
-                courseID.replace("courseID=", "");
-
-                //call distributionExpanded which makes DB request
-                distributionExpanded(courseID);
-            }*/
 
             //quick create the arrow icon
             var arrowIcon = document.createElement("img");
@@ -84,40 +68,48 @@ function distributionSetup() {
             
             //add listener to newLink
             newLink.addEventListener('click', function () {
-                 //get courseID
-                var courseURL = $(this).attr('href');
-                var courseID = courseURL.match(/courseID=([0-9]*)/)[1];
-                courseID.replace("courseID=", "");
+                // Extracts course ID
+                var courseURL = $(this).prev().attr('href');
+                var subjectID = courseURL.match(/subjectId=([0-9]*)/)[1];
+                subjectID.replace("subjectId=", "");
+
+                // Extract course number from a specific TD. Some trimming and RegEx magic needed to filter out ocassional "Cross-listed" or "Term" text in that same TD
+                var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)').html().trim().match(/([0-9]*)/)[1];
+                
+                //combine subjectID and courseNum into a courseID
+                var courseID = subjectID + courseNum
                 
                 //call distributionExpanded which makes DB request
-                distributionExpanded(courseID);
+                //distributionExpanded(courseID);
                 
                 //test
-                alert("you clicked it");
                 console.log("clicked the new link");
+                
+                //toggle the div
+                $(this).next().toggle();
             });
             
             //append newLink to the section, below the sections link
             $(this).parent().append(newLink);
             
             
-            /*//create the hidden div
+            //create the hidden div
             var tableDiv = $(document.createElement("div")).hide();
             tableDiv.className = "distTableDivClass";
             ////tableDiv.display = "none";
             //create the table to append to div
             var distTable = document.createElement("table");
             distTable.className = "distTableClass";
-            tableDiv.appendChild(distTable);
+            tableDiv.append(distTable);
             //testing
             var testNode = document.createElement("p");
             testNode.innerHTML = "Wow this is a neat test, check this out.";
-            tableDiv.appendChild(testNode);
+            tableDiv.append(testNode);
             //append div into the page
-            $(this).parent().append(tableDiv);*/
+            $(this).parent().append(tableDiv);
             
         }
-    })
+    });
 
 }
 
@@ -151,6 +143,7 @@ function distributionExpanded(course) {
         count: 5
     }, function(response) {
         //do response handling here & fill build/fill table
+        console.log(response);
         var jsonObj = $.parseJSON(response);
     });
     
