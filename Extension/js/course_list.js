@@ -67,96 +67,114 @@ function distributionSetup() {
 
             //add listener to newLink
             newLink.addEventListener('click', function () {
-                // Extracts course ID
-                var courseURL = $(this).prev().attr('href');
-                var subjectID = courseURL.match(/subjectId=([0-9]*)/)[1];
-                subjectID.replace("subjectId=", "");
+                //check if the table has already been made, if not then make it
+                if (!$(this).next().is(".distTable")) {
 
-                // Extract course number from a specific TD. Some trimming and RegEx magic needed to filter out ocassional "Cross-listed" or "Term" text in that same TD
-                var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)').html().trim().match(/([0-9]*)/)[1];
+                    // Extracts course ID
+                    var courseURL = $(this).prev().attr('href');
+                    var subjectID = courseURL.match(/subjectId=([0-9]*)/)[1];
+                    subjectID.replace("subjectId=", "");
 
-                //combine subjectID and courseNum into a courseID
-                var courseID = subjectID + courseNum
+                    // Extract course number from a specific TD. Some trimming and RegEx magic needed to filter out ocassional "Cross-listed" or "Term" text in that same TD
+                    var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)').html().trim().match(/([0-9]*)/)[1];
 
-                //call distributionExpanded which makes DB request
-                //distributionExpanded(courseID);
-                chrome.runtime.sendMessage( {
-                    action: "getDistribution",
-                    course: courseID,
-                    count: 5
-                }, function(response) {
-                //do response handling here & fill build/fill table
-                console.log(response);
-                var jsonObj = response;
-                var table = document.createElement("table");
-                table.border = "1px solid black";
-                /*for (var i = 0, il = jsonObj.length; i < il; i++) {
-                    //create row
-                    var row = document.createElement('tr'),
-                        td;
-                    //create term column
-                    td = document.createElement('td');
-                    td.appendChild(document.createTextNode(value.term));
-                    row.appendChild(td);
-                    
-                    //append row to table
-                    table.appendChild(row);
-                    console.log("row appended...");
-                }*/
-                //create row
-                var row = document.createElement("tr");
-                //create term column
-                var tdTerm = document.createElement("td");
-                tdTerm.appendChild(document.createTextNode(jsonObj.sections[0].term));
-                row.appendChild(tdTerm);
-                //create count column
-                var tdCount = document.createElement("td");
-                tdCount.appendChild(document.createTextNode(jsonObj.sections[0].count));
-                row.appendChild(tdCount);
-                //create avg GPA column
-                var tdAvgGpa = document.createElement("td");
-                tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[0].avgGPA));
-                row.appendChild(tdAvgGpa);
-                //create aPercent column
-                var tdAPercent = document.createElement("td");
-                tdAPercent.appendChild(document.createTextNode(jsonObj.sections[0].aPercent));
-                row.appendChild(tdAPercent);
-                //create abPercent column
-                var tdABPercent = document.createElement("td");
-                tdABPercent.appendChild(document.createTextNode(jsonObj.sections[0].abPercent));
-                row.appendChild(tdABPercent);
-                //create bPercent column
-                var tdBPercent = document.createElement("td");
-                tdBPercent.appendChild(document.createTextNode(jsonObj.sections[0].bPercent));
-                row.appendChild(tdBPercent);
-                //create bcPercent column
-                var tdBCPercent = document.createElement("td");
-                tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[0].bcPercent));
-                row.appendChild(tdBCPercent);
-                //create cPercent column
-                var tdCPercent = document.createElement("td");
-                tdCPercent.appendChild(document.createTextNode(jsonObj.sections[0].cPercent));
-                row.appendChild(tdCPercent);
-                //create dPercent column
-                var tdDPercent = document.createElement("td");
-                tdDPercent.appendChild(document.createTextNode(jsonObj.sections[0].dPercent));
-                row.appendChild(tdDPercent);
-                //create fPercent column
-                var tdFPercent = document.createElement("td");
-                tdFPercent.appendChild(document.createTextNode(jsonObj.sections[0].fPercent));
-                row.appendChild(tdFPercent);
-                //create iPercent column
-                var tdIPercent = document.createElement("td");
-                tdIPercent.appendChild(document.createTextNode(jsonObj.sections[0].iPercent));
-                row.appendChild(tdIPercent);
-                    
-                //append row to table
-                table.appendChild(row);
-                    
-                currElement.parent().append(table);
-                console.log("table appended...");
-                
-                });
+                    //combine subjectID and courseNum into a courseID
+                    var courseID = subjectID + courseNum
+
+                    //call distributionExpanded which makes DB request
+                    //distributionExpanded(courseID);
+                    chrome.runtime.sendMessage( {
+                        action: "getDistribution",
+                        course: courseID,
+                        count: 5
+                    }, function(response) {
+                        //do response handling here & fill build/fill table
+                        console.log(response);
+                        var jsonObj = response;
+                        //create table to populate
+                        var table = document.createElement("table");
+                        table.className = "distTable";
+                        table.border = "1px solid black";
+
+                        //create the header row
+                        var $headerRow = $("<tr/>");
+                        //create all the table headers
+                        $("<th/>").text("Term").appendTo($headerRow);
+                        $("<th/>").text("Count").appendTo($headerRow);
+                        $("<th/>").text("Avg GPA").appendTo($headerRow);
+                        $("<th/>").text("A%").appendTo($headerRow);
+                        $("<th/>").text("AB%").appendTo($headerRow);
+                        $("<th/>").text("B%").appendTo($headerRow);
+                        $("<th/>").text("BC%").appendTo($headerRow);
+                        $("<th/>").text("C%").appendTo($headerRow);
+                        $("<th/>").text("D%").appendTo($headerRow);
+                        $("<th/>").text("F%").appendTo($headerRow);
+                        $("<th/>").text("I%").appendTo($headerRow);
+                        //append header row to table
+                        //table.appendChild($headerRow);
+                        $headerRow.appendTo(table);
+                        
+                        //parse the returned JSON
+                        for (var i = 0; i < jsonObj.sections.length; i++) {
+
+                            //create row
+                            var row = document.createElement("tr");
+                            //create term column
+                            var tdTerm = document.createElement("td");
+                            tdTerm.appendChild(document.createTextNode(jsonObj.sections[i].term));
+                            row.appendChild(tdTerm);
+                            //create count column
+                            var tdCount = document.createElement("td");
+                            tdCount.appendChild(document.createTextNode(jsonObj.sections[i].count));
+                            row.appendChild(tdCount);
+                            //create avg GPA column
+                            var tdAvgGpa = document.createElement("td");
+                            tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[i].avgGPA));
+                            row.appendChild(tdAvgGpa);
+                            //create aPercent column
+                            var tdAPercent = document.createElement("td");
+                            tdAPercent.appendChild(document.createTextNode(jsonObj.sections[i].aPercent));
+                            row.appendChild(tdAPercent);
+                            //create abPercent column
+                            var tdABPercent = document.createElement("td");
+                            tdABPercent.appendChild(document.createTextNode(jsonObj.sections[i].abPercent));
+                            row.appendChild(tdABPercent);
+                            //create bPercent column
+                            var tdBPercent = document.createElement("td");
+                            tdBPercent.appendChild(document.createTextNode(jsonObj.sections[i].bPercent));
+                            row.appendChild(tdBPercent);
+                            //create bcPercent column
+                            var tdBCPercent = document.createElement("td");
+                            tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[i].bcPercent));
+                            row.appendChild(tdBCPercent);
+                            //create cPercent column
+                            var tdCPercent = document.createElement("td");
+                            tdCPercent.appendChild(document.createTextNode(jsonObj.sections[i].cPercent));
+                            row.appendChild(tdCPercent);
+                            //create dPercent column
+                            var tdDPercent = document.createElement("td");
+                            tdDPercent.appendChild(document.createTextNode(jsonObj.sections[i].dPercent));
+                            row.appendChild(tdDPercent);
+                            //create fPercent column
+                            var tdFPercent = document.createElement("td");
+                            tdFPercent.appendChild(document.createTextNode(jsonObj.sections[i].fPercent));
+                            row.appendChild(tdFPercent);
+                            //create iPercent column
+                            var tdIPercent = document.createElement("td");
+                            tdIPercent.appendChild(document.createTextNode(jsonObj.sections[i].iPercent));
+                            row.appendChild(tdIPercent);
+
+                            //append row to table
+                            table.appendChild(row);
+
+                        }
+
+                        currElement.parent().append(table);
+                        console.log("table appended...");
+
+                    });
+
+                }
 
                 //test
                 console.log("clicked the new link");
@@ -167,22 +185,6 @@ function distributionSetup() {
 
             //append newLink to the section, below the sections link
             $(this).parent().append(newLink);
-
-
-            /*//create the hidden div
-            var tableDiv = $(document.createElement("div")).hide();
-            tableDiv.className = "distTableDivClass";
-            ////tableDiv.display = "none";
-            //create the table to append to div
-            var distTable = document.createElement("table");
-            distTable.className = "distTableClass";
-            tableDiv.append(distTable);
-            //testing
-            var testNode = document.createElement("p");
-            testNode.innerHTML = "Wow this is a neat test, check this out.";
-            tableDiv.append(testNode);
-            //append div into the page
-            //$(this).parent().append(tableDiv);*/
 
         }
     });
