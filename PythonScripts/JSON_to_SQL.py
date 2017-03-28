@@ -48,10 +48,10 @@ def json_to_sql(file, db):
                 _dept = cur.lastrowid
 
                 cur.execute("""INSERT OR IGNORE INTO
-                        Course (classID, deptID, course, name)
+                        Course (courseID, deptID, course, name)
                         VALUES (?,?,?,?)
                     """, (str(course['Subject_Num']+course['Class_Num']), course['Subject_Num'], course['Class_Num'], course['Class_Name']))
-                _course = cur.lastrowid
+                _course = str(course['Subject_Num']+course['Class_Num'])
 
 #                cur.execute("""INSERT OR IGNORE INTO
 #                        Map (name, link)
@@ -81,7 +81,6 @@ def json_to_sql(file, db):
                             Section (section, courseID, gradesID, termID)
                             VALUES (?,?,?,?)
                         """, (sect['Sec_Num'], _course, _grade, _term))
-
 
 def testing(data):
     return 0

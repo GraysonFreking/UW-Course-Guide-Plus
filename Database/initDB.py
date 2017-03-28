@@ -69,7 +69,7 @@ with con:
 
     cur.execute("""
         CREATE TABLE Course(
-            classID INTEGER PRIMARY KEY AUTOINCREMENT,
+            courseID INTEGER PRIMARY KEY,
             deptID INTEGER,
             course INTEGER,
             name TEXT,

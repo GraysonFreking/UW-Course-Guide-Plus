@@ -92,11 +92,18 @@ def xml_parse(in_file):
 
             if re.search('^[*]', item[2]): # Case for when GPA Average is not available
                 temp_item['Class_Name'] = re.sub('^\*\*\*', '', ' '.join(item[2:]))
-            else:
-                #if item[2] == '.': # Case for when _____
-               #     temp_item['Class_Name'] = ' '.join(item[18:])
-              #  else: # Case for _____
-                temp_item['Class_Name'] = re.sub('^\d\.\d+', '', ' '.join(item[18:]))
+            else: # Case for when GPA Average is Available
+                if re.search(r'(^\d+\.\d)(\d\.\d{0,3})(.*)', item[17]): # If Class_Name merged with Other and GPA
+                    split = re.split('(^\d+\.\d)(\d\.\d{0,3})(.*)', ' '.join(item[17:]), flags=re.IGNORECASE)
+                else: # If Class_Name merged with GPA
+                    split = re.split('(^\d\.\d{0,3})(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+                    
+                if len(split) == 1:
+                    temp_item['Class_Name'] = split[0]
+                elif len(split) == 4:
+                    temp_item['Class_Name'] = split[2]
+                elif len(split) == 5:
+                    temp_item['Class_Name'] = split[3]
             continue
 
         if len(item) <= 10: # Case for when subject line is being read instead of Class line. If found, continues on next iteration of loop
@@ -156,7 +163,7 @@ def xml_parse(in_file):
                     temp_item['Sections'][0]['Grades']['Other'] = split[1]
                     temp_item['Class_Num'] = split[2]
                     temp_item['Class_Name'] = split[3]
-
+                    
         elif temp_item['Sections'][0]['Avg_GPA'] != '***': # Case for when GPA Average is available
             temp_item['Sections'][0]['Grades']['A'] = item[3]
             temp_item['Sections'][0]['Grades']['AB'] = item[4]
@@ -200,7 +207,7 @@ def xml_parse(in_file):
                     temp_item['Sections'][0]['Grades']['Other'] = split[1]
                     temp_item['Class_Num'] = split[2]
                     temp_item['Class_Name'] = split[3]
-            
+
         else: # Case for when lines DO NOT include periods for all of the A-F data
             temp_item['Sections'][0]['Grades']['A'] = '.'
             temp_item['Sections'][0]['Grades']['AB'] = '.'
@@ -245,7 +252,7 @@ def xml_parse(in_file):
                     temp_item['Class_Num'] = split[2]
                     temp_item['Class_Name'] = split[3]
 
-    #    print temp_item # Prints temporary item to the console
+#        print temp_item # Prints temporary item to the console
         json_data.append(temp_item) # Add the temp_item to the json_data element
 
     curr_item = '' # Defines the current element

@@ -1,0 +1,22 @@
+#!/bin/sh
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2015_2016_Spring.xml ../grade_dist_JSONs/2015_2016_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2014_2015_Spring.xml ../grade_dist_JSONs/2014_2015_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2013_2014_Spring.xml ../grade_dist_JSONs/2013_2014_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2012_2013_Spring.xml ../grade_dist_JSONs/2012_2013_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2011_2012_Spring.xml ../grade_dist_JSONs/2011_2012_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2010_2011_Spring.xml ../grade_dist_JSONs/2010_2011_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2009_2010_Spring.xml ../grade_dist_JSONs/2009_2010_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2008_2009_Spring.xml ../grade_dist_JSONs/2008_2009_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2007_2008_Spring.xml ../grade_dist_JSONs/2007_2008_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2006_2007_Spring.xml ../grade_dist_JSONs/2006_2007_Spring.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2016_2017_Fall.xml ../grade_dist_JSONs/2016_2017_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2015_2016_Fall.xml ../grade_dist_JSONs/2015_2016_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2014_2015_Fall.xml ../grade_dist_JSONs/2014_2015_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2013_2014_Fall.xml ../grade_dist_JSONs/2013_2014_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2012_2013_Fall.xml ../grade_dist_JSONs/2012_2013_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2011_2012_Fall.xml ../grade_dist_JSONs/2011_2012_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2010_2011_Fall.xml ../grade_dist_JSONs/2010_2011_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2009_2010_Fall.xml ../grade_dist_JSONs/2009_2010_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2008_2009_Fall.xml ../grade_dist_JSONs/2008_2009_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2007_2008_Fall.xml ../grade_dist_JSONs/2007_2008_Fall.json -t
+python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2006_2007_Fall.xml ../grade_dist_JSONs/2006_2007_Fall.json -t
