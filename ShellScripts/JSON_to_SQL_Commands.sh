@@ -20,6 +20,6 @@ python ../PythonScripts/JSON_to_SQL.py ../grade_dist_JSONs/2009_2010_Fall.json .
 python ../PythonScripts/JSON_to_SQL.py ../grade_dist_JSONs/2008_2009_Fall.json ../Database/tempdb.db
 python ../PythonScripts/JSON_to_SQL.py ../grade_dist_JSONs/2007_2008_Fall.json ../Database/tempdb.db
 python ../PythonScripts/JSON_to_SQL.py ../grade_dist_JSONs/2006_2007_Fall.json ../Database/tempdb.db
-cd ../PythonScripts
-python importMapsToDb.py guideInfo.db --add
-cd ../ShellScripts
+#cd ../PythonScripts
+#python importMapsToDb.py guideInfo.db --add
+#cd ../ShellScripts

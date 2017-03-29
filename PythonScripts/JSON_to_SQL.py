@@ -41,17 +41,20 @@ def json_to_sql(file, db):
 #                    """, ('P'))
 #                _prof = cur.lastrowid
 
+                if course['Dept_Num'] == 'SAB':
+                    course['Dept_Num'] = '000'
+
                 cur.execute("""INSERT OR IGNORE INTO
-                        Department (deptID, name, shortName)
-                        VALUES (?,?,?)
-                    """, (course['Subject_Num'], '', ''))
+                        Department (deptID, name, shortName, school)
+                        VALUES (?,?,?,?)
+                    """, (course['Dept_Num'], course['Dept_Name'], course['Dept_Short_Name'], course['School']))
                 _dept = cur.lastrowid
 
                 cur.execute("""INSERT OR IGNORE INTO
                         Course (courseID, deptID, course, name)
                         VALUES (?,?,?,?)
-                    """, (str(course['Subject_Num']+course['Class_Num']), course['Subject_Num'], course['Class_Num'], course['Class_Name']))
-                _course = str(course['Subject_Num']+course['Class_Num'])
+                    """, (course['Dept_Num']+course['Class_Num'], course['Dept_Num'], course['Class_Num'], course['Class_Name']))
+                _course = course['Dept_Num']+course['Class_Num']
 
 #                cur.execute("""INSERT OR IGNORE INTO
 #                        Map (name, link)

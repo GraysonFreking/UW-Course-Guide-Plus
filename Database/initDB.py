@@ -65,7 +65,8 @@ with con:
         CREATE TABLE Department(
             deptID INTEGER PRIMARY KEY,
             name TEXT,
-            shortName TEXT)""")
+            shortName TEXT,
+            school TEXT)""")
 
     cur.execute("""
         CREATE TABLE Course(

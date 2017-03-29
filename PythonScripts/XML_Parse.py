@@ -31,16 +31,21 @@ def xml_parse(in_file):
     class_num = ''
     class_sec = ''
     grades = []
-    subject_num = 0
-    term_num = 0
+    dept_num = ''
+    dept_name = ''
+    dept_short_name = ''
+    term_num = ''
     term_name = ''
 
     json_item = {
         'Class_Name': '',
         'Class_Num': '',
-        'Subject_Num': '',
+        'Dept_Num': '',
+        'Dept_Name': '',
+        'Dept_Short_Name': '',
         'Term_Num': '',
         'Term_Name': '',
+        'School': '',
         'Sections' : [{
             'Sec_Num': '',
             'Num_Grades': '',
@@ -68,35 +73,55 @@ def xml_parse(in_file):
 
     temp_item = json_item
 
+    info_item = [] # For dept / school info
+    info_line = [] # For dept / school info
+    info_line_count = 0; # For dept / school info
 
     for textline in root.iter('textline'): # For each line being read in as XML (each letter of text from a PDF)
         for text in textline.iter('text'):
             line = line + text.text
         line = line.rstrip() # Appends all data from line into one string, and removes outside white space
+        
+        if line == '(Non-Cross Listed)' or info_line_count > 0: # Grab the Department and School info
+            if line == '(Non-Cross Listed)':
+                info_line = []
+            info_line.append(line)
+            info_line_count += 1
 
-        if re.search('^\d\d\d|(Course Total)', line): # Pattern matching to grab Course Data & Class Name, and split item into an array
-            if not re.search('(Section Total)', line):
-                text_data.append(line.split())
-        if re.search('TERM :', line): # Pattern matching to grab term value
-            term_num = re.sub('^.*[TERM :]', '', line)
-        if re.search('Fall', line) or re.search('Spring', line): # Pattern matching to grab term value
-            split = re.split('(^.*\d)(.*)', line, flags=re.IGNORECASE)
-            term_name = split[1]
+            if info_line_count == 9:
+                info_item.append(info_line)
+                info_line_count = 0
+
+        if info_line_count == 0: # Grab the Course info
+            if re.search('^\d\d\d|(Course Total)', line): # Pattern matching to grab Course Data & Class Name, and split item into an array
+                #|(Section #)
+                if not re.search('(Section Total)', line):
+                    split = line.split()
+                    split.append(info_line[1]) # Append School
+                    split.append(info_line[2]) # Append Dept_Name
+                    split.append(info_line[7]) # Append Dept_Num
+                    split.append(info_line[8]) # Append Dept_Short_Name
+                    text_data.append(split)
+            if re.search('TERM :', line): # Pattern matching to grab term value
+                term_num = re.sub('^.*[TERM :]', '', line)
+            if re.search('Fall', line) or re.search('Spring', line): # Pattern matching to grab term value
+                split = re.split('(^.*\d)(.*)', line, flags=re.IGNORECASE)
+                term_name = split[1]
+        
 #        print line # Prints line to console
         line = ''
 
     for item in text_data: # For each newly created line, parse that shit
-
         if item[0] == 'Course': # If Course Total is the line, merge into one value
             item[0:2] = [' '.join(item[0:2])]
 
             if re.search('^[*]', item[2]): # Case for when GPA Average is not available
-                temp_item['Class_Name'] = re.sub('^\*\*\*', '', ' '.join(item[2:]))
+                temp_item['Class_Name'] = re.sub('^\*\*\*', '', ' '.join(item[2:-4]))
             else: # Case for when GPA Average is Available
                 if re.search(r'(^\d+\.\d)(\d\.\d{0,3})(.*)', item[17]): # If Class_Name merged with Other and GPA
-                    split = re.split('(^\d+\.\d)(\d\.\d{0,3})(.*)', ' '.join(item[17:]), flags=re.IGNORECASE)
+                    split = re.split('(^\d+\.\d)(\d\.\d{0,3})(.*)', ' '.join(item[17:-4]), flags=re.IGNORECASE)
                 else: # If Class_Name merged with GPA
-                    split = re.split('(^\d\.\d{0,3})(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+                    split = re.split('(^\d\.\d{0,3})(.*)', ' '.join(item[18:-4]), flags=re.IGNORECASE)
                     
                 if len(split) == 1:
                     temp_item['Class_Name'] = split[0]
@@ -106,15 +131,17 @@ def xml_parse(in_file):
                     temp_item['Class_Name'] = split[3]
             continue
 
-        if len(item) <= 10: # Case for when subject line is being read instead of Class line. If found, continues on next iteration of loop
-            subject_num = item[0]
+        if len(item) <= 10: # Case for when department line is being read instead of Class line. If found, continues on next iteration of loop
             continue
-        
+
         temp_item = copy.deepcopy(json_item) # Completely copy the JSON_item, including all inner pieces
 
         temp_item['Term_Num'] = term_num
         temp_item['Term_Name'] = term_name
-        temp_item['Subject_Num'] = subject_num
+        temp_item['Dept_Num'] = item[-2]
+        temp_item['School'] = item[-4]
+        temp_item['Dept_Name'] = re.sub('( Section #)', '', item[-3])
+        temp_item['Dept_Short_Name'] = item[-1]
         temp_item['Sections'][0]['Sec_Num'] = item[0]
         temp_item['Sections'][0]['Num_Grades'] = item[1]
         temp_item['Sections'][0]['Avg_GPA'] = item[2]
@@ -139,7 +166,7 @@ def xml_parse(in_file):
             
             if item[17] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
                 temp_item['Sections'][0]['Grades']['Other'] = item[17]
-                split = re.split('(^\d{0,3})(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+                split = re.split('(^\d{0,3})(.*)', ' '.join(item[18:-4]), flags=re.IGNORECASE)
 
                 if len(split) == 1:
                     temp_item['Class_Num'] = split[0]
@@ -150,7 +177,7 @@ def xml_parse(in_file):
                     temp_item['Class_Num'] = split[1]
                     temp_item['Class_Name'] = split[2]
             else:
-                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[17:]), flags=re.IGNORECASE)
+                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[17:-4]), flags=re.IGNORECASE)
 
                 if len(split) == 2:
                     temp_item['Sections'][0]['Grades']['Other'] = split[0]
@@ -183,7 +210,7 @@ def xml_parse(in_file):
             
             if item[18] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
                 temp_item['Sections'][0]['Grades']['Other'] = item[18]
-                split = re.split('(^\d{0,3})(.*)', ' '.join(item[19:]), flags=re.IGNORECASE)
+                split = re.split('(^\d{0,3})(.*)', ' '.join(item[19:-4]), flags=re.IGNORECASE)
 
                 if len(split) == 1:
                     temp_item['Class_Num'] = split[0]
@@ -194,7 +221,7 @@ def xml_parse(in_file):
                     temp_item['Class_Num'] = split[1]
                     temp_item['Class_Name'] = split[2]
             else:
-                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[18:]), flags=re.IGNORECASE)
+                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[18:-4]), flags=re.IGNORECASE)
 
                 if len(split) == 2:
                     temp_item['Sections'][0]['Grades']['Other'] = split[0]
@@ -227,7 +254,7 @@ def xml_parse(in_file):
             
             if item[9] == '.': # Splits remaining pieces into Other, Class Name, and Number. Use Cases follow.
                 temp_item['Sections'][0]['Grades']['Other'] = item[9]
-                split = re.split('(^\d{0,3})(.*)', ' '.join(item[10:]), flags=re.IGNORECASE)
+                split = re.split('(^\d{0,3})(.*)', ' '.join(item[10:-4]), flags=re.IGNORECASE)
 
                 if len(split) == 1:
                     temp_item['Class_Num'] = split[0]
@@ -238,7 +265,7 @@ def xml_parse(in_file):
                     temp_item['Class_Num'] = split[1]
                     temp_item['Class_Name'] = split[2]
             else:
-                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[9:]), flags=re.IGNORECASE) #(^\d+\.\d)(\d{0,3})(.*)
+                split = re.split('(^\d+\.\d)(\d{0,3})(.*)', ' '.join(item[9:-4]), flags=re.IGNORECASE)
 
                 if len(split) == 2:
                     temp_item['Sections'][0]['Grades']['Other'] = split[0]
@@ -264,9 +291,9 @@ def xml_parse(in_file):
             curr_item['Sections'].append(item['Sections'][0])
             json_data.remove(item)
 
-    #for item in json_data: #Prints each item in console
-    #    print item
-    #    print
+#    for item in json_data: #Prints each item in console
+#        print item
+#        print
 
     return json_data
 
@@ -289,8 +316,18 @@ def testing(data):
             print item
             print
 
-        if item['Subject_Num'] == '':
-            print "WARNING: No Subject_Num found for item:"
+        if item['Dept_Num'] == '':
+            print "WARNING: No Dept_Num found for item:"
+            print item
+            print
+
+        if item['Dept_Name'] == '':
+            print "WARNING: No Dept_Name found for item:"
+            print item
+            print
+        
+        if item['Dept_Short_Name'] == '':
+            print "WARNING: No Dept_Short_Name found for item:"
             print item
             print
 
@@ -303,7 +340,12 @@ def testing(data):
             print "WARNING: No Term_Name found for item:"
             print item
             print
-    
+            
+        if item['School'] == '':
+            print "WARNING: No School found for item:"
+            print item
+            print
+
         if len(item['Sections']) == 0:
             print "WARNING: No Section data found for item:"
             print item
@@ -422,8 +464,18 @@ def testing(data):
             print item
             print
 
-        if not re.search(r'^\d{3}', item['Subject_Num']):
-            print "WARNING: Subject_Num is not valid:"
+        if not re.search(r'^\d{3}', item['Dept_Num']):
+            print "WARNING: Dept_Num is not valid:"
+            print item
+            print
+
+        if not re.search(r'^\D', item['Dept_Name']):
+            print "WARNING: Dept_Name is not valid:"
+            print item
+            print
+
+        if re.search(r'^\d{0:}', item['Dept_Short_Name']):
+            print "WARNING: Dept_Short_Name is not valid:"
             print item
             print
 
@@ -439,6 +491,11 @@ def testing(data):
         
         if not re.search('(Spring|Fall).*\d\d\d\d.*\d\d\d\d', item['Term_Name']):
             print "WARNING: Term_Name is not valid:"
+            print item
+            print
+
+        if re.search('\D{0:}', item['School']):
+            print "WARNING: School is not valid:"
             print item
             print
 
@@ -554,7 +611,7 @@ if '-p' in sys.argv:
 else:
     export_data(sys.argv[2], data, '')
 
-
+print 'DONE'
 
 
 

@@ -8,7 +8,8 @@ CREATE TABLE Course(
 CREATE TABLE Department(
             deptID INTEGER PRIMARY KEY,
             name TEXT,
-            shortName TEXT);
+            shortName TEXT,
+            school TEXT);
 CREATE TABLE Grades(
             gradesID INTEGER PRIMARY KEY AUTOINCREMENT,
             avgGPA REAL,
