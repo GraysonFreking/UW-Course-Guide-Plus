@@ -15,3 +15,15 @@ a.gradesExpand img.expandCollapseIcon {
   margin-right: 3px !important;
   margin-top: 1px !important;
 }
+
+.graphs {
+  width: 46%;
+}
+
+#terms.graphs {
+  float: left;
+}
+
+#professors.graphs {
+  float: right;
+}

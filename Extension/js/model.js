@@ -51,3 +51,7 @@ function getDistribution(course, count) {
 	// TODO: worry about specific count when we have more in db
 	return getDistributions(course);
 }
+
+function getDistributionsByProfessor(course, professor) {
+    // TODO: Wasn't in original planning docs, but this is necessary at some point for the by-professor charts on the course pages
+}
