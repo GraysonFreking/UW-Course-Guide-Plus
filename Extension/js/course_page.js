@@ -156,6 +156,9 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			});
 		}
 	})
+    // Ethan codes in the function(response) above this line -----------------------
+    //
+    // Brett codes in a new Chrome.runtime.sendMessage() below this line -----------
 
 
 }
