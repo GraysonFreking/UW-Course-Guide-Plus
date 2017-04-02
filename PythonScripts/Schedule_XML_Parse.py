@@ -3,56 +3,43 @@
 # # HOW TO USE THIS FILE  # #
 
 # The XML file to look at should be passed as an argument
-# USAGE - Linux: ./Schedule_XML_Parse.py <somefile.xml> <args>
+# USAGE - Linux: ./Schedule_XML_Parse.py <somefile.xml||somefile.xml.gz> <args>
 # Usage - Linux: python Schedule_XML_Parse.py <args>
-# <args> = '' for basic functionality,
+# <args> = '' for basic functionality, producing a gzipped xml file,
 #          '-t' for testing,
-#          '-p' for pretty printing
+#          '-p' for printing human readable content
 
 import xml.etree.ElementTree as ET
 import json
 import re
 import sys
-
-
-class JSONObject(object):
-    """docstring for JSON_Object"""
-
-    def __init__(self, term_number, class_number,
-                 section_number, dept_number, professor_name):
-        super(JSONObject, self).__init__()
-        self.json_dict = {'term_number': term_number,
-                          'class_number': class_number,
-                          'section_number': section_number,
-                          'dept_number': dept_number,
-                          'professor_name': professor_name}
+import gzip
 
 
 def exportJSON(out_file, json_list, pretty):
     if pretty:
         # Appends txt file to add this list and "pretty prints" it
         with open(out_file, 'wt') as outfile:
-            outfile.write('[\n')
-            for obj in json_list:
-                outfile.write(json.dumps(obj.json_dict, sort_keys=True,
-                                         indent=4, separators=(',', ': ')))
-            outfile.write(']')
+            outfile.write(json.dumps(json_list, sort_keys=True,
+                                     indent=4, separators=(',', ': ')))
     else:
         # Creates new json file
-        with open(out_file, 'w') as outfile:
-            outfile.write('[\n')
-            for obj in json_list:
-                outfile.write(json.dumps(json_list))
-            outfile.write(']')
+        with gzip.open(out_file, 'wb') as outfile:
+            outfile.write(json.dumps(json_list))
 
 
-def readInTree(fileToRead):
+def readInTreeFromXML(fileToRead):
     return ET.parse(fileToRead)  # XML being read
 
 
-def parseTreeToText(tree):
-    root = tree.getroot()
+def readInTreeFromGZippedXML(fileToRead):
+    contentString = ''
+    with gzip.open(fileToRead, 'rb') as f:
+        contentString = f.read()
+    return ET.fromstring(contentString)
 
+
+def parseTreeToText(root):
     lines_of_text = []  # Data being read from XML
 
     # For each page being read in as xml (As each page has it's own subtree)
@@ -81,9 +68,12 @@ def textToJson(lines_of_text):
 
     class_regex = re.compile(r" ([0-9]{3}) ")
     dept_regex = re.compile(r"[A-Z ]+\(([0-9]{3}) ")
-    section_line_regex = re.compile(r"[0-9]{5}")
+    # section_line_regex = re.compile(r"[0-9]{5}")
     section_num_regex = re.compile(r"(LAB|LEC) ([0-9]{3})")
-    professor_regex = re.compile(r"[A-Z ]+ [0-9]+ ([A-z\-]+),([A-z]+)")
+    professor_regex = re.compile(
+        r"([A-Z ]+)([\d]+)? ([A-z\-]+),([A-z\-]+ ?([A-Z`]?[a-z\.]+))")
+    bad_Middle_Name_regex = re.compile(
+        r"Require|Student|Course|Non|Prereq|Entrance|Only|This|Open")
 
     list_of_sections = []
 
@@ -113,11 +103,19 @@ def textToJson(lines_of_text):
         section_match = re.search(section_num_regex, line)
         if professor_match and section_match:
             section_number = section_match.group(2)
-            professor_name = ' '.join([professor_match.group(2),
-                                      professor_match.group(1)])
-            list_of_sections.append(JSONObject(term_number, class_number,
-                                    section_number, dept_number,
-                                    professor_name))
+            # Check for and remove any mistakenly grabbed words
+            midChk = re.search(bad_Middle_Name_regex, professor_match.group(5))
+            if midChk:
+                professor_name = ' '.join([professor_match.group(4).split()[0],
+                                           professor_match.group(3)])
+            else:
+                professor_name = ' '.join([professor_match.group(4),
+                                           professor_match.group(3)])
+            list_of_sections.append({'term_number': term_number,
+                                     'class_number': class_number,
+                                     'section_number': section_number,
+                                     'dept_number': dept_number,
+                                     'professor_name': professor_name})
     return list_of_sections
 
 
@@ -127,244 +125,15 @@ def textToJson(lines_of_text):
 def testing(data):
 
     for item in data:
-        for key in item.json_dict.keys():
-            if item.json_dict[key] == '':
+        for key in item.keys():
+            if item[key] == '':
                 print "WARNING: No " + key + "Class_Name found for item:"
                 print item
 
-
-#            for sect in item['Sections']:
-#                if sect['Sec_Num'] == '':
-#                    print "WARNING: No Sec_Num found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Num_Grades'] == '':
-#                    print "WARNING: No Num_Grades found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Avg_GPA'] == '':
-#                    print "WARNING: No Avg_GPA found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['A'] == '':
-#                    print "WARNING: No A found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['AB'] == '':
-#                    print "WARNING: No AB found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['B'] == '':
-#                    print "WARNING: No B found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['BC'] == '':
-#                    print "WARNING: No BC found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['C'] == '':
-#                    print "WARNING: No C found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['D'] == '':
-#                    print "WARNING: No D found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['F'] == '':
-#                    print "WARNING: No F found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['S'] == '':
-#                    print "WARNING: No S found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['U'] == '':
-#                    print "WARNING: No U found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['CR'] == '':
-#                    print "WARNING: No CR found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['N'] == '':
-#                    print "WARNING: No N found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['P'] == '':
-#                    print "WARNING: No P found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['I'] == '':
-#                    print "WARNING: No I found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['NW'] == '':
-#                    print "WARNING: No NW found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['NR'] == '':
-#                    print "WARNING: No NR found for item:"
-#                    print item
-#                    print
-#
-#                if sect['Grades']['Other'] == '':
-#                    print "WARNING: No Other found for item:"
-#                    print item
-#                    print
-#
-#        # Tests for validity of data entry
-#
-#        if bool(re.search(r'^\d', item['Class_Name'])):  # This is the only WARNING that can sometimes be ignored, as some class names have numbers in them
-#            print "WARNING: Class_Name has numbers:"
-#            print item
-#            print#
-
-#        if bool(re.search(r'^\D', item['Class_Num'])):
-#            print "WARNING: Class_Num has letters:"
-#            print item
-#            print#
-
-#        if bool(re.search(r'^\d\d\d', item['Subject_Num'])) == False:
-#            print "WARNING: Subject_Num is not valid:"
-#            print item
-#            print#
-
-#        if bool(re.search(r'^\d\d\d\d', item['Term'])) == False:
-#            print "WARNING: Term is not valid:"
-#            print item
-#            print
-#
-#        if len(item['Sections']) != 0:
-#            for sect in item['Sections']:
-#                if bool(re.search(r'^\d\d\d', sect['Sec_Num'])) == False:
-#                    print "WARNING: Sec_Num is not valid:"
-#                    print item
-#                    print
-#
-#                if bool(re.search(r'^\D', sect['Num_Grades'])):
-#                    print "WARNING: Num_Grades is not valid:"
-#                    print item
-#                    print
-#
-#                if bool(re.search(r'^\D', sect['Avg_GPA'])):
-#                    if bool(re.search(r'^\*\*\*', sect['Avg_GPA'])) == False:
-#                        print "WARNING: Avg_GPA is not valid:"
-#                        print item
-#                        print
-#
-#                if bool(re.search(r'^\D', sect['Grades']['A'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['A'])) == False:
-#                        print "WARNING: A is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['AB'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['AB'])) == False:
-#                        print "WARNING: AB is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['B'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['B'])) == False:
-#                        print "WARNING: B is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['BC'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['BC'])) == False:
-#                        print "WARNING: BC is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['C'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['C'])) == False:
-#                        print "WARNING: C is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['D'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['D'])) == False:
-#                        print "WARNING: D is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['F'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['F'])) == False:
-#                        print "WARNING: F is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['S'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['S'])) == False:
-#                        print "WARNING: S is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['U'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['U'])) == False:
-#                        print "WARNING: U is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['CR'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['CR'])) == False:
-#                        print "WARNING: CR is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['N'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['N'])) == False:
-#                        print "WARNING: N is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['P'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['P'])) == False:
-#                        print "WARNING: P is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['I'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['I'])) == False:
-#                        print "WARNING: I is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['NW'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['NW'])) == False:
-#                        print "WARNING: NW is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['NR'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['NR'])) == False:
-#                        print "WARNING: NR is not valid:"
-#                        print item
-#                        print#
-
-#                if bool(re.search(r'^\D', sect['Grades']['Other'])):
-#                    if bool(re.search(r'^\.', sect['Grades']['Other'])) == False:
-#                        print "WARNING: Other is not valid:"
-#                        print item
-#                        print#
-#
+        for bite in item['professor_name'].split():
+            if bite.isupper() and len(bite) > 2:
+                print "WARNING: REGEX grabbed bad professorName"
+                print item
 
 
 def main(args):
@@ -375,14 +144,21 @@ def main(args):
          '-t' for testing,
          '-p' for pretty printing"""
         quit()
-    tree = readInTree(sys.argv[1])
-    lines_of_text = parseTreeToText(tree)
+    # grab the root depending on input
+    if args[1].split('.')[-1] == 'gz':
+        treeRoot = readInTreeFromGZippedXML(args[1])
+    else:
+        tree = readInTreeFromXML(args[1])
+        treeRoot = tree.getroot()
+
+    lines_of_text = parseTreeToText(treeRoot)
     json_data = textToJson(lines_of_text)
     # This abomination makes the out file the infile name plus JSON at the end
-    out_name = '.'.join([''.join([args[1].split('.')[0], 'JSON']), 'json'])
+    out_name = '.'.join([''.join([args[1].split('.')[0], 'JSON']), 'json.gz'])
     isPretty = False
     if '-p' in args:
         isPretty = True
+        out_name = out_name[:-3]
     exportJSON(out_name, json_data, isPretty)
     if '-t' in args:
         testing(json_data)

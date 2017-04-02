@@ -72,7 +72,7 @@ We have 5 tables, and I'm about to walk you through their contents, and what sho
             
             section INT,                // this is the actual section number. e.g. 001
             
-            courseID INT FOREIGN KEY,   // this is the primary key of the course in the Course table. e.g. 577
+            courseID INT FOREIGN KEY,   // this is the primary key of the course in the Course table. e.g. 266577
             
             profID INT FOREIGN KEY,     // this is the primary key of the professor in the Professor table.
             

@@ -12,8 +12,10 @@ if len(sys.argv) != 2:
 
 
 def readData():
-
-    f = open(sys.argv[1], 'r')
+    if sys.argv[1].split('.')[-1] == 'gz':
+        f = gzip.open(sys.argv[1], 'rb')
+    else:
+        f = open(sys.argv[1], 'r')
 
     with f:
         data = f.read()

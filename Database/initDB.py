@@ -2,6 +2,7 @@
 
 import sqlite3 as sql
 import sys
+import gzip
 
 
 if len(sys.argv) != 2:
@@ -13,7 +14,7 @@ if len(sys.argv) != 2:
 
 def write(data):
 
-    f = open(sys.argv[1].split('.')[0] + 'Backup.sql', 'w+')
+    f = gzip.open(sys.argv[1].split('.')[0] + 'Backup.sql.gz', 'wb')
 
     with f:
         f.write(data)
