@@ -87,7 +87,9 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					termGPAs[dist[i].term] = [];
 				}
 
-				termGPAs[dist[i].term].push(dist[i].avgGPA);
+				if (dist[i].avgGPA != "") {
+					termGPAs[dist[i].term].push(dist[i].avgGPA);
+				}
 			}
 
 			console.log(termGPAs);
