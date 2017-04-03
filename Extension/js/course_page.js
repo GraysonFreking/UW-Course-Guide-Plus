@@ -79,28 +79,28 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 	}, function(response) {
 		if (response != undefined) {
 			// addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
-			var dist = response;
-			var profGPAs = {};
-			for (var i = 0; i < dist.sections.length; i++) {
-				// console.log(dist.sections[i].term);
-				if (!profGPAs[dist.sections[i].term]) {
-					profGPAs[dist.sections[i].term] = [];
+			var dist = response.sections;
+			var termGPAs = {};
+			for (var i = 0; i < dist.length; i++) {
+				// console.log(dist[i].term);
+				if (!termGPAs[dist[i].term]) {
+					termGPAs[dist[i].term] = [];
 				}
 
-				profGPAs[dist.sections[i].term].push(dist.sections[i].avgGPA);
+				termGPAs[dist[i].term].push(dist[i].avgGPA);
 			}
 
-			console.log(profGPAs);
+			console.log(termGPAs);
 
 			var gpaDataPoints = new Array();
-			for (var term in profGPAs) {
+			for (var term in termGPAs) {
 				var dataPoint = {};
 				dataPoint.label = term;
 				var sum = 0.0;
-				for (var i = 0; i < profGPAs[term].length; i++) {
-					sum += profGPAs[term][i];
+				for (var i = 0; i < termGPAs[term].length; i++) {
+					sum += termGPAs[term][i];
 				}
-				var avg = sum / profGPAs[term].length;
+				var avg = sum / termGPAs[term].length;
 				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
 				gpaDataPoints.push(dataPoint);
 			}
@@ -121,7 +121,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				title: {
 					text: "Average GPA"
 				},
-		                animationEnabled: true,
+				animationEnabled: true,
 				data: [
 				{
 				type: "spline", //change it to line, area, bar, pie, etc
