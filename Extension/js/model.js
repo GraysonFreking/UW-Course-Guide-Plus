@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(
             sendResponse(getAverageGPA(request.course));
             break;
         case "getRmpScores":
-	        sendResponse(getRmpScores(request.professors));
+	        sendResponse(getRmpScores(request.professor));
 	        break;
         case "getLocationLinks":
 	        sendResponse(getLocationLinks(request.locations));
@@ -37,8 +37,8 @@ function getAverageGPA(course) {
 }
 
 
-function getRmpScores(professors) {
-
+function getRmpScores(profName) {
+    return getProfInfo(profName);
 }
 
 

@@ -8,6 +8,7 @@ function listSetup() {
   averageGPASetup();
   distributionSetup();
   sectionsListenerSetup();
+  RMPSetup();
 }
 
 function averageGPASetup() {
@@ -197,6 +198,60 @@ function sectionsListenerSetup() {
     });
 }
 
+function RMPSetup() {
+    // Will run for every class card inserted into DOM (including realtime insertions)
+    $.initialize('div.CGsectionTable', function() {
+        $(this).find('tr').slice(1).each( function() {
+            var profNames = $(this).find('td').eq(5)
+            pullRMPData(profNames);
+        })
+    });
+}
+
+function pullRMPData(profNames) {
+
+    profNames.find('a').each( function() {
+
+        var overall_quality = 4.9;
+        var would_take_again = "N/A";
+        var level_of_difficulty = 2.1;
+        var RMP_link;
+
+        //console.log($(this).text());
+        var prof_name = $(this).text();
+        var curr_prof = $(this);
+
+        
+
+        chrome.runtime.sendMessage( {
+                        action: "getRmpScores",
+                        professor: prof_name
+                    }, function(response) {
+                        var prof_info = response;
+                        if (prof_info == "professor not found" || prof_info == "bad search request") {
+                            console.log("professor not found");
+                            Tipped.create(curr_prof, '<div>Professor not found</div>');
+                        } else if (prof_info == "prof does not have scores info") {
+                            console.log("Professor has not been rated yet");
+                            Tipped.create(curr_prof, '<div>Professor has not been rated yet</div>');
+                        } else {
+                            console.log(prof_info["score"]);
+                            console.log(prof_info["link"]);
+                            console.log(prof_info["would_take_again"]);
+                            console.log(prof_info["difficulty"]);
+                            overall_quality = prof_info["score"];
+                            would_take_again = prof_info["would_take_again"];
+                            level_of_difficulty = prof_info["difficulty"];
+                            RMP_link = prof_info["link"];
+
+                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor</a></div>');
+                        }
+
+                    }
+        )
+        
+    });
+}
 
 /***** event handlers (listener callbacks) *****/
 

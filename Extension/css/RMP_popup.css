@@ -1,0 +1,19 @@
+.hover {
+  text-align: center;
+}
+
+.hover a {
+  color: white;
+}
+
+.highlight {
+  font-family:monospace,monospace;
+  font-size:2em;
+  padding:2px 4px;
+  color:#c7254e;
+  background-color:#f9f2f4;
+  border-radius:4px;
+  width:50%;
+  margin: auto;
+  text-align: center;
+}
