@@ -16,14 +16,21 @@ a.gradesExpand img.expandCollapseIcon {
   margin-top: 1px !important;
 }
 
+div#graphs {
+  height: 470px;
+}
+
 .graphs {
   width: 46%;
+  height: 415px;
 }
 
 #terms.graphs {
   float: left;
+  margin-left: 2%;
 }
 
 #professors.graphs {
   float: right;
+  margin-right: 2%;
 }

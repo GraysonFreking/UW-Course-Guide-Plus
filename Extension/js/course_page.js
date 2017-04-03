@@ -24,6 +24,7 @@ function distributionInfoSetup() {
 	newDiv.id = "grade_distributions";
 	th.className = "tableHeader";
 	tc.className = "tableContents";
+	tc.id = "graphs";
 	h.innerHTML = "Grade Distribution Information";
 	th.appendChild(h);
 	newDiv.appendChild(th);
@@ -79,27 +80,27 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 		if (response != undefined) {
 			// addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
 			var dist = response;
-			var termGPAs = {};
+			var profGPAs = {};
 			for (var i = 0; i < dist.sections.length; i++) {
 				// console.log(dist.sections[i].term);
-				if (!termGPAs[dist.sections[i].term]) {
-					termGPAs[dist.sections[i].term] = [];
+				if (!profGPAs[dist.sections[i].term]) {
+					profGPAs[dist.sections[i].term] = [];
 				}
 
-				termGPAs[dist.sections[i].term].push(dist.sections[i].avgGPA);
+				profGPAs[dist.sections[i].term].push(dist.sections[i].avgGPA);
 			}
 
-			console.log(termGPAs);
+			console.log(profGPAs);
 
 			var gpaDataPoints = new Array();
-			for (var term in termGPAs) {
+			for (var term in profGPAs) {
 				var dataPoint = {};
 				dataPoint.label = term;
 				var sum = 0.0;
-				for (var i = 0; i < termGPAs[term].length; i++) {
-					sum += termGPAs[term][i];
+				for (var i = 0; i < profGPAs[term].length; i++) {
+					sum += profGPAs[term][i];
 				}
-				var avg = sum / termGPAs[term].length;
+				var avg = sum / profGPAs[term].length;
 				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
 				gpaDataPoints.push(dataPoint);
 			}
@@ -159,36 +160,47 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
     //
     // Brett codes in a new Chrome.runtime.sendMessage() below this line -----------
 
+
+	// TODO: Modify following code once the query for distributions w/ professor data is available
 	chrome.runtime.sendMessage( {
 		action: "getDistribution",
 		course: subjectID + courseNum
 	}, function(response) {
 		if (response != undefined) {
-			var dist = response;
-			var termGPAs = {};
-			for (var i = 0; i < dist.sections.length; i++) {
-				// console.log(dist.sections[i].term);
-				if (!termGPAs[dist.sections[i].term]) {
-					termGPAs[dist.sections[i].term] = [];
-				}
+			var dist = response.sections;
+			console.log(dist);
 
-				termGPAs[dist.sections[i].term].push(dist.sections[i].avgGPA);
+			// Set-up for individual professor graphs + overall averages
+			var profGPAs = {},
+				totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0, numC = 0, numD = 0, numF = 0, numI = 0;
+			for (var i = 0; i < dist.length; i++) {
+				// console.log(dist[i].term);
+				if (!profGPAs[dist[i].professor]) {
+					profGPAs[dist[i].term] = [];
+				}
+				profGPAs[dist[i].term].push(dist[i].avgGPA);
+
+				// Dividing by 100 to convert percentages correctly (returned from DB not as decimals)
+				totalGrades += dist[i].count;
+				numA  += dist[i].aPercent  * dist[i].count / 100;
+				numAB += dist[i].abPercent * dist[i].count / 100;
+				numB  += dist[i].bPercent  * dist[i].count / 100;
+				numBC += dist[i].bcPercent * dist[i].count / 100;
+				numC  += dist[i].cPercent  * dist[i].count / 100;
+				numD  += dist[i].dPercent  * dist[i].count / 100;
+				numF  += dist[i].fPercent  * dist[i].count / 100;
+				numI  += dist[i].iPercent  * dist[i].count / 100;
 			}
 
-			var gpaDataPoints = new Array();
-			for (var term in termGPAs) {
-				var dataPoint = {};
-				dataPoint.label = term;
-				var sum = 0.0;
-				for (var i = 0; i < termGPAs[term].length; i++) {
-					sum += termGPAs[term][i];
-				}
-				var avg = sum / termGPAs[term].length;
-				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
-				gpaDataPoints.push(dataPoint);
-			}
-
-			console.log(gpaDataPoints);
+			var allProfsDataPoints = new Array();
+			allProfsDataPoints.push( { label: "A", y: numA / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "AB", y: numAB / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "B", y: numB / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "BC", y: numBC / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "C", y: numC / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "D", y: numD / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "F", y: numF / totalGrades * 100 } );
+			allProfsDataPoints.push( { label: "I", y: numI / totalGrades * 100 } );
 
 			var graphsDiv = document.createElement("div");
 			graphsDiv.id = "professors";
@@ -201,27 +213,26 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 			var options1 = {
 				title: {
-					text: "Average GPA"
+					text: "Grade Distribution",
+					fontFamily: "Helvetica Neue"
 				},
-		                animationEnabled: true,
-				data: [
-				{
-				type: "spline", //change it to line, area, bar, pie, etc
-					dataPoints: gpaDataPoints
+				animationEnabled: true,
+				data: [ {
+				type: "column", //change it to line, area, bar, pie, etc
+					dataPoints: allProfsDataPoints
 					// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
 				}
 				],
 		      axisX: {
-		        labelFontSize: 0,
-				title: "Term",
-				titleFontFamily: "Helvetica Neue"
+		        labelFontSize: 14,
+				labelFontFamily: "Helvetica Neue"
 		      },
 	         axisY: {
 		        labelFontSize: 14,
+				labelFontFamily: "Helvetica Neue",
 				title: "GPA",
 				titleFontFamily: "Helvetica Neue",
-				minimum: 0,
-				maximum: 4
+				minimum: 0
 		      }
 			};
 
