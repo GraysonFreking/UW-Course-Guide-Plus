@@ -177,10 +177,10 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0, numC = 0, numD = 0, numF = 0, numI = 0;
 			for (var i = 0; i < dist.length; i++) {
 				// console.log(dist[i].term);
-				if (!profGPAs[dist[i].professor]) {
-					profGPAs[dist[i].term] = [];
-				}
-				profGPAs[dist[i].term].push(dist[i].avgGPA);
+				// if (!profGPAs[dist[i].professor]) {
+				// 	profGPAs[dist[i].professor] = [];
+				// }
+				// profGPAs[dist[i].professor].push(dist[i].avgGPA);
 
 				// Dividing by 100 to convert percentages correctly (returned from DB not as decimals)
 				totalGrades += dist[i].count;
@@ -194,15 +194,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				numI  += dist[i].iPercent  * dist[i].count / 100;
 			}
 
-			var allProfsDataPoints = new Array();
-			allProfsDataPoints.push( { label: "A", y: numA / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "AB", y: numAB / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "B", y: numB / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "BC", y: numBC / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "C", y: numC / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "D", y: numD / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "F", y: numF / totalGrades * 100 } );
-			allProfsDataPoints.push( { label: "I", y: numI / totalGrades * 100 } );
+			var allProfsGraph = generateProfGraphOptions("All Professors", totalGrades, numA, numAB, numB, numBC, numC, numD, numF, numI);
 
 			var graphsDiv = document.createElement("div");
 			graphsDiv.id = "professors";
@@ -210,39 +202,18 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			$(".detail_container#grade_distributions .tableContents").append(graphsDiv);
 
 			var professorsDefault = document.createElement("div");
-			professorsDefault.id = "professors_default";
+			professorsDefault.id = "all_professors";
 			$("#professors.graphs").append(professorsDefault);
 
-			var options1 = {
-				title: {
-					text: "Grade Distribution",
-					fontFamily: "Helvetica Neue"
-				},
-				animationEnabled: true,
-				data: [ {
-				type: "column", //change it to line, area, bar, pie, etc
-					dataPoints: allProfsDataPoints
-					// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
-				}
-				],
-		      axisX: {
-		        labelFontSize: 14,
-				labelFontFamily: "Helvetica Neue"
-		      },
-	         axisY: {
-		        labelFontSize: 14,
-				labelFontFamily: "Helvetica Neue",
-				title: "GPA",
-				titleFontFamily: "Helvetica Neue",
-				minimum: 0
-		      }
-			};
+			// var professorsDefault2 = document.createElement("div");
+			// professorsDefault2.id = "all_professors2";
+			// $("#professors.graphs").append(professorsDefault2);
 
 			$("#professors.graphs").tabs({
 				create: function (event, ui) {
 					//Render Charts after tabs have been created.
-					$("#professors_default").CanvasJSChart(options1);
-					// $("#chartContainer2").CanvasJSChart(options2);
+					$("#all_professors").CanvasJSChart(allProfsGraph);
+					// $("#all_professors2").CanvasJSChart(allProfsGraph);
 				},
 				activate: function (event, ui) {
 					//Updates the chart to its container's size if it has changed.
@@ -253,4 +224,42 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 	})
 
 
+}
+
+function generateProfGraphOptions(title, totalGrades, numA, numAB, numB, numBC, numC, numD, numF, numI) {
+	var dataPoints = new Array();
+	dataPoints.push( { label: "A", y: numA / totalGrades * 100 } );
+	dataPoints.push( { label: "AB", y: numAB / totalGrades * 100 } );
+	dataPoints.push( { label: "B", y: numB / totalGrades * 100 } );
+	dataPoints.push( { label: "BC", y: numBC / totalGrades * 100 } );
+	dataPoints.push( { label: "C", y: numC / totalGrades * 100 } );
+	dataPoints.push( { label: "D", y: numD / totalGrades * 100 } );
+	dataPoints.push( { label: "F", y: numF / totalGrades * 100 } );
+	dataPoints.push( { label: "I", y: numI / totalGrades * 100 } );
+
+	var options = {
+		title: {
+			text: title,
+			fontFamily: "Helvetica Neue"
+		},
+		animationEnabled: true,
+		data: [ {
+		type: "column", //change it to line, area, bar, pie, etc
+			dataPoints: dataPoints
+		} ],
+
+		axisX: {
+			labelFontSize: 14,
+			labelFontFamily: "Helvetica Neue"
+	  	},
+	 	axisY: {
+			labelFontSize: 14,
+			labelFontFamily: "Helvetica Neue",
+			title: "%",
+			titleFontFamily: "Helvetica Neue",
+			minimum: 0
+	  	}
+	};
+
+	return options;
 }
