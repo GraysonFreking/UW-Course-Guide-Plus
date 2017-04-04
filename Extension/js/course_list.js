@@ -195,7 +195,48 @@ function distributionSetup() {
 function sectionsListenerSetup() {
     $.initialize('table.sectionDetailList', function() {
         // All sections table actions done in here
+		$(this).find('tr').slice(1).each( function() {
+			var locations = $(this).find('td').eq(4);
+			addMapLinks(locations);
+		})
     });
+}
+
+function addMapLinks(locations) {
+	//Add map link for each location
+	locations.each( function() {
+		var loc = $(this);
+		var loc_clone = $(this).clone();
+		loc_clone.find("br").replaceWith("\n");
+		loc_text = loc_clone.text();
+		//console.log(loc_text);
+		var loc_split = loc_text.split("\n");
+		//console.log(loc_split.length);
+		//skip the first all whitespace split
+		loc.empty(); //remove the text
+		for (var i = 1; i < loc_split.length; i++) {
+			//console.log(loc_split[i]);
+			//TODO: the event handler takes a really long time. Applies to lots of areas of the extension
+			
+			var loc_str = loc_split[i].trim().replace(/ /g, "+");
+			//var loc_str = loc_s.replace(/&nbsp;/g, "+");
+			var link_text = 'https://www.google.com/maps/place/' + loc_str + '+Madison+Wisconsin';
+			var link = document.createElement("a");
+        	link.href = link_text;
+        	link.className = "mapLink"; 
+			var tn = loc_split[i];
+			if (i != 1) {
+				tn = '\n' + tn;
+			}
+			var t = document.createTextNode(tn);
+			link.append(t);
+			loc.append(link);
+		}
+		
+	}); 
+
+
+
 }
 
 function RMPSetup() {
