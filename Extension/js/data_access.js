@@ -41,6 +41,19 @@ function getDistributions(course) {
 		distributions.sections.push(row);
 	}
 	
+	distributions.sections.sort(function(x, y) {
+		if (x.term === y.term)
+			return 0;
+		else if (parseInt(x.term.split("-")[1]) > parseInt(y.term.split("-")[1]))
+			return -1;
+		else if (parseInt(x.term.split("-")[1]) > parseInt(y.term.split("-")[1]))
+			return 1;
+		else if (x.term.contains("Fall"))
+			return -1;
+		else
+			return 1;
+	});
+	
 	return distributions;
 }
 
