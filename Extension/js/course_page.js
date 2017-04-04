@@ -181,10 +181,15 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				if (!profGPAs[dist[i].professor]) {
 					profGPAs[dist[i].professor] = [];
 				}
-				profGPAs[dist[i].professor].push(dist[i].avgGPA);
+				if (dist[i].avgGPA != "") {
+					profGPAs[dist[i].professor].push(dist[i].avgGPA);
+				}
 			}
 
+			console.log(profGPAs);
+
 			var allProfsGraph = generateProfGraphOptions("All Professors", dist);
+			var individualProfGraphs = generateMultipleProfGraphOptions(profGPAs);
 
 			var graphsDiv = document.createElement("div");
 			graphsDiv.id = "professors";
@@ -203,7 +208,13 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				create: function (event, ui) {
 					//Render Charts after tabs have been created.
 					$("#all_professors").CanvasJSChart(allProfsGraph);
-					// $("#all_professors2").CanvasJSChart(allProfsGraph);
+					var i = 1;
+					for (graph in individualProfGraphs) {
+						var newProfGraph = document.createElement("div");
+						newProfGraph.id = "professor" + i;
+						$("#professors.graphs").append(newProfGraph);
+						$("#professor" + i).CanvasJSChart(individualProfGraphs[graph]);
+					}
 				},
 				activate: function (event, ui) {
 					//Updates the chart to its container's size if it has changed.
@@ -279,4 +290,14 @@ function generateProfGraphOptions(title, dist) {
 	};
 
 	return options;
+}
+
+function generateMultipleProfGraphOptions(profGPAs) {
+	var profGraphs = new Array();
+	for (var prof in profGPAs) {
+		profGraphs.push(generateProfGraphOptions(prof, profGPAs[prof]));
+	}
+	console.log(profGraphs);
+
+	return profGraphs;
 }
