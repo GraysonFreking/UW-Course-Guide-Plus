@@ -5,6 +5,7 @@ addRmpScores();
 addLocationLinks();
 addDistributions();
 addDistributionGraphs();
+var subjectID, courseNum;
 
 function setup() {
 	distributionInfoSetup();
@@ -47,10 +48,19 @@ function distributionInfoSetup() {
 		tbody.removeChild(tbody.firstChild);
 	}
 	$('div.tableContents').last().append(tableCln);
+
+	var url = window.location.href;
+	subjectID = url.match(/subjectId=([0-9]*)/)[1];
+	courseNum = $("h1").attr("title").match(/([0-9]*):/)[1];
 }
 
 function addAverageGpa() {
-
+	chrome.runtime.sendMessage( {
+		action: "getAverageGPA",
+		course: subjectID + courseNum
+	}, function (response) {
+		$('.detail_container table.rightTable tbody').first().append("<tr><td class='fieldTall'>Average GPA:</td><td class='fieldInfo'>" + response.aveGPA + "</td></tr>");
+	})
 }
 
 function addRmpScores() {
@@ -66,13 +76,6 @@ function addDistributions() {
 }
 
 function addDistributionGraphs(courseDistributions, professorsDistributions) {
-	var url = window.location.href;
-	var subjectID = url.match(/subjectId=([0-9]*)/)[1];
-	var courseNum = $("h1").attr("title").match(/([0-9]*):/)[1];
-
-	// console.log(subjectID);
-	// console.log(courseNum);
-
 	chrome.runtime.sendMessage( {
 		action: "getDistribution",
 		course: subjectID + courseNum
@@ -173,28 +176,15 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			console.log(dist);
 
 			// Set-up for individual professor graphs + overall averages
-			var profGPAs = {},
-				totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0, numC = 0, numD = 0, numF = 0, numI = 0;
+			var profGPAs = {};
 			for (var i = 0; i < dist.length; i++) {
-				// console.log(dist[i].term);
-				// if (!profGPAs[dist[i].professor]) {
-				// 	profGPAs[dist[i].professor] = [];
-				// }
-				// profGPAs[dist[i].professor].push(dist[i].avgGPA);
-
-				// Dividing by 100 to convert percentages correctly (returned from DB not as decimals)
-				totalGrades += dist[i].count;
-				numA  += dist[i].aPercent  * dist[i].count / 100;
-				numAB += dist[i].abPercent * dist[i].count / 100;
-				numB  += dist[i].bPercent  * dist[i].count / 100;
-				numBC += dist[i].bcPercent * dist[i].count / 100;
-				numC  += dist[i].cPercent  * dist[i].count / 100;
-				numD  += dist[i].dPercent  * dist[i].count / 100;
-				numF  += dist[i].fPercent  * dist[i].count / 100;
-				numI  += dist[i].iPercent  * dist[i].count / 100;
+				if (!profGPAs[dist[i].professor]) {
+					profGPAs[dist[i].professor] = [];
+				}
+				profGPAs[dist[i].professor].push(dist[i].avgGPA);
 			}
 
-			var allProfsGraph = generateProfGraphOptions("All Professors", totalGrades, numA, numAB, numB, numBC, numC, numD, numF, numI);
+			var allProfsGraph = generateProfGraphOptions("All Professors", dist);
 
 			var graphsDiv = document.createElement("div");
 			graphsDiv.id = "professors";
@@ -220,13 +210,40 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					ui.newPanel.children().first().CanvasJSChart().render();
 				}
 			});
+
+			// <div id="tabs" style="height: 290px">
+			// 	<ul>
+			// 		<li ><a href="#tabs-1" style="font-size: 12px">Spline</a></li>
+			// 		<li ><a href="#tabs-2"  style="font-size: 12px">Spline Area</a></li>
+			// 	</ul>
+			// 	<div id="tabs-1" style="height: 225px">
+			// 		<div id="chartContainer1" style="height: 240px; width: 100%;"></div>
+			// 	</div>
+			// 	<div id="tabs-2" style="height: 225px">
+			// 		<div id="chartContainer2" style="height: 240px; width: 100%;"></div>
+			// 	</div>
+			// </div>
 		}
 	})
 
-
 }
 
-function generateProfGraphOptions(title, totalGrades, numA, numAB, numB, numBC, numC, numD, numF, numI) {
+function generateProfGraphOptions(title, dist) {
+	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
+		numC = 0, numD = 0, numF = 0, numI = 0;
+	for (var i = 0; i < dist.length; i++) {
+		// Dividing by 100 to convert percentages correctly (returned from DB not as decimals)
+		totalGrades += dist[i].count;
+		numA  += dist[i].aPercent  * dist[i].count / 100;
+		numAB += dist[i].abPercent * dist[i].count / 100;
+		numB  += dist[i].bPercent  * dist[i].count / 100;
+		numBC += dist[i].bcPercent * dist[i].count / 100;
+		numC  += dist[i].cPercent  * dist[i].count / 100;
+		numD  += dist[i].dPercent  * dist[i].count / 100;
+		numF  += dist[i].fPercent  * dist[i].count / 100;
+		numI  += dist[i].iPercent  * dist[i].count / 100;
+	}
+
 	var dataPoints = new Array();
 	dataPoints.push( { label: "A", y: numA / totalGrades * 100 } );
 	dataPoints.push( { label: "AB", y: numAB / totalGrades * 100 } );
