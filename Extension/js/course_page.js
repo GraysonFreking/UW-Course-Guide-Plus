@@ -85,6 +85,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 		if (response != undefined) {
 			// addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
 			var dist = response.sections;
+			dist.reverse();
 			var termGPAs = {};
 			for (var i = 0; i < dist.length; i++) {
 				// console.log(dist[i].term);
@@ -96,8 +97,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					termGPAs[dist[i].term].push(dist[i].avgGPA);
 				}
 			}
-
-			console.log(termGPAs);
 
 			var gpaDataPoints = new Array();
 			for (var term in termGPAs) {
@@ -111,9 +110,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
 				gpaDataPoints.push(dataPoint);
 			}
-
-			console.log(gpaDataPoints);
-
 
 			var graphsDiv = document.createElement("div");
 			graphsDiv.id = "terms";
@@ -175,7 +171,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 	}, function(response) {
 		if (response != undefined) {
 			var dist = response.sections;
-			console.log(dist);
 
 			// Set-up for individual professor graphs + overall averages
 			var profGPAs = {};
@@ -187,8 +182,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					profGPAs[dist[i].professor].push(dist[i].avgGPA);
 				}
 			}
-
-			console.log(profGPAs);
 
 			var allProfsGraph = generateProfGraphOptions("All Professors", dist);
 			var individualProfGraphs = generateMultipleProfGraphOptions(profGPAs);
@@ -223,8 +216,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					ui.newPanel.children().first().CanvasJSChart().render();
 				}
 			});
-
-			console.log($(""));
 		}
 	})
 
@@ -300,8 +291,6 @@ function generateTabsList(tabNames, tabsID) {
 	}
 
 }
-
-
 
 // <div id="tabs" style="height: 290px">
 // 	<ul>
