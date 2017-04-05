@@ -3,6 +3,15 @@
 
 # IN CONSOLE, navigate to directory and type the following: $ python XML_Parse.py <xml file path> <JSON output path> <-t invoke testing> <-p pretty-print json>
 
+# This code is very messy, and therefore very hard to understand.
+# The reason for this monstrosity is simply because the UW system does not allow us to grab grade distribution info from their database
+# ... So we have to resort to parsing PDFs, which are very particular by the way.
+#
+# If this file confuses the hell out of you (and it will)...
+# ... please just don't touch it
+#
+# You have been warned.
+
 import xml.etree.ElementTree as ET
 import json
 import re
@@ -94,7 +103,7 @@ def xml_parse(in_file):
 
         if info_line_count == 0: # Grab the Course info
             if re.search('^\d\d\d|(Course Total)', line): # Pattern matching to grab Course Data & Class Name, and split item into an array
-                #|(Section #)
+                #|(Section #) #Keep this line for reference
                 if not re.search('(Section Total)', line):
                     split = line.split()
                     split.append(info_line[1]) # Append School
@@ -449,7 +458,7 @@ def testing(data):
     
         # Tests for validity of data entry
         
-        if re.search(r'^\d', item['Class_Name']): #This is the only WARNING that can sometimes be ignored, as some class names have numbers in them
+        if re.search(r'^\d', item['Class_Name']): # This WARNING that can sometimes be ignored, as some class names have numbers in them
             print "WARNING: Class_Name contains numbers:"
             print item
             print
@@ -464,17 +473,23 @@ def testing(data):
             print item
             print
 
-        if not re.search(r'^\d{3}', item['Dept_Num']):
-            print "WARNING: Dept_Num is not valid:"
-            print item
-            print
+        if not re.search(r'^\d{3}', item['Dept_Num']): # This WARNING that can sometimes be ignored, as some department names have letters in them
+			if item['Dept_Num'] != 'SAB':
+				print "WARNING: Dept_Num is not valid:"
+				print item
+				print
 
         if not re.search(r'^\D', item['Dept_Name']):
             print "WARNING: Dept_Name is not valid:"
             print item
             print
 
-        if re.search(r'^\d{0:}', item['Dept_Short_Name']):
+        # This WARNING will make you infuriated, but sometimes the grade ditro gets merged here due to a lack on information on the PDFs
+        # The warnings are kind of okay... as long as you note which classes are being affected by this bug
+        # Thankfully, this only seems to affect 1 department when uploaded to the database (Transportation and Public --> Tran P U)
+        # However, if more errors are found (which there shouldnt be any), simply fix them in the local database and reupload said database for correctness
+        # Terible workaround, but the safest option we have
+        if re.search(r'\d', item['Dept_Short_Name']):
             print "WARNING: Dept_Short_Name is not valid:"
             print item
             print
