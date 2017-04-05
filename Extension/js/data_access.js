@@ -46,9 +46,9 @@ function getDistributions(course) {
 			return 0;
 		else if (parseInt(x.term.split("-")[1]) > parseInt(y.term.split("-")[1]))
 			return -1;
-		else if (parseInt(x.term.split("-")[1]) > parseInt(y.term.split("-")[1]))
+		else if (parseInt(x.term.split("-")[1]) < parseInt(y.term.split("-")[1]))
 			return 1;
-		else if (x.term.contains("Fall"))
+		else if (x.term.includes("Spring"))
 			return -1;
 		else
 			return 1;
