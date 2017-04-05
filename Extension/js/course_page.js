@@ -59,7 +59,9 @@ function addAverageGpa() {
 		action: "getAverageGPA",
 		course: subjectID + courseNum
 	}, function (response) {
-		$('.detail_container table.rightTable tbody').first().append("<tr><td class='fieldTall'>Average GPA:</td><td class='fieldInfo'>" + response.aveGPA + "</td></tr>");
+		if (response != undefined) {
+			$('.detail_container table.rightTable tbody').first().append("<tr><td class='fieldTall'>Average GPA:</td><td class='fieldInfo'>" + response.aveGPA + "</td></tr>");
+		}
 	})
 }
 
@@ -213,7 +215,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 						var newProfGraph = document.createElement("div");
 						newProfGraph.id = "professor" + i;
 						$("#professors.graphs").append(newProfGraph);
-						$("#professor" + i).CanvasJSChart(individualProfGraphs[graph]);
+						// $("#professor" + i).CanvasJSChart(individualProfGraphs[graph]);
 					}
 				},
 				activate: function (event, ui) {
@@ -222,18 +224,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				}
 			});
 
-			// <div id="tabs" style="height: 290px">
-			// 	<ul>
-			// 		<li ><a href="#tabs-1" style="font-size: 12px">Spline</a></li>
-			// 		<li ><a href="#tabs-2"  style="font-size: 12px">Spline Area</a></li>
-			// 	</ul>
-			// 	<div id="tabs-1" style="height: 225px">
-			// 		<div id="chartContainer1" style="height: 240px; width: 100%;"></div>
-			// 	</div>
-			// 	<div id="tabs-2" style="height: 225px">
-			// 		<div id="chartContainer2" style="height: 240px; width: 100%;"></div>
-			// 	</div>
-			// </div>
+			console.log($(""));
 		}
 	})
 
@@ -297,7 +288,30 @@ function generateMultipleProfGraphOptions(profGPAs) {
 	for (var prof in profGPAs) {
 		profGraphs.push(generateProfGraphOptions(prof, profGPAs[prof]));
 	}
-	console.log(profGraphs);
 
 	return profGraphs;
 }
+
+function generateTabsList(tabNames, tabsID) {
+	var $ul = $("<ul></ul>");
+	$ul.appendTo($("#" + tabsID + ".graphs"));
+	for (var i = 0; i < tabNames.length; i++) {
+		$("<li><a href='#" + tabsID + i + "'>" + tabNames[i] + "</a></li>").appendTo($ul);
+	}
+
+}
+
+
+
+// <div id="tabs" style="height: 290px">
+// 	<ul>
+// 		<li ><a href="#tabs-1" style="font-size: 12px">Spline</a></li>
+// 		<li ><a href="#tabs-2" style="font-size: 12px">Spline Area</a></li>
+// 	</ul>
+// 	<div id="tabs-1" style="height: 225px">
+// 		<div id="chartContainer1" style="height: 240px; width: 100%;"></div>
+// 	</div>
+// 	<div id="tabs-2" style="height: 225px">
+// 		<div id="chartContainer2" style="height: 240px; width: 100%;"></div>
+// 	</div>
+// </div>
