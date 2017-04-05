@@ -33,17 +33,10 @@ function distributionInfoSetup() {
 	//Add it after the section information
 	$('div.detail_container').parent().append(newDiv);
 
-	//Add paragraph element
-	var newP = document.createElement("p");
-	newP.className = "CGsectionTableNote";
-	newP.innerHTML = "Viewing grade distributions for the past XXX years";
-	$('div.tableContents').last().append(newP);
-
 	//Adds table structure, but no rows
 	var table = document.getElementsByClassName("Detail_display")[0];
 	var tableCln = table.cloneNode(true);
 	var tbody = tableCln.firstElementChild.firstElementChild.firstElementChild.firstElementChild;
-	console.log(tbody);
 	while(tbody.hasChildNodes()) {
 		tbody.removeChild(tbody.firstChild);
 	}
@@ -183,32 +176,20 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				}
 			}
 
-			var allProfsGraph = generateProfGraphOptions("All Professors", dist);
-			var individualProfGraphs = generateMultipleProfGraphOptions(profGPAs);
+			var allProfsGraph = generateDistGraph("All Professors", dist);
+			var indvProfGraphs = generateMultipleProfGraphOptions(profGPAs);
 
-			var graphsDiv = document.createElement("div");
-			graphsDiv.id = "professors";
-			graphsDiv.className = "graphs"
-			$(".detail_container#grade_distributions .tableContents").append(graphsDiv);
+			$("<div></div>", { id: "professors", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
 
-			var professorsDefault = document.createElement("div");
-			professorsDefault.id = "all_professors";
-			$("#professors.graphs").append(professorsDefault);
-
-			// var professorsDefault2 = document.createElement("div");
-			// professorsDefault2.id = "all_professors2";
-			// $("#professors.graphs").append(professorsDefault2);
+			generateTabsList(profGPAs, "professors", "All Professors");
 
 			$("#professors.graphs").tabs({
 				create: function (event, ui) {
 					//Render Charts after tabs have been created.
-					$("#all_professors").CanvasJSChart(allProfsGraph);
+					$("#professorschart0").CanvasJSChart(allProfsGraph);
 					var i = 1;
-					for (graph in individualProfGraphs) {
-						var newProfGraph = document.createElement("div");
-						newProfGraph.id = "professor" + i;
-						$("#professors.graphs").append(newProfGraph);
-						// $("#professor" + i).CanvasJSChart(individualProfGraphs[graph]);
+					for (graph in indvProfGraphs) {
+						$("#professorschart" + i).CanvasJSChart(indvProfGraphs[graph]);
 					}
 				},
 				activate: function (event, ui) {
@@ -221,7 +202,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 }
 
-function generateProfGraphOptions(title, dist) {
+function generateDistGraph(title, dist) {
 	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
 		numC = 0, numD = 0, numF = 0, numI = 0;
 	for (var i = 0; i < dist.length; i++) {
@@ -277,30 +258,31 @@ function generateProfGraphOptions(title, dist) {
 function generateMultipleProfGraphOptions(profGPAs) {
 	var profGraphs = new Array();
 	for (var prof in profGPAs) {
-		profGraphs.push(generateProfGraphOptions(prof, profGPAs[prof]));
+		profGraphs.push(generateDistGraph(prof, profGPAs[prof]));
 	}
 
 	return profGraphs;
 }
 
-function generateTabsList(tabNames, tabsID) {
-	var $ul = $("<ul></ul>");
+function generateTabsList(tabNames, tabsID, defaultTabName) {
+	// Make tab list
+	var $ul = $("<ul class='tabs'></ul>");
 	$ul.appendTo($("#" + tabsID + ".graphs"));
-	for (var i = 0; i < tabNames.length; i++) {
-		$("<li><a href='#" + tabsID + i + "'>" + tabNames[i] + "</a></li>").appendTo($ul);
+
+	// Insert default tab and graph
+	$("<li><a href='#" + tabsID + "0'>" + defaultTabName + "</a></li>").appendTo($ul);
+	var $tab    = $("<div></div>", { id: tabsID + "0" });
+	var $chart  = $("<div></div>", { id: tabsID + "chart0" });
+	$tab.html($chart);
+	$("#" + tabsID + ".graphs").append($tab);
+
+	// Make tab button and chart container for each chart
+	var i = 1;
+	for (var name in tabNames) {
+		$("<li><a href='#" + tabsID + i + "'>" + name + "</a></li>").appendTo($ul);
+		var $tab    = $("<div></div>", { id: tabsID + i });
+		var $chart  = $("<div></div>", { id: tabsID + "chart" + i });
+		$tab.html($chart);
+		$("#" + tabsID + ".graphs").append($tab);
 	}
-
 }
-
-// <div id="tabs" style="height: 290px">
-// 	<ul>
-// 		<li ><a href="#tabs-1" style="font-size: 12px">Spline</a></li>
-// 		<li ><a href="#tabs-2" style="font-size: 12px">Spline Area</a></li>
-// 	</ul>
-// 	<div id="tabs-1" style="height: 225px">
-// 		<div id="chartContainer1" style="height: 240px; width: 100%;"></div>
-// 	</div>
-// 	<div id="tabs-2" style="height: 225px">
-// 		<div id="chartContainer2" style="height: 240px; width: 100%;"></div>
-// 	</div>
-// </div>
