@@ -68,7 +68,7 @@ class GradeDistribution(unittest.TestCase):
         #Make sure can get elements
         cg = driver.find_element_by_id('CG_browsePluto_29_u360303l1n15_118316_tw_')
         self.assertEqual("CG_browse", cg.get_attribute("class"))
-        
+
     def test_ave_gpa(self):
         driver = self.driver
         #driver.refresh()
@@ -98,8 +98,35 @@ class GradeDistribution(unittest.TestCase):
         #Add assertion for grades dropdown
         gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
         fall2016gpa = gradeTable.find_element_by_xpath("/tr[2]/td[3]")
-        assertEqual("3.104", fall2016gpa.text)         
+        assertEqual("3.104", fall2016gpa.text)
 
+    def test_class_page(self):
+        driver = self.driver
+        #driver.refresh()
+        #TODO: Issue, without the sleep delay, throwing staleelement exception
+        time.sleep(3)
+        #Go to computer science page
+        termId = 'termChoice2'
+        subjectValue = '266'
+        self.findSubject(termId, subjectValue)
+        time.sleep(7)
+        #First courseResult card, block with ave gpa
+        course_card = driver.find_element_by_link_text("Introduction to Algorithms")
+        course_card.click()
+        
+        driver.switch_to_window(driver.window_handles[-1])
+        #Check if this worked
+        source = driver.page_source
+        
+        time.sleep(5)
+        
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        
+        time.sleep(5)
+        
+        terms = driver.find_element_by_xpath("//*[@id='terms']")
+        profs = driver.find_element_by_xpath("//*[@id='professors']")
+    
     #tear down after each test
     def tearDown(self):
         pass
