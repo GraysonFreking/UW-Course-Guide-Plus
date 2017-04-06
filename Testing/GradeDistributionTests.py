@@ -58,7 +58,8 @@ class GradeDistribution(unittest.TestCase):
 
 
     #Tests
-    def test_cg_loaded(self):
+    
+    def test_cg_loaded(self): #Not passing
         driver = self.driver
         source = driver.page_source
         #Make sure do not have old page
@@ -85,7 +86,7 @@ class GradeDistribution(unittest.TestCase):
         self.assertIn("2.971", aveGPA.text)    
 
 
-    def test_grades_dropdown(self):
+    def test_grades_dropdown(self): #Not passing
         driver = self.driver
         time.sleep(3)
         #Go to computer science page
@@ -98,7 +99,7 @@ class GradeDistribution(unittest.TestCase):
         #Add assertion for grades dropdown
         gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
         fall2016gpa = gradeTable.find_element_by_xpath("/tr[2]/td[3]")
-        assertEqual("3.104", fall2016gpa.text)
+        self.assertEqual("3.104", fall2016gpa.text)
 
     def test_class_page(self):
         driver = self.driver
@@ -110,22 +111,31 @@ class GradeDistribution(unittest.TestCase):
         subjectValue = '266'
         self.findSubject(termId, subjectValue)
         time.sleep(7)
-        #First courseResult card, block with ave gpa
+        #Find CS 577 and click on it
         course_card = driver.find_element_by_link_text("Introduction to Algorithms")
         course_card.click()
         
         driver.switch_to_window(driver.window_handles[-1])
         #Check if this worked
         source = driver.page_source
+        time.sleep(5)
+        
+        #Hover over prof links
+        prof_link = driver.find_element_by_xpath("//*[@class='CG_instructorDetailsLink']")
         
         time.sleep(5)
         
+        hover = ActionChains(driver).move_to_element(prof_link)
+        hover.perform()
+        
+        time.sleep(5)
+        self.assertEqual("CHAWLA, SHUCHI", prof_link.text)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        
         time.sleep(5)
-        
         terms = driver.find_element_by_xpath("//*[@id='terms']")
         profs = driver.find_element_by_xpath("//*[@id='professors']")
+    
+
     
     #tear down after each test
     def tearDown(self):
