@@ -24,10 +24,11 @@ chrome.runtime.onSuspendCanceled.addListener(function() {
 });
 
 function getDistributions(course) {
-	var stmt = db.prepare("select name as term, avgGPA, count, aPercent, abPercent, bPercent, bcPercent, cPercent, dPercent, fPercent, iPercent \
+	var stmt = db.prepare("select Term.name as term, avgGPA, count, aPercent, abPercent, bPercent, bcPercent, cPercent, dPercent, fPercent, iPercent, Professor.name as professor \
 	from Grades \
 	join Section on Section.gradesID = Grades.gradesID \
 	join Term on Term.termID = Section.termID \
+	join Professor on Professor.profID = Section.profID \
 	where courseID = $course");
 
 	stmt.bind({$course: course});
