@@ -135,6 +135,11 @@ class GradeDistribution(unittest.TestCase):
         terms = driver.find_element_by_xpath("//*[@id='terms']")
         profs = driver.find_element_by_xpath("//*[@id='professors']")
     
+        driver.close();
+        driver.switch_to_window(driver.window_handles[1]);
+    
+        time.sleep(5)
+    
 
     
     #tear down after each test
