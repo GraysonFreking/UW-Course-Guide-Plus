@@ -17,12 +17,12 @@ a.gradesExpand img.expandCollapseIcon {
 }
 
 div#graphs {
-  height: 500px;
+  height: 520px;
 }
 
 .graphs {
   width: 46%;
-  height: 460px;
+  height: 500px;
 }
 
 #terms.graphs {
@@ -33,4 +33,12 @@ div#graphs {
 #professors.graphs {
   float: right;
   margin-right: 2%;
+}
+
+.tabs a {
+  font-size: 12px;
+}
+
+ul.tabs {
+  height: 63px;
 }

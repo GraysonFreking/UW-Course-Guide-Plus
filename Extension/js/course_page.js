@@ -20,17 +20,17 @@ function distributionInfoSetup() {
 	$("<div></div>", { "class": "tableContents", id: "graphs" }).appendTo($newDiv);
 	$('div.detail_container').parent().append($newDiv);
 
+	/* Broken currently (crashes on course pages that have no such table to clone) */
 	//Adds table structure, but no rows
-	var table = $(".Detail_display")[0];
-	var tableCln = table.cloneNode(true);
-	var tbody = tableCln.firstElementChild.firstElementChild.firstElementChild.firstElementChild;
-	while(tbody.hasChildNodes()) {
-		tbody.removeChild(tbody.firstChild);
-	}
-	$('div.tableContents').last().append(tableCln);
+	// var table    = $(".Detail_display")[0];0];
+	// var tableCln = table.cloneNode(true);
+	// var tbody    = tableCln.firstElementChild.firstElementChild.firstElementChild.firstElementChild;
+	// while(tbody.hasChildNodes()) {
+	// 	tbody.removeChild(tbody.firstChild);
+	// }
+	// $('div.tableContents').last().append(tableCln);
 
-	var url   = window.location.href;f;
-	subjectID = url.match(/subjectId=([0-9]*)/)[1];
+	subjectID = window.location.href.match(/subjectId=([0-9]*)/)[1];
 	courseNum = $("h1").attr("title").match(/([0-9]*):/)[1];
 }
 
@@ -63,12 +63,12 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 		course: subjectID + courseNum
 	}, function(response) {
 		if (response != undefined) {
-			// addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
+
+			/* TERM GRAPHS */
 			var dist = response.sections;
 			dist.reverse();
 			var termGPAs = {};
 			for (var i = 0; i < dist.length; i++) {
-				// console.log(dist[i].term);
 				if (!termGPAs[dist[i].term]) {
 					termGPAs[dist[i].term] = [];
 				}
@@ -90,15 +90,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
 				gpaDataPoints.push(dataPoint);
 			}
-
-//			var graphsDiv = document.createElement("div");
-//			graphsDiv.id = "terms";
-//			graphsDiv.className = "graphs"
-//			$(".detail_container#grade_distributions .tableContents").append(graphsDiv);
-
-//			var termsDefault = document.createElement("div");
-//			termsDefault.id = "terms_default";
-//			$("#terms.graphs").append(termsDefault);
 
 			var allTermOptions = {
 				title: {
@@ -136,13 +127,13 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
                     indivSemesterDist = [];
                     indivSemesterDist.push(dist[i]);
                     indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
-                    
+
                     recentTermGPAs[dist[i].term] = i;
                 }
             }
-            
+
             $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
-            
+
             generateTabsList(recentTermGPAs, "terms", "All Terms");
 
 			$("#terms.graphs").tabs({
@@ -154,27 +145,15 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
                     for (graph in indivTermGraphs) {
                         $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
                     }
-					// $("#chartContainer2").CanvasJSChart(options2);
 				},
 				activate: function (event, ui) {
 					//Updates the chart to its container's size if it has changed.
 					ui.newPanel.children().first().CanvasJSChart().render();
 				}
 			});
-		}
-	})
-	// Ethan codes in the function(response) above this line -----------------------
-	//
-	// Brett codes in a new Chrome.runtime.sendMessage() below this line -----------
 
 
-	// TODO: Modify following code once the query for distributions w/ professor data is available
-	chrome.runtime.sendMessage( {
-		action: "getDistribution",
-		course: subjectID + courseNum
-	}, function(response) {
-		if (response != undefined) {
-			var dist = response.sections;
+			/* PROFESSOR GRAPHS */
 
 			// Set-up for individual professor graphs + overall averages
 			var profGPAs = {};
@@ -210,7 +189,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			});
 		}
 	})
-
 }
 
 function generateDistGraph(title, dist) {
@@ -277,23 +255,22 @@ function generateMultipleProfGraphOptions(profGPAs) {
 
 function generateTabsList(tabNames, tabsID, defaultTabName) {
 	// Make tab list
-	var $ul = $("<ul class='tabs'></ul>");
-	$ul.appendTo($("#" + tabsID + ".graphs"));
+	var $ul = $("<ul class='tabs'></ul>")
+	$("#" + tabsID + ".graphs").append($ul);
 
 	// Insert default tab and graph
 	$("<li><a href='#" + tabsID + "0'>" + defaultTabName + "</a></li>").appendTo($ul);
-	var $tab    = $("<div></div>", { id: tabsID + "0" });
-	var $chart  = $("<div></div>", { id: tabsID + "chart0" });
-	$tab.html($chart);
+	var $tab = $("<div></div>", { id: tabsID + "0" });
+	$("<div></div>", { id: tabsID + "chart0" }).appendTo($tab);
 	$("#" + tabsID + ".graphs").append($tab);
 
 	// Make tab button and chart container for each chart
 	var i = 1;
 	for (var name in tabNames) {
 		$("<li><a href='#" + tabsID + i + "'>" + name + "</a></li>").appendTo($ul);
-		var $tab    = $("<div></div>", { id: tabsID + i });
-		var $chart  = $("<div></div>", { id: tabsID + "chart" + i });
-		$tab.html($chart);
+		var $tab = $("<div></div>", { id: tabsID + i });
+		$("<div></div>", { id: tabsID + "chart" + i }).appendTo($tab);
 		$("#" + tabsID + ".graphs").append($tab);
+		i++;
 	}
 }
