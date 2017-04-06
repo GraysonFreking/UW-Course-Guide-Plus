@@ -104,18 +104,19 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				gpaDataPoints.push(dataPoint);
 			}
 
-			var graphsDiv = document.createElement("div");
-			graphsDiv.id = "terms";
-			graphsDiv.className = "graphs"
-			$(".detail_container#grade_distributions .tableContents").append(graphsDiv);
+//			var graphsDiv = document.createElement("div");
+//			graphsDiv.id = "terms";
+//			graphsDiv.className = "graphs"
+//			$(".detail_container#grade_distributions .tableContents").append(graphsDiv);
 
-			var termsDefault = document.createElement("div");
-			termsDefault.id = "terms_default";
-			$("#terms.graphs").append(termsDefault);
+//			var termsDefault = document.createElement("div");
+//			termsDefault.id = "terms_default";
+//			$("#terms.graphs").append(termsDefault);
 
-			var options1 = {
+			var allTermOptions = {
 				title: {
-					text: "Average GPA"
+					text: "Average GPA",
+                    fontFamily: "Helvetica Neue"
 				},
 				animationEnabled: true,
 				data: [
@@ -138,11 +139,34 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				maximum: 4
 		      }
 			};
+            //-------------------------------------------------------
+            //set up the individual semester graphs
+            dist.reverse();
+            var indivTermGraphs = new Array();
+            var recentTermGPAs = {};
+            for (var i = 0; i < 5; i++) {
+                if (dist[i]) {
+                    indivSemesterDist = [];
+                    indivSemesterDist.push(dist[i]);
+                    indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
+                    
+                    recentTermGPAs[dist[i].term] = i;
+                }
+            }
+            
+            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
+            
+            generateTabsList(recentTermGPAs, "terms", "All Terms");
 
 			$("#terms.graphs").tabs({
 				create: function (event, ui) {
 					//Render Charts after tabs have been created.
-					$("#terms_default").CanvasJSChart(options1);
+                    console.log(allTermOptions);
+					$("#termschart0").CanvasJSChart(allTermOptions);
+                    var i = 1;
+                    for (graph in indivTermGraphs) {
+                        $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
+                    }
 					// $("#chartContainer2").CanvasJSChart(options2);
 				},
 				activate: function (event, ui) {
