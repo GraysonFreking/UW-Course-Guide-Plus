@@ -18,7 +18,7 @@
   },
 
   "background": {
-    "scripts": ["js/sql.js", "js/data_access.js", "js/model.js"],
+    "scripts": ["js/lib/sql.js", "js/data_access.js", "js/model.js"],
     "persistent": false
   },
 
@@ -26,12 +26,12 @@
     {
       "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=advancedSearch*"],
       "css": ["css/main.css", "css/RMP_popup.css", "css/tipped.css"],
-      "js": ["js/jquery-3.1.1.js", "js/jquery.initialize.min.js", "js/course_list.js", "js/tipped.js", "js/spinners.min.js"]
+      "js": ["js/lib/jquery-3.1.1.js", "js/lib/jquery.initialize.min.js", "js/course_list.js", "js/lib/tipped.js", "js/lib/spinners.min.js"]
     },
     {
       "matches": ["*://my.wisc.edu/portal/f/u360303l1s4/p/CourseGuide-Browse-Courses*pP_action=courseDetail*"],
       "css": ["css/main.css"],
-      "js": ["js/jquery-3.1.1.js", "js/jquery.canvasjs.min.js", "js/jquery-ui.min.js", "js/course_page.js"]
+      "js": ["js/lib/jquery-3.1.1.js", "js/lib/jquery.canvasjs.min.js", "js/lib/jquery-ui.min.js", "js/course_page.js"]
     }
   ],
 
