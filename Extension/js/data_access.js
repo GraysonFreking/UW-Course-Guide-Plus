@@ -28,7 +28,7 @@ function getDistributions(course) {
 	from Grades \
 	join Section on Section.gradesID = Grades.gradesID \
 	join Term on Term.termID = Section.termID \
-	join Professor on Professor.profID = Section.profID \
+	left join Professor on Professor.profID = Section.profID \
 	where courseID = $course");
 
 	stmt.bind({$course: course});
