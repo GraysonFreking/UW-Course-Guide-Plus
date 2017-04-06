@@ -15,26 +15,13 @@ function setup() {
 
 //Insert Grade Distribution Info section to bottom of page
 function distributionInfoSetup() {
-	//Make a new div for grade distribution
-	var newDiv = document.createElement("div");
-	//And it's children elements
-	var th = document.createElement("div");
-	var tc = document.createElement("div");
-	var h = document.createElement("h2");
-	newDiv.className = "detail_container";
-	newDiv.id = "grade_distributions";
-	th.className = "tableHeader";
-	tc.className = "tableContents";
-	tc.id = "graphs";
-	h.innerHTML = "Grade Distribution Information";
-	th.appendChild(h);
-	newDiv.appendChild(th);
-	newDiv.appendChild(tc);
-	//Add it after the section information
-	$('div.detail_container').parent().append(newDiv);
+	var $newDiv = $("<div></div>", { "class": "detail_container", id: "grade_distributions" } );
+	$("<div class='tableHeader'><h2>Grade Distribution Information</h2></div>").appendTo($newDiv);
+	$("<div></div>", { "class": "tableContents", id: "graphs" }).appendTo($newDiv);
+	$('div.detail_container').parent().append($newDiv);
 
 	//Adds table structure, but no rows
-	var table = document.getElementsByClassName("Detail_display")[0];
+	var table = $(".Detail_display")[0];
 	var tableCln = table.cloneNode(true);
 	var tbody = tableCln.firstElementChild.firstElementChild.firstElementChild.firstElementChild;
 	while(tbody.hasChildNodes()) {
@@ -42,7 +29,7 @@ function distributionInfoSetup() {
 	}
 	$('div.tableContents').last().append(tableCln);
 
-	var url = window.location.href;
+	var url   = window.location.href;f;
 	subjectID = url.match(/subjectId=([0-9]*)/)[1];
 	courseNum = $("h1").attr("title").match(/([0-9]*):/)[1];
 }
@@ -119,24 +106,24 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				},
 				animationEnabled: true,
 				data: [
-				{
-				type: "spline", //change it to line, area, bar, pie, etc
-					dataPoints: gpaDataPoints
-					// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
-				}
+					{
+						type: "spline", //change it to line, area, bar, pie, etc
+						dataPoints: gpaDataPoints
+						// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
+					}
 				],
-		      axisX: {
-		        labelFontSize: 0,
-				title: "Term",
-				titleFontFamily: "Helvetica Neue"
-		      },
-	         axisY: {
-		        labelFontSize: 14,
-				title: "GPA",
-				titleFontFamily: "Helvetica Neue",
-				minimum: 0,
-				maximum: 4
-		      }
+				axisX: {
+					labelFontSize: 0,
+					title: "Term",
+					titleFontFamily: "Helvetica Neue"
+				},
+				axisY: {
+					labelFontSize: 14,
+					title: "GPA",
+					titleFontFamily: "Helvetica Neue",
+					minimum: 0,
+					maximum: 4
+				}
 			};
 
 			$("#terms.graphs").tabs({
@@ -152,9 +139,9 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			});
 		}
 	})
-    // Ethan codes in the function(response) above this line -----------------------
-    //
-    // Brett codes in a new Chrome.runtime.sendMessage() below this line -----------
+	// Ethan codes in the function(response) above this line -----------------------
+	//
+	// Brett codes in a new Chrome.runtime.sendMessage() below this line -----------
 
 
 	// TODO: Modify following code once the query for distributions w/ professor data is available
@@ -204,7 +191,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 function generateDistGraph(title, dist) {
 	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
-		numC = 0, numD = 0, numF = 0, numI = 0;
+	numC = 0, numD = 0, numF = 0, numI = 0;
 	for (var i = 0; i < dist.length; i++) {
 		// Dividing by 100 to convert percentages correctly (returned from DB not as decimals)
 		totalGrades += dist[i].count;
@@ -235,21 +222,21 @@ function generateDistGraph(title, dist) {
 		},
 		animationEnabled: true,
 		data: [ {
-		type: "column", //change it to line, area, bar, pie, etc
+			type: "column", //change it to line, area, bar, pie, etc
 			dataPoints: dataPoints
 		} ],
 
 		axisX: {
 			labelFontSize: 14,
 			labelFontFamily: "Helvetica Neue"
-	  	},
-	 	axisY: {
+		},
+		axisY: {
 			labelFontSize: 14,
 			labelFontFamily: "Helvetica Neue",
 			title: "%",
 			titleFontFamily: "Helvetica Neue",
 			minimum: 0
-	  	}
+		}
 	};
 
 	return options;
