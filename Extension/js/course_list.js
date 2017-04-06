@@ -225,9 +225,11 @@ function addMapLinks(locations) {
         	link.href = link_text;
         	link.className = "mapLink"; 
 			var tn = loc_split[i];
-			if (i != 1) {
-				tn = '\n' + tn;
-			}
+            //Add linebreaks if multiple locations per row
+       		if (i != 1) {
+                var linebreak = document.createElement("br");
+                loc.append(linebreak);
+            }
 			var t = document.createTextNode(tn);
 			link.append(t);
 			loc.append(link);
