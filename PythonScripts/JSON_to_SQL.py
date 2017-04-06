@@ -43,12 +43,14 @@ def json_to_sql(file, db):
 
                 if course['Dept_Num'] == 'SAB':
                     course['Dept_Num'] = '000'
+                if course['Dept_Num'] == '243':
+                    course['Dept_Short_Name'] = 'TRAN P U'
 
                 cur.execute("""INSERT OR IGNORE INTO
                         Department (deptID, name, shortName, school)
                         VALUES (?,?,?,?)
                     """, (course['Dept_Num'], course['Dept_Name'], course['Dept_Short_Name'], course['School']))
-                _dept = cur.lastrowid
+                _dept = course['Dept_Num']
 
                 cur.execute("""INSERT OR IGNORE INTO
                         Course (courseID, deptID, course, name)
