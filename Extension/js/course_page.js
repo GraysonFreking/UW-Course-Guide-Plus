@@ -144,15 +144,23 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
             dist.reverse();
             var indivTermGraphs = new Array();
             var recentTermGPAs = {};
-            for (var i = 0; i < 5; i++) {
-                if (dist[i]) {
-                    indivSemesterDist = [];
-                    indivSemesterDist.push(dist[i]);
-                    indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
-                    
-                    recentTermGPAs[dist[i].term] = i;
+            //for now we'll only display 5 most recent terms
+            for (var i = 0; i < dist.length; i++) {
+                if (indivTermGraphs.length < 5) {
+                    if (!recentTermGPAs[dist[i].term]) {
+                        recentTermGPAs[dist[i].term] = i+1;
+                        indivSemesterDist = [];
+                        indivSemesterDist.push(dist[i]);
+                        indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
+                        console.log(dist[i].term);
+                    }
+                }
+                else {
+                    break;
                 }
             }
+            console.log(recentTermGPAs);
+            console.log(indivTermGraphs);
             
             $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
             
@@ -161,7 +169,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			$("#terms.graphs").tabs({
 				create: function (event, ui) {
 					//Render Charts after tabs have been created.
-                    console.log(allTermOptions);
+//                    console.log(allTermOptions);
 					$("#termschart0").CanvasJSChart(allTermOptions);
                     var i = 1;
                     for (graph in indivTermGraphs) {
