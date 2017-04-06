@@ -220,7 +220,7 @@ function addMapLinks(locations) {
 			
 			var loc_str = loc_split[i].trim().replace(/ /g, "+");
 			//var loc_str = loc_s.replace(/&nbsp;/g, "+");
-			var link_text = 'https://www.google.com/maps/place/' + loc_str + '+Madison+Wisconsin';
+			var link_text = 'https://www.google.com/maps/place/' + loc_str + '+University+of+Wisconsin-Madison';
 			var link = document.createElement("a");
         	link.href = link_text;
         	link.className = "mapLink"; 
@@ -230,6 +230,7 @@ function addMapLinks(locations) {
                 var linebreak = document.createElement("br");
                 loc.append(linebreak);
             }
+            link.setAttribute('target', '_blank');
 			var t = document.createTextNode(tn);
 			link.append(t);
 			loc.append(link);
