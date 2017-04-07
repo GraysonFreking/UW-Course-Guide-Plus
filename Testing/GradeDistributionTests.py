@@ -79,7 +79,7 @@ class GradeDistribution(unittest.TestCase):
         termId = 'termChoice2'
         subjectValue = '266'
         self.findSubject(termId, subjectValue)
-        time.sleep(7)
+        time.sleep(5)
         #First courseResult card, block with ave gpa
         aveGPA = driver.find_element_by_xpath("//tr[@class='courseResult']/td[7]")
         self.assertIn("Ave. GPA: ", aveGPA.text)
@@ -95,11 +95,86 @@ class GradeDistribution(unittest.TestCase):
         self.findSubject(termId, subjectValue)
         dropdown = driver.find_element_by_xpath("//tr[@class='courseResult']/td[@colspan='8']/a[text()='grades']")
         dropdown.click()
-        time.sleep(7)
+        time.sleep(5)
         #Add assertion for grades dropdown
         gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
-        fall2016gpa = gradeTable.find_element_by_xpath("/tr[2]/td[3]")
+        fall2016gpa = gradeTable.find_element_by_xpath("tr[2]/td[3]")
         self.assertEqual("3.104", fall2016gpa.text)
+
+
+    def test_grades_dropdown_long_wait(self):
+        driver = self.driver
+        time.sleep(3)
+        #Go to computer science page
+        termId = 'termChoice2'
+        subjectValue = '266'
+        self.findSubject(termId, subjectValue)
+        dropdown = driver.find_element_by_xpath("//tr[@class='courseResult']/td[@colspan='8']/a[text()='grades']")
+        dropdown.click()
+        time.sleep(15)
+        #Add assertion for grades dropdown
+        gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
+        fall2016gpa = gradeTable.find_element_by_xpath("tr[2]/td[3]")
+        self.assertEqual("3.104", fall2016gpa.text)
+
+    def test_map_links(self):
+        driver = self.driver
+        time.sleep(3)
+        #Go to computer science page
+        termId = 'termChoice2'
+        subjectValue = '266'
+        self.findSubject(termId, subjectValue)
+        dropdown = driver.find_element_by_xpath("//tr[@class='courseResult']/td[@colspan='8']/a[contains(text(), 'sections')]")
+        driver.execute_script("arguments[0].click()", dropdown)
+
+        sectionTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
+        loc = sectionTable.find_element_by_xpath("tbody/tr[2]/td[5]/a")
+        self.assertEqual("https://www.google.com/maps/place/B239%C2%A0Van+Vleck+Hall+University+of+Wisconsin-Madison", loc.get_attribute("href"))
+
+    
+    def test_rmp_popup_displays(self): #Not passing
+        driver = self.driver
+        time.sleep(3)
+        #Go to computer science page
+        termId = 'termChoice2'
+        subjectValue = '266'
+        self.findSubject(termId, subjectValue)
+        dropdown = driver.find_element_by_xpath("//tr[@class='courseResult'][6]/td[@colspan='8']/a[contains(text(), 'sections')]")
+        driver.execute_script("arguments[0].click()", dropdown)
+
+        sectionTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
+        prof = sectionTable.find_element_by_xpath("tbody/tr[2]/td[6]/a")
+        ActionChains(driver).move_to_element(prof).perform()
+        time.sleep(3)
+        popupRating = driver.find_element_by_xpath("//div[@class='hover']/p[@class='highlight']")
+        
+        self.assertEqual('3.9', popupRating.text)
+    
+
+    def test_rmp_popup_displays_long_wait(self):
+        driver = self.driver
+        time.sleep(3)
+        #Go to computer science page
+        termId = 'termChoice2'
+        subjectValue = '266'
+        self.findSubject(termId, subjectValue)
+        dropdown = driver.find_element_by_xpath("//tr[@class='courseResult'][last()]/td[@colspan='8']/a[contains(text(), 'sections')]")
+        ActionChains(driver).move_to_element(dropdown).perform()
+        driver.execute_script("arguments[0].click()", dropdown)
+
+        sectionTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
+        prof = sectionTable.find_element_by_xpath("tbody/tr[4]/td[6]/a")
+        time.sleep(15)
+        ActionChains(driver).move_to_element(prof).perform()
+        popup = driver.find_element_by_xpath("//div[@class='tpd-content']")
+        popupRating = popup.find_element_by_xpath("div[@class='hover']/p[@class='highlight']")
+        popupWTA =  popup.find_element_by_xpath("div[@class='hover']/h5[1]")
+        popupLOD =  popup.find_element_by_xpath("div[@class='hover']/h5[2]")
+        self.assertEqual('4.3', popupRating.text)
+        self.assertIn('100', popupWTA.text)
+        self.assertIn('2.8', popupLOD.text)
+
+
 
     def test_class_page(self):
         driver = self.driver
@@ -180,7 +255,7 @@ class GradeDistribution(unittest.TestCase):
         term.click()
         subject.click()
         findButton.click()
-        time.sleep(2)
+        time.sleep(5)
         
 
 if __name__ == "__main__":
