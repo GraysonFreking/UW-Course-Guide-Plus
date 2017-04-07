@@ -68,13 +68,13 @@ function addLocationLinks() {
 	        	//skip the first all whitespace split
 	        	loc.empty(); //remove the text
 	        	for (var i = 1; i < loc_split.length; i++) {
-	        		
+
 	        		var loc_str = loc_split[i].trim().replace(/ /g, "+");
 	        		//var loc_str = loc_s.replace(/&nbsp;/g, "+");
 	        		var link_text = 'https://www.google.com/maps/place/' + loc_str + '+University+of+Wisconsin-Madison';
 	        		var link = document.createElement("a");
                 	link.href = link_text;
-                	link.className = "mapLink"; 
+                	link.className = "mapLink";
 	        		var tn = loc_split[i];
                     console.log(loc_split[i] + ": " + i)
 	        		var t = document.createTextNode(tn);
@@ -87,8 +87,8 @@ function addLocationLinks() {
 	        		loc.append(link);
                     //Add linebreak if there are multiple locations per row
 	        	}
-	        	
-	        }); 
+
+	        });
 
 
         })
@@ -183,9 +183,9 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
                     break;
                 }
             }
-            console.log(recentTermGPAs);
-            console.log(indivTermGraphs);
-            
+            // console.log(recentTermGPAs);
+            // console.log(indivTermGraphs);
+
             $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
 
             generateTabsList(recentTermGPAs, "terms", "All Terms");
@@ -212,16 +212,24 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			// Set-up for individual professor graphs + overall averages
 			var profGPAs = {};
 			for (var i = 0; i < dist.length; i++) {
-				if (!profGPAs[dist[i].professor]) {
-					profGPAs[dist[i].professor] = [];
+				if (!profGPAs[dist[i].professor] ) {
+					if (dist[i].professor != null)
+						profGPAs[dist[i].professor] = [];
+					else
+						profGPAs["Other"] = [];
 				}
-				if (dist[i].avgGPA != "") {
-					profGPAs[dist[i].professor].push(dist[i].avgGPA);
+				if (dist[i].avgGPA != "" ) {
+					if (dist[i].professor != null)
+						profGPAs[dist[i].professor].push(dist[i]);
+					else
+						profGPAs["Other"].push(dist[i]);
 				}
 			}
 
 			var allProfsGraph = generateDistGraph("All Professors", dist);
 			var indvProfGraphs = generateMultipleProfGraphOptions(profGPAs);
+
+			console.log(indvProfGraphs);
 
 			$("<div></div>", { id: "professors", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
 
@@ -246,6 +254,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 }
 
 function generateDistGraph(title, dist) {
+	console.log(dist);
 	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
 	numC = 0, numD = 0, numF = 0, numI = 0;
 	for (var i = 0; i < dist.length; i++) {
@@ -303,6 +312,8 @@ function generateMultipleProfGraphOptions(profGPAs) {
 	for (var prof in profGPAs) {
 		profGraphs.push(generateDistGraph(prof, profGPAs[prof]));
 	}
+
+	console.log(profGraphs);
 
 	return profGraphs;
 }
