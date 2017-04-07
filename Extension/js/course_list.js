@@ -65,11 +65,15 @@ function distributionSetup() {
             arrowIcon.width = "15";
             arrowIcon.height = "15";
             newLink.appendChild(arrowIcon);
+            
+            //keep track of whether table is built yet
+            var tableBuilt = false;
 
             //add listener to newLink
             newLink.addEventListener('click', function () {
                 //check if the table has already been made, if not then make it
-                if (!$(this).next().is(".distTable")) {
+//                if (!$(this).next().is(".distTable")) {
+                if (!tableBuilt) {
 
                     // Extracts course ID
                     var courseURL = $(this).prev().attr('href');
@@ -91,88 +95,100 @@ function distributionSetup() {
                     }, function(response) {
                         //do response handling here & fill build/fill table
                         console.log(response);
-                        var jsonObj = response;
-                        //create table to populate
-                        var table = document.createElement("table");
-                        table.className = "distTable";
-                        table.border = "1px solid black";
-
-                        //create the header row
-                        var $headerRow = $("<tr/>");
-                        //create all the table headers
-                        $("<th/>").text("Term").appendTo($headerRow);
-                        $("<th/>").text("Count").appendTo($headerRow);
-                        $("<th/>").text("Avg GPA").appendTo($headerRow);
-                        $("<th/>").text("A%").appendTo($headerRow);
-                        $("<th/>").text("AB%").appendTo($headerRow);
-                        $("<th/>").text("B%").appendTo($headerRow);
-                        $("<th/>").text("BC%").appendTo($headerRow);
-                        $("<th/>").text("C%").appendTo($headerRow);
-                        $("<th/>").text("D%").appendTo($headerRow);
-                        $("<th/>").text("F%").appendTo($headerRow);
-                        $("<th/>").text("I%").appendTo($headerRow);
-                        //append header row to table
-                        //table.appendChild($headerRow);
-                        $headerRow.appendTo(table);
                         
-                        //parse the returned JSON
-                        for (var i = 0; i < jsonObj.sections.length; i++) {
+                        //only build the table if get a good response
+                        if (response != undefined) {
+                            var jsonObj = response;
+                            //create table to populate
+                            var table = document.createElement("table");
+                            table.className = "distTable";
+                            table.border = "1px solid black";
 
-                            //create row
-                            var row = document.createElement("tr");
-                            //create term column
-                            var tdTerm = document.createElement("td");
-                            tdTerm.appendChild(document.createTextNode(jsonObj.sections[i].term));
-                            row.appendChild(tdTerm);
-                            //create count column
-                            var tdCount = document.createElement("td");
-                            tdCount.appendChild(document.createTextNode(jsonObj.sections[i].count));
-                            row.appendChild(tdCount);
-                            //create avg GPA column
-                            var tdAvgGpa = document.createElement("td");
-                            tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[i].avgGPA));
-                            row.appendChild(tdAvgGpa);
-                            //create aPercent column
-                            var tdAPercent = document.createElement("td");
-                            tdAPercent.appendChild(document.createTextNode(jsonObj.sections[i].aPercent));
-                            row.appendChild(tdAPercent);
-                            //create abPercent column
-                            var tdABPercent = document.createElement("td");
-                            tdABPercent.appendChild(document.createTextNode(jsonObj.sections[i].abPercent));
-                            row.appendChild(tdABPercent);
-                            //create bPercent column
-                            var tdBPercent = document.createElement("td");
-                            tdBPercent.appendChild(document.createTextNode(jsonObj.sections[i].bPercent));
-                            row.appendChild(tdBPercent);
-                            //create bcPercent column
-                            var tdBCPercent = document.createElement("td");
-                            tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[i].bcPercent));
-                            row.appendChild(tdBCPercent);
-                            //create cPercent column
-                            var tdCPercent = document.createElement("td");
-                            tdCPercent.appendChild(document.createTextNode(jsonObj.sections[i].cPercent));
-                            row.appendChild(tdCPercent);
-                            //create dPercent column
-                            var tdDPercent = document.createElement("td");
-                            tdDPercent.appendChild(document.createTextNode(jsonObj.sections[i].dPercent));
-                            row.appendChild(tdDPercent);
-                            //create fPercent column
-                            var tdFPercent = document.createElement("td");
-                            tdFPercent.appendChild(document.createTextNode(jsonObj.sections[i].fPercent));
-                            row.appendChild(tdFPercent);
-                            //create iPercent column
-                            var tdIPercent = document.createElement("td");
-                            tdIPercent.appendChild(document.createTextNode(jsonObj.sections[i].iPercent));
-                            row.appendChild(tdIPercent);
+                            //create the header row
+                            var $headerRow = $("<tr/>");
+                            //create all the table headers
+                            $("<th/>").text("Term").appendTo($headerRow);
+                            $("<th/>").text("Count").appendTo($headerRow);
+                            $("<th/>").text("Avg GPA").appendTo($headerRow);
+                            $("<th/>").text("A%").appendTo($headerRow);
+                            $("<th/>").text("AB%").appendTo($headerRow);
+                            $("<th/>").text("B%").appendTo($headerRow);
+                            $("<th/>").text("BC%").appendTo($headerRow);
+                            $("<th/>").text("C%").appendTo($headerRow);
+                            $("<th/>").text("D%").appendTo($headerRow);
+                            $("<th/>").text("F%").appendTo($headerRow);
+                            $("<th/>").text("I%").appendTo($headerRow);
+                            //append header row to table
+                            //table.appendChild($headerRow);
+                            $headerRow.appendTo(table);
 
-                            //append row to table
-                            table.appendChild(row);
+                            //parse the returned JSON
+                            for (var i = 0; i < jsonObj.sections.length; i++) {
+
+                                //create row
+                                var row = document.createElement("tr");
+                                //create term column
+                                var tdTerm = document.createElement("td");
+                                tdTerm.appendChild(document.createTextNode(jsonObj.sections[i].term));
+                                row.appendChild(tdTerm);
+                                //create count column
+                                var tdCount = document.createElement("td");
+                                tdCount.appendChild(document.createTextNode(jsonObj.sections[i].count));
+                                row.appendChild(tdCount);
+                                //create avg GPA column
+                                var tdAvgGpa = document.createElement("td");
+                                tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[i].avgGPA));
+                                row.appendChild(tdAvgGpa);
+                                //create aPercent column
+                                var tdAPercent = document.createElement("td");
+                                tdAPercent.appendChild(document.createTextNode(jsonObj.sections[i].aPercent));
+                                row.appendChild(tdAPercent);
+                                //create abPercent column
+                                var tdABPercent = document.createElement("td");
+                                tdABPercent.appendChild(document.createTextNode(jsonObj.sections[i].abPercent));
+                                row.appendChild(tdABPercent);
+                                //create bPercent column
+                                var tdBPercent = document.createElement("td");
+                                tdBPercent.appendChild(document.createTextNode(jsonObj.sections[i].bPercent));
+                                row.appendChild(tdBPercent);
+                                //create bcPercent column
+                                var tdBCPercent = document.createElement("td");
+                                tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[i].bcPercent));
+                                row.appendChild(tdBCPercent);
+                                //create cPercent column
+                                var tdCPercent = document.createElement("td");
+                                tdCPercent.appendChild(document.createTextNode(jsonObj.sections[i].cPercent));
+                                row.appendChild(tdCPercent);
+                                //create dPercent column
+                                var tdDPercent = document.createElement("td");
+                                tdDPercent.appendChild(document.createTextNode(jsonObj.sections[i].dPercent));
+                                row.appendChild(tdDPercent);
+                                //create fPercent column
+                                var tdFPercent = document.createElement("td");
+                                tdFPercent.appendChild(document.createTextNode(jsonObj.sections[i].fPercent));
+                                row.appendChild(tdFPercent);
+                                //create iPercent column
+                                var tdIPercent = document.createElement("td");
+                                tdIPercent.appendChild(document.createTextNode(jsonObj.sections[i].iPercent));
+                                row.appendChild(tdIPercent);
+
+                                //append row to table
+                                table.appendChild(row);
+
+                            }
+
+                            if (!tableBuilt) {
+                                currElement.parent().append(table);
+                                console.log("table appended...");
+                            }
+                            
+                            //keep track that we built the table
+                            tableBuilt = true;
 
                         }
-
-                        currElement.parent().append(table);
-                        console.log("table appended...");
-
+                        else {
+                            console.log("The database returned undefined.");
+                        }
                     });
 
                 }
@@ -180,6 +196,16 @@ function distributionSetup() {
                 //test
                 console.log("clicked the new link");
 
+                //switch the arrow icon
+                if (arrowIcon.src = chrome.extension.getURL('img/left-arrow.png')) {
+                    console.log("it's left arrow");
+                    arrowIcon.src = chrome.extension.getURL('img/down-arrow.png');
+                }
+                else {
+                    console.log("it's not left arrow");
+                    arrowIcon.src = chrome.extension.getURL('img/left-arrow.png');
+                }
+                
                 //toggle the div
                 $(this).next().toggle();
             });
