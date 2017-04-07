@@ -58,7 +58,7 @@ class GradeDistribution(unittest.TestCase):
 
 
     #Tests
-    
+        
     def test_cg_loaded(self): #Not passing
         driver = self.driver
         source = driver.page_source
@@ -111,7 +111,7 @@ class GradeDistribution(unittest.TestCase):
         self.findSubject(termId, subjectValue)
         dropdown = driver.find_element_by_xpath("//tr[@class='courseResult']/td[@colspan='8']/a[text()='grades']")
         dropdown.click()
-        time.sleep(15)
+        time.sleep(20)
         #Add assertion for grades dropdown
         gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
         fall2016gpa = gradeTable.find_element_by_xpath("tr[2]/td[3]")
@@ -164,7 +164,7 @@ class GradeDistribution(unittest.TestCase):
 
         sectionTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
         prof = sectionTable.find_element_by_xpath("tbody/tr[4]/td[6]/a")
-        time.sleep(15)
+        time.sleep(20)
         ActionChains(driver).move_to_element(prof).perform()
         popup = driver.find_element_by_xpath("//div[@class='tpd-content']")
         popupRating = popup.find_element_by_xpath("div[@class='hover']/p[@class='highlight']")
@@ -175,7 +175,7 @@ class GradeDistribution(unittest.TestCase):
         self.assertIn('2.8', popupLOD.text)
 
 
-
+    
     def test_class_page(self):
         driver = self.driver
         #driver.refresh()
