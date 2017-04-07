@@ -51,6 +51,51 @@ function addRmpScores() {
 
 function addLocationLinks() {
 
+    $('table.sectionDetailList', function() {
+        console.log("Add locations")
+	    $(this).find('tr').slice(1).each( function() {
+	    	var locations = $(this).find('td').eq(4);
+	        console.log("Adding some locs")
+	        //Add map link for each location
+	        locations.each( function() {
+	        	var loc = $(this);
+	        	var loc_clone = $(this).clone();
+	        	loc_clone.find("br").replaceWith("\n");
+	        	loc_text = loc_clone.text();
+	        	//console.log(loc_text);
+	        	var loc_split = loc_text.split("\n");
+	        	//console.log(loc_split.length);
+	        	//skip the first all whitespace split
+	        	loc.empty(); //remove the text
+	        	for (var i = 1; i < loc_split.length; i++) {
+	        		
+	        		var loc_str = loc_split[i].trim().replace(/ /g, "+");
+	        		//var loc_str = loc_s.replace(/&nbsp;/g, "+");
+	        		var link_text = 'https://www.google.com/maps/place/' + loc_str + '+University+of+Wisconsin-Madison';
+	        		var link = document.createElement("a");
+                	link.href = link_text;
+                	link.className = "mapLink"; 
+	        		var tn = loc_split[i];
+                    console.log(loc_split[i] + ": " + i)
+	        		var t = document.createTextNode(tn);
+	        		if (i != 1) {
+                        var linebreak = document.createElement("br");
+                        loc.append(linebreak);
+                    }
+                    link.setAttribute('target', '_blank');
+	        		link.append(t);
+	        		loc.append(link);
+                    //Add linebreak if there are multiple locations per row
+	        	}
+	        	
+	        }); 
+
+
+        })
+
+    });
+
+
 }
 
 function addDistributions() {
