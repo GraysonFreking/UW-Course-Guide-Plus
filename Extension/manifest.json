@@ -13,13 +13,12 @@
 
   "browser_action": {
     "default_icon": "img/icon16.png",
-    "default_popup": "html/popup.html",
     "default_title": "Go to UW Course Guide"
   },
 
   "background": {
-    "scripts": ["js/lib/sql.js", "js/data_access.js", "js/model.js"],
-    "persistent": false
+    "scripts": ["js/lib/sql.js", "js/data_access.js", "js/model.js", "js/browser_action.js"],
+    "persistent": true
   },
 
   "content_scripts": [
