@@ -5,88 +5,90 @@ import sys
 import gzip
 
 
-if len(sys.argv) != 2:
-    print """USAGE: ./initDB.py <nameOfDatabase>
-    If not on linux, run initDB.py in python, same arg."""
-
-    sys.exit()
-
-
-def write(data):
-
-    f = gzip.open(sys.argv[1].split('.')[0] + 'Backup.sql.gz', 'wb')
-
+def writeBackup(file_name, backup_string):
+    f = gzip.open(file_name.split('.')[0] + 'Backup.sql.gz', 'wb')
     with f:
-        f.write(data)
+        f.write(backup_string)
 
 
-con = sql.connect(sys.argv[1])
+def main(args):
 
-with con:
-    cur = con.cursor()
+    if len(args) != 1:
+        print """USAGE: ./initDB.py <nameOfDatabase>
+        If not on linux, run initDB.py in python, same arg."""
+        sys.exit()
 
-    cur.execute("""
-        CREATE TABLE Professor(
-            profID INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT)""")
+    con = sql.connect(args[0])
 
-    cur.execute("""
-        CREATE TABLE Grades(
-            gradesID INTEGER PRIMARY KEY AUTOINCREMENT,
-            avgGPA REAL,
-            aPercent REAL,
-            abPercent REAL,
-            bPercent REAL,
-            bcPercent REAL,
-            cPercent REAL,
-            dPercent REAL,
-            fPercent REAL,
-            iPercent REAL,
-            count INTEGER)""")
+    with con:
+        cur = con.cursor()
 
-    cur.execute("""
-        CREATE TABLE Term(
-            termID INTEGER PRIMARY KEY,
-            name TEXT)""")
+        cur.execute("""
+            CREATE TABLE Professor(
+                profID INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE)""")
 
-    cur.execute("""
-        CREATE TABLE Section(
-            sectionID INTEGER PRIMARY KEY AUTOINCREMENT,
-            section TEXT,
-            courseID INTEGER,
-            profID INTEGER,
-            gradesID INTEGER,
-            termID INTEGER,
-            FOREIGN KEY(courseID) REFERENCES Course(courseID),
-            FOREIGN KEY(profID) REFERENCES Professor(profID),
-            FOREIGN KEY(gradesID) REFERENCES Grades(gradesID),
-            FOREIGN KEY(termID) REFERENCES Term(termID))""")
+        cur.execute("""
+            CREATE TABLE Grades(
+                gradesID INTEGER PRIMARY KEY AUTOINCREMENT,
+                avgGPA REAL,
+                aPercent REAL,
+                abPercent REAL,
+                bPercent REAL,
+                bcPercent REAL,
+                cPercent REAL,
+                dPercent REAL,
+                fPercent REAL,
+                iPercent REAL,
+                count INTEGER)""")
 
-    cur.execute("""
-        CREATE TABLE Department(
-            deptID INTEGER PRIMARY KEY,
-            name TEXT,
-            shortName TEXT,
-            school TEXT)""")
+        cur.execute("""
+            CREATE TABLE Term(
+                termID INTEGER PRIMARY KEY,
+                name TEXT)""")
 
-    cur.execute("""
-        CREATE TABLE Course(
-            courseID INTEGER PRIMARY KEY,
-            deptID INTEGER,
-            course INTEGER,
-            name TEXT,
-            FOREIGN KEY(deptID) REFERENCES Department(deptID))""")
+        cur.execute("""
+            CREATE TABLE Section(
+                sectionID INTEGER PRIMARY KEY AUTOINCREMENT,
+                section TEXT,
+                courseID INTEGER,
+                profID INTEGER,
+                gradesID INTEGER,
+                termID INTEGER,
+                FOREIGN KEY(courseID) REFERENCES Course(courseID),
+                FOREIGN KEY(profID) REFERENCES Professor(profID),
+                FOREIGN KEY(gradesID) REFERENCES Grades(gradesID),
+                FOREIGN KEY(termID) REFERENCES Term(termID))""")
 
-    cur.execute("""
-        CREATE TABLE Map(
-            mapID INTEGER PRIMARY KEY,
-            name TEXT,
-            link TEXT)""")
+        cur.execute("""
+            CREATE TABLE Department(
+                deptID INTEGER PRIMARY KEY,
+                name TEXT,
+                shortName TEXT,
+                school TEXT)""")
 
-    con.commit()
+        cur.execute("""
+            CREATE TABLE Course(
+                courseID INTEGER PRIMARY KEY,
+                deptID INTEGER,
+                course INTEGER,
+                name TEXT,
+                FOREIGN KEY(deptID) REFERENCES Department(deptID))""")
 
-    # this constructs a string of previously executed SQL commands.
-    backupData = '\n'.join(con.iterdump())
+        cur.execute("""
+            CREATE TABLE Map(
+                mapID INTEGER PRIMARY KEY,
+                name TEXT,
+                link TEXT)""")
 
-    # create a list of SQL commands to restore the database if needed
-    write(backupData)
+        con.commit()
+
+        # this constructs a string of previously executed SQL commands.
+        backup_string = '\n'.join(con.iterdump())
+
+        # create a list of SQL commands to restore the database if needed
+        writeBackup(args[0], backup_string)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

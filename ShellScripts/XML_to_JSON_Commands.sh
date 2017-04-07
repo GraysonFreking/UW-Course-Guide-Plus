@@ -20,3 +20,7 @@ python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2009_2010_Fall.xml ..
 python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2008_2009_Fall.xml ../grade_dist_JSONs/2008_2009_Fall.json -t
 python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2007_2008_Fall.xml ../grade_dist_JSONs/2007_2008_Fall.json -t
 python ../PythonScripts/XML_Parse.py ../../grade_dist_XMLs/2006_2007_Fall.xml ../grade_dist_JSONs/2006_2007_Fall.json -t
+python ../PythonScripts/Schedule_XML_Parse.py ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1152.xml ../grade_dist_JSONs/PDF_Schedule_of_Classes_1152.json -t
+python ../PythonScripts/Schedule_XML_Parse.py ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1144.xml ../grade_dist_JSONs/PDF_Schedule_of_Classes_1144.json -t
+python ../PythonScripts/Schedule_XML_Parse.py ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1142.xml ../grade_dist_JSONs/PDF_Schedule_of_Classes_1142.json -t
+python ../PythonScripts/Schedule_XML_Parse.py ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1134.xml ../grade_dist_JSONs/PDF_Schedule_of_Classes_1134.json -t

@@ -1,0 +1,26 @@
+#!/bin/sh
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2015_2016_Spring.xml ../grade_dist_PDFs/2015_2016_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2014_2015_Spring.xml ../grade_dist_PDFs/2014_2015_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2013_2014_Spring.xml ../grade_dist_PDFs/2013_2014_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2012_2013_Spring.xml ../grade_dist_PDFs/2012_2013_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2011_2012_Spring.xml ../grade_dist_PDFs/2011_2012_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2010_2011_Spring.xml ../grade_dist_PDFs/2010_2011_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2009_2010_Spring.xml ../grade_dist_PDFs/2009_2010_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2008_2009_Spring.xml ../grade_dist_PDFs/2008_2009_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2007_2008_Spring.xml ../grade_dist_PDFs/2007_2008_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2006_2007_Spring.xml ../grade_dist_PDFs/2006_2007_Spring.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2016_2017_Fall.xml ../grade_dist_PDFs/2016_2017_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2015_2016_Fall.xml ../grade_dist_PDFs/2015_2016_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2014_2015_Fall.xml ../grade_dist_PDFs/2014_2015_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2013_2014_Fall.xml ../grade_dist_PDFs/2013_2014_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2012_2013_Fall.xml ../grade_dist_PDFs/2012_2013_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2011_2012_Fall.xml ../grade_dist_PDFs/2011_2012_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2010_2011_Fall.xml ../grade_dist_PDFs/2010_2011_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2009_2010_Fall.xml ../grade_dist_PDFs/2009_2010_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2008_2009_Fall.xml ../grade_dist_PDFs/2008_2009_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2007_2008_Fall.xml ../grade_dist_PDFs/2007_2008_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/2006_2007_Fall.xml ../grade_dist_PDFs/2006_2007_Fall.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1152.xml ../grade_dist_PDFs/PDF_Schedule_of_Classes_1152.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1144.xml ../grade_dist_PDFs/PDF_Schedule_of_Classes_1144.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1142.xml ../grade_dist_PDFs/PDF_Schedule_of_Classes_1142.pdf
+python pdf2txt.py -t xml -M 1000 -L 1000 -o ../../grade_dist_XMLs/PDF_Schedule_of_Classes_1134.xml ../grade_dist_PDFs/PDF_Schedule_of_Classes_1134.pdf

@@ -2,37 +2,43 @@
 
 import sqlite3 as sql
 import sys
+import gzip
 
 
-if len(sys.argv) != 2:
-    print """USAGE: ./restoreDB.py <nameOfDatabaseBackup>
-    If not on linux, run restoreDB.py in python, same arg."""
-
-    sys.exit()
-
-
-def readData():
-    if sys.argv[1].split('.')[-1] == 'gz':
-        f = gzip.open(sys.argv[1], 'rb')
+def readData(backup_source):
+    if backup_source.split('.')[-1] == 'gz':
+        f = gzip.open(backup_source, 'rb')
     else:
-        f = open(sys.argv[1], 'r')
+        f = open(backup_source, 'r')
 
     with f:
         data = f.read()
         return data
 
 
-con = sql.connect(sys.argv[1].split('.')[0] + '.db')
+def main(args):
+    if len(args) != 1:
+        print """USAGE: ./restoreDB.py <nameOfDatabaseBackup>
+        If not on linux, run restoreDB.py in python, same arg."""
 
-with con:
+        sys.exit()
 
-    cur = con.cursor()
+    con = sql.connect(args[0].split('.')[0] + '.db')
 
-    databaseConstructor = readData()
-    cur.executescript(databaseConstructor)
+    with con:
 
-    print 'Database contains the tables:'
-    cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    tables = cur.fetchall()
-    for each in tables:
-        print each[0]
+        cur = con.cursor()
+
+        databaseConstructor = readData(args[0])
+        cur.executescript(databaseConstructor)
+
+        print 'Database contains the tables:'
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = cur.fetchall()
+
+        for each in tables:
+            print each[0]
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

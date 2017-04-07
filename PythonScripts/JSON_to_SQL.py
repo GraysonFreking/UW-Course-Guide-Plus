@@ -1,7 +1,8 @@
 
 ## HOW TO USE THIS FILE ##
 
-# IN CONSOLE, navigate to directory and type the following: $ python JSON_to_Sql.py <JSON file path> <database> <-t invoke testing>
+# IN CONSOLE, navigate to directory and type the following: $ python
+# JSON_to_Sql.py <JSON file path> <database> <-t invoke testing>
 
 #./initDB.py testdb.db
 
@@ -10,6 +11,7 @@ import re
 import copy
 import sys
 import sqlite3 as lite
+import gzip
 
 
 def json_to_sql(file, db):
@@ -23,18 +25,18 @@ def json_to_sql(file, db):
 
     with con:
         cur = con.cursor()
-        
+
         cur.execute("""INSERT OR IGNORE INTO
                     Term (termID, name)
                     VALUES (?,?)
                 """, (json_data[0]['Term_Num'], json_data[0]['Term_Name']))
         _term = cur.lastrowid
-        
+
         if _term != 0:
-        
+
             for course in json_data:
                 cur = con.cursor()
-                
+
 #                cur.execute("""INSERT OR IGNORE INTO
 #                        Professor (name)
 #                        VALUES (?)
@@ -55,8 +57,8 @@ def json_to_sql(file, db):
                 cur.execute("""INSERT OR IGNORE INTO
                         Course (courseID, deptID, course, name)
                         VALUES (?,?,?,?)
-                    """, (course['Dept_Num']+course['Class_Num'], course['Dept_Num'], course['Class_Num'], course['Class_Name']))
-                _course = course['Dept_Num']+course['Class_Num']
+                    """, (course['Dept_Num'] + course['Class_Num'], course['Dept_Num'], course['Class_Num'], course['Class_Name']))
+                _course = course['Dept_Num'] + course['Class_Num']
 
 #                cur.execute("""INSERT OR IGNORE INTO
 #                        Map (name, link)
@@ -65,16 +67,26 @@ def json_to_sql(file, db):
 #                _map = cur.lastrowid
 
                 for sect in course['Sections']:
-                    _avgGPA = '' if sect['Avg_GPA'] == '***' else sect['Avg_GPA']
-                    _classSize = '' if sect['Num_Grades'] <=5 else sect['Num_Grades']
-                    _a = '' if sect['Grades']['A'] == '.' else sect['Grades']['A']
-                    _ab = '' if sect['Grades']['AB'] == '.' else sect['Grades']['AB']
-                    _b = '' if sect['Grades']['B'] == '.' else sect['Grades']['B']
-                    _bc = '' if sect['Grades']['BC'] == '.' else sect['Grades']['BC']
-                    _c = '' if sect['Grades']['C'] == '.' else sect['Grades']['C']
-                    _d = '' if sect['Grades']['D'] == '.' else sect['Grades']['D']
-                    _f = '' if sect['Grades']['F'] == '.' else sect['Grades']['F']
-                    _i = '' if sect['Grades']['I'] == '.' else sect['Grades']['I']
+                    _avgGPA = '' if sect[
+                        'Avg_GPA'] == '***' else sect['Avg_GPA']
+                    _classSize = '' if sect[
+                        'Num_Grades'] <= 5 else sect['Num_Grades']
+                    _a = '' if sect['Grades'][
+                        'A'] == '.' else sect['Grades']['A']
+                    _ab = '' if sect['Grades'][
+                        'AB'] == '.' else sect['Grades']['AB']
+                    _b = '' if sect['Grades'][
+                        'B'] == '.' else sect['Grades']['B']
+                    _bc = '' if sect['Grades'][
+                        'BC'] == '.' else sect['Grades']['BC']
+                    _c = '' if sect['Grades'][
+                        'C'] == '.' else sect['Grades']['C']
+                    _d = '' if sect['Grades'][
+                        'D'] == '.' else sect['Grades']['D']
+                    _f = '' if sect['Grades'][
+                        'F'] == '.' else sect['Grades']['F']
+                    _i = '' if sect['Grades'][
+                        'I'] == '.' else sect['Grades']['I']
 
                     cur.execute("""INSERT OR IGNORE INTO
                             Grades (avgGPA,aPercent,abPercent,bPercent,bcPercent,cPercent,dPercent,fPercent,iPercent, count)
@@ -86,6 +98,18 @@ def json_to_sql(file, db):
                             Section (section, courseID, gradesID, termID)
                             VALUES (?,?,?,?)
                         """, (sect['Sec_Num'], _course, _grade, _term))
+        con.commit()
+
+        backup_string = '\n'.join(con.iterdump())
+
+        writeBackup(db, backup_string)
+
+
+def writeBackup(fileLoc, backup_string):
+
+    with gzip.open(fileLoc[:-3] + 'Backup.sql.gz', 'ab') as f:
+        f.write(backup_string)
+
 
 def testing(data):
     return 0
@@ -95,5 +119,3 @@ if len(sys.argv) > 3 and sys.argv[3] == "-t":
     testing(test_data)
 else:
     json_to_sql(sys.argv[1], sys.argv[2])
-
-

@@ -3,7 +3,7 @@
 # # HOW TO USE THIS FILE  # #
 
 # The XML file to look at should be passed as an argument
-# USAGE - Linux: ./Schedule_XML_Parse.py <somefile.xml||somefile.xml.gz> <args>
+# USAGE - Linux: ./Schedule_XML_Parse.py <somefile.xml||somefile.xml.gz> <outfile.json> <args>
 # Usage - Linux: python Schedule_XML_Parse.py <args>
 # <args> = '' for basic functionality, producing a gzipped xml file,
 #          '-t' for testing,
@@ -19,12 +19,12 @@ import gzip
 def exportJSON(out_file, json_list, pretty):
     if pretty:
         # Appends txt file to add this list and "pretty prints" it
-        with open(out_file, 'wt') as outfile:
+        with open(out_file, 'w+') as outfile:
             outfile.write(json.dumps(json_list, sort_keys=True,
                                      indent=4, separators=(',', ': ')))
     else:
         # Creates new json file
-        with gzip.open(out_file, 'wb') as outfile:
+        with open(out_file, 'w+') as outfile:
             outfile.write(json.dumps(json_list))
 
 
@@ -139,30 +139,28 @@ def testing(data):
 def main(args):
     # Input Checking
     if len(args) < 2:
-        print """USAGE: Schedule_XML_Parse.py <XML_FILE_TO_PARSE> <args>
+        print """USAGE: Schedule_XML_Parse.py <XML_FILE_TO_PARSE> <outfile.json> <args>
 <args> = '' for basic functionality,
          '-t' for testing,
          '-p' for pretty printing"""
         quit()
     # grab the root depending on input
-    if args[1].split('.')[-1] == 'gz':
-        treeRoot = readInTreeFromGZippedXML(args[1])
+    if args[0].split('.')[-1] == 'gz':
+        treeRoot = readInTreeFromGZippedXML(args[0])
     else:
-        tree = readInTreeFromXML(args[1])
+        tree = readInTreeFromXML(args[0])
         treeRoot = tree.getroot()
 
     lines_of_text = parseTreeToText(treeRoot)
     json_data = textToJson(lines_of_text)
-    # This abomination makes the out file the infile name plus JSON at the end
-    out_name = '.'.join([''.join([args[1].split('.')[0], 'JSON']), 'json.gz'])
+
     isPretty = False
     if '-p' in args:
         isPretty = True
-        out_name = out_name[:-3]
-    exportJSON(out_name, json_data, isPretty)
+    exportJSON(args[1], json_data, isPretty)
     if '-t' in args:
         testing(json_data)
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])
