@@ -48,6 +48,7 @@ def xml_parse(in_file):
 
     json_item = {
         'Class_Name': '',
+        'Avg_GPA': '',
         'Class_Num': '',
         'Dept_Num': '',
         'Dept_Name': '',
@@ -305,8 +306,6 @@ def xml_parse(in_file):
 #        print
 
     return json_data
-
-
 
 # Testing statements for each item. Not PyUnit, but intuitive and complete for our purposes and the data we are collecting
 

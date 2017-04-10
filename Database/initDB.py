@@ -73,6 +73,7 @@ def main(args):
                 deptID INTEGER,
                 course INTEGER,
                 name TEXT,
+                courseGPA REAL,
                 FOREIGN KEY(deptID) REFERENCES Department(deptID))""")
 
         cur.execute("""
