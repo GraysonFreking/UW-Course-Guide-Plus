@@ -7,7 +7,7 @@ import sqlite3 as sql
 import gzip
 
 
-def json_to_sql(folder, db):
+def json_to_sql(db):
 
     con = sql.connect(db)
 
@@ -54,11 +54,12 @@ def json_to_sql(folder, db):
 
 #            print str(aveGPA) + ", " + str(totalGradePoints) + ", " + str(totalGrades) + ", " + str(id)
 
-            cur.execute("UPDATE Course SET courseGPA = " + str(aveGPA) + " WHERE courseID = " + id);
+            if aveGPA != 0:
+                cur.execute("UPDATE Course SET courseGPA = " + str(aveGPA) + " WHERE courseID = " + id);
 
 
-if len(sys.argv) > 3 and sys.argv[3] == "-t":
-    test_data = json_to_sql(sys.argv[1], sys.argv[2])
+if len(sys.argv) > 2 and sys.argv[2] == "-t":
+    test_data = json_to_sql(sys.argv[1])
     testing(test_data)
 else:
-    json_to_sql(sys.argv[1], sys.argv[2])
+    json_to_sql(sys.argv[1])
