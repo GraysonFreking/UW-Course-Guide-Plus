@@ -38,9 +38,9 @@ function addAverageGpa() {
 	chrome.runtime.sendMessage( {
 		action: "getAverageGPA",
 		course: subjectID + courseNum
-	}, function (response) {
-		if (response != undefined) {
-			$('.detail_container table.rightTable tbody').first().append("<tr><td class='fieldTall'>Average GPA:</td><td class='fieldInfo'>" + response.aveGPA + "</td></tr>");
+	}, function (gpa) {
+		if (gpa != undefined && gpa != null) {
+			$('.detail_container table.rightTable tbody').first().append("<tr><td class='fieldTall'>Average GPA:</td><td class='fieldInfo'>" + gpa + "</td></tr>");
 		}
 	})
 }
@@ -67,7 +67,7 @@ function pullRMPData(profNames) {
         var prof_name = $(this).text();
         var curr_prof = $(this);
 
-        
+
 
         chrome.runtime.sendMessage( {
                         action: "getRmpScores",
@@ -95,7 +95,7 @@ function pullRMPData(profNames) {
 
                     }
         )
-        
+
     });
 }
 

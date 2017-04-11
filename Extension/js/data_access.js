@@ -23,6 +23,18 @@ chrome.runtime.onSuspendCanceled.addListener(function() {
 	dbSetup();
 });
 
+function findAverageGPA(course) {
+	var stmt = db.prepare("\
+		SELECT courseGPA \
+            FROM Course \
+		    WHERE courseID = $course \
+	");
+
+	stmt.bind( { $course: course } );
+	stmt.step();
+	return stmt.getAsObject();
+}
+
 function getDistributions(course) {
 	var stmt = db.prepare("select Term.name as term, avgGPA, count, aPercent, abPercent, bPercent, bcPercent, cPercent, dPercent, fPercent, iPercent, Professor.name as professor \
 	from Grades \

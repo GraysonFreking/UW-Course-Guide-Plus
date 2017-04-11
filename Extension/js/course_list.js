@@ -31,9 +31,9 @@ function averageGPASetup() {
         chrome.runtime.sendMessage( {
             action: "getAverageGPA",
             course: subjectID + courseNum
-        }, function(response) {
-            if (response != undefined) {
-                addlInfoTD.append("<strong>Ave. GPA: </strong>" + response.aveGPA + "<br>");
+        }, function(gpa) {
+            if (gpa != undefined && gpa != null) {
+                addlInfoTD.append("<strong>Ave. GPA: </strong>" + gpa + "<br>");
             }
         })
     })
@@ -65,7 +65,7 @@ function distributionSetup() {
             arrowIcon.width = "15";
             arrowIcon.height = "15";
             newLink.appendChild(arrowIcon);
-            
+
             //keep track of whether table is built yet
             var tableBuilt = false;
 
@@ -95,7 +95,7 @@ function distributionSetup() {
                     }, function(response) {
                         //do response handling here & fill build/fill table
                         console.log(response);
-                        
+
                         //only build the table if get a good response
                         if (response != undefined) {
                             var jsonObj = response;
@@ -181,7 +181,7 @@ function distributionSetup() {
                                 currElement.parent().append(table);
                                 console.log("table appended...");
                             }
-                            
+
                             //keep track that we built the table
                             tableBuilt = true;
 
@@ -205,7 +205,7 @@ function distributionSetup() {
                     console.log("it's not left arrow");
                     arrowIcon.src = chrome.extension.getURL('img/left-arrow.png');
                 }
-                
+
                 //toggle the div
                 $(this).next().toggle();
             });
@@ -243,13 +243,13 @@ function addMapLinks(locations) {
 		for (var i = 1; i < loc_split.length; i++) {
 			//console.log(loc_split[i]);
 			//TODO: the event handler takes a really long time. Applies to lots of areas of the extension
-			
+
 			var loc_str = loc_split[i].trim().replace(/ /g, "+");
 			//var loc_str = loc_s.replace(/&nbsp;/g, "+");
 			var link_text = 'https://www.google.com/maps/place/' + loc_str + '+University+of+Wisconsin-Madison';
 			var link = document.createElement("a");
         	link.href = link_text;
-        	link.className = "mapLink"; 
+        	link.className = "mapLink";
 			var tn = loc_split[i];
             //Add linebreaks if multiple locations per row
        		if (i != 1) {
@@ -261,8 +261,8 @@ function addMapLinks(locations) {
 			link.append(t);
 			loc.append(link);
 		}
-		
-	}); 
+
+	});
 
 
 
@@ -291,7 +291,7 @@ function pullRMPData(profNames) {
         var prof_name = $(this).text();
         var curr_prof = $(this);
 
-        
+
 
         chrome.runtime.sendMessage( {
                         action: "getRmpScores",
@@ -319,7 +319,7 @@ function pullRMPData(profNames) {
 
                     }
         )
-        
+
     });
 }
 
