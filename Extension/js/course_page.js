@@ -1,5 +1,6 @@
 // functions to call on script injected
-setup();
+setUpCourseKey();
+distributionInfoSetup();
 addAverageGpa();
 RMPSetup()
 addLocationLinks();
@@ -7,11 +8,10 @@ addDistributions();
 addDistributionGraphs();
 var subjectID, courseNum;
 
-function setup() {
-	distributionInfoSetup();
+function setUpCourseKey() {
+	subjectID = window.location.href.match(/subjectId=([0-9]*)/)[1];
+	courseNum = $("h1").attr("title").match(/([0-9]*):/)[1];
 }
-
-/***** setup functions *****/
 
 //Insert Grade Distribution Info section to bottom of page
 function distributionInfoSetup() {
@@ -29,9 +29,6 @@ function distributionInfoSetup() {
 	// 	tbody.removeChild(tbody.firstChild);
 	// }
 	// $('div.tableContents').last().append(tableCln);
-
-	subjectID = window.location.href.match(/subjectId=([0-9]*)/)[1];
-	courseNum = $("h1").attr("title").match(/([0-9]*):/)[1];
 }
 
 function addAverageGpa() {
@@ -159,7 +156,11 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 		action: "getDistribution",
 		course: subjectID + courseNum
 	}, function(response) {
-		if (response != undefined) {
+		console.log(response);
+		if (response != undefined && response.sections.length > 0) {
+			// Expand new div to make room
+			$('div#graphs.tableContents').css("height", "520px");
+
 
 			/* TERM GRAPHS */
 			var dist = response.sections;
@@ -301,6 +302,8 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					ui.newPanel.children().first().CanvasJSChart().render();
 				}
 			});
+		} else { // No sections returned
+			$("div#graphs.tableContents").html("<p>No historical data was found for this course.</p>");
 		}
 	})
 }

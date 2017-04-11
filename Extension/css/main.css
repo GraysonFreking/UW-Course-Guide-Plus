@@ -16,10 +16,6 @@ a.gradesExpand img.expandCollapseIcon {
   margin-top: 1px !important;
 }
 
-div#graphs {
-  height: 520px;
-}
-
 .graphs {
   width: 46%;
   height: 500px;
