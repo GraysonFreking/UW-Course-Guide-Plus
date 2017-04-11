@@ -156,108 +156,106 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 		action: "getDistribution",
 		course: subjectID + courseNum
 	}, function(response) {
-		console.log(response);
 		if (response != undefined && response.sections.length > 0) {
 			// Expand new div to make room
 			$('div#graphs.tableContents').css("height", "520px");
 
 
-			/* TERM GRAPHS */
+// 			/* TERM GRAPHS */
 			var dist = response.sections;
-			dist.reverse();
-			var termGPAs = {};
-			for (var i = 0; i < dist.length; i++) {
-				if (!termGPAs[dist[i].term]) {
-					termGPAs[dist[i].term] = [];
-				}
-
-				if (dist[i].avgGPA != "") {
-					termGPAs[dist[i].term].push(dist[i].avgGPA);
-				}
-			}
-
-			var gpaDataPoints = new Array();
-			for (var term in termGPAs) {
-				var dataPoint = {};
-				dataPoint.label = term;
-				var sum = 0.0;
-				for (var i = 0; i < termGPAs[term].length; i++) {
-					sum += termGPAs[term][i];
-				}
-				var avg = sum / termGPAs[term].length;
-				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
-				gpaDataPoints.push(dataPoint);
-			}
-
-			var allTermOptions = {
-				title: {
-					text: "Average GPA",
-                    fontFamily: "Helvetica Neue"
-				},
-				animationEnabled: true,
-				data: [
-					{
-						type: "spline", //change it to line, area, bar, pie, etc
-						dataPoints: gpaDataPoints
-						// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
-					}
-				],
-				axisX: {
-					labelFontSize: 0,
-					title: "Term",
-					titleFontFamily: "Helvetica Neue"
-				},
-				axisY: {
-					labelFontSize: 14,
-					title: "GPA",
-					titleFontFamily: "Helvetica Neue",
-					minimum: 0,
-					maximum: 4
-				}
-			};
-            //-------------------------------------------------------
-            //set up the individual semester graphs
-            dist.reverse();
-            var indivTermGraphs = new Array();
-            var recentTermGPAs = {};
-
-            //for now we'll only display 5 most recent terms
-            for (var i = 0; i < dist.length; i++) {
-                if (indivTermGraphs.length < 5) {
-                    if (!recentTermGPAs[dist[i].term]) {
-                        recentTermGPAs[dist[i].term] = i+1;
-                        indivSemesterDist = [];
-                        indivSemesterDist.push(dist[i]);
-                        indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
-                        console.log(dist[i].term);
-                    }
-                }
-                else {
-                    break;
-                }
-            }
-            // console.log(recentTermGPAs);
-            // console.log(indivTermGraphs);
-
-            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
-
-            generateTabsList(recentTermGPAs, "terms", "All Terms");
-
-			$("#terms.graphs").tabs({
-				create: function (event, ui) {
-					//Render Charts after tabs have been created.
-//                    console.log(allTermOptions);
-					$("#termschart0").CanvasJSChart(allTermOptions);
-                    var i = 1;
-                    for (graph in indivTermGraphs) {
-                        $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
-                    }
-				},
-				activate: function (event, ui) {
-					//Updates the chart to its container's size if it has changed.
-					ui.newPanel.children().first().CanvasJSChart().render();
-				}
-			});
+// 			dist.reverse();
+// 			var termGPAs = {};
+// 			for (var i = 0; i < dist.length; i++) {
+// 				if (!termGPAs[dist[i].term]) {
+// 					termGPAs[dist[i].term] = [];
+// 				}
+//
+// 				if (dist[i].avgGPA != "") {
+// 					termGPAs[dist[i].term].push(dist[i].avgGPA);
+// 				}
+// 			}
+//
+// 			var gpaDataPoints = new Array();
+// 			for (var term in termGPAs) {
+// 				var dataPoint = {};
+// 				dataPoint.label = term;
+// 				var sum = 0.0;
+// 				for (var i = 0; i < termGPAs[term].length; i++) {
+// 					sum += termGPAs[term][i];
+// 				}
+// 				var avg = sum / termGPAs[term].length;
+// 				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
+// 				gpaDataPoints.push(dataPoint);
+// 			}
+//
+// 			var allTermOptions = {
+// 				title: {
+// 					text: "Average GPA",
+//                     fontFamily: "Helvetica Neue"
+// 				},
+// 				animationEnabled: true,
+// 				data: [
+// 					{
+// 						type: "spline", //change it to line, area, bar, pie, etc
+// 						dataPoints: gpaDataPoints
+// 						// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
+// 					}
+// 				],
+// 				axisX: {
+// 					labelFontSize: 0,
+// 					title: "Term",
+// 					titleFontFamily: "Helvetica Neue"
+// 				},
+// 				axisY: {
+// 					labelFontSize: 14,
+// 					title: "GPA",
+// 					titleFontFamily: "Helvetica Neue",
+// 					minimum: 0,
+// 					maximum: 4
+// 				}
+// 			};
+//             //-------------------------------------------------------
+//             //set up the individual semester graphs
+//             dist.reverse();
+//             var indivTermGraphs = new Array();
+//             var recentTermGPAs = {};
+//
+//             //for now we'll only display 5 most recent terms
+//             for (var i = 0; i < dist.length; i++) {
+//                 if (indivTermGraphs.length < 5) {
+//                     if (!recentTermGPAs[dist[i].term]) {
+//                         recentTermGPAs[dist[i].term] = i+1;
+//                         indivSemesterDist = [];
+//                         indivSemesterDist.push(dist[i]);
+//                         indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
+//                     }
+//                 }
+//                 else {
+//                     break;
+//                 }
+//             }
+//             // console.log(recentTermGPAs);
+//             // console.log(indivTermGraphs);
+//
+//             $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
+//
+//             generateTabsList(recentTermGPAs, "terms", "All Terms");
+//
+// 			$("#terms.graphs").tabs({
+// 				create: function (event, ui) {
+// 					//Render Charts after tabs have been created.
+// //                    console.log(allTermOptions);
+// 					$("#termschart0").CanvasJSChart(allTermOptions);
+//                     var i = 1;
+//                     for (graph in indivTermGraphs) {
+//                         $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
+//                     }
+// 				},
+// 				activate: function (event, ui) {
+// 					//Updates the chart to its container's size if it has changed.
+// 					ui.newPanel.children().first().CanvasJSChart().render();
+// 				}
+// 			});
 
 
 			/* PROFESSOR GRAPHS */
@@ -282,11 +280,9 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			var allProfsGraph = generateDistGraph("All Professors", dist);
 			var indvProfGraphs = generateMultipleProfGraphOptions(profGPAs);
 
-			console.log(indvProfGraphs);
-
 			$("<div></div>", { id: "professors", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
 
-			generateTabsList(profGPAs, "professors", "All Professors");
+			generateTabsList(Object.keys(profGPAs), "professors", "All Professors");
 
 			$("#professors.graphs").tabs({
 				create: function (event, ui) {
@@ -295,6 +291,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					var i = 1;
 					for (graph in indvProfGraphs) {
 						$("#professorschart" + i).CanvasJSChart(indvProfGraphs[graph]);
+						i++;
 					}
 				},
 				activate: function (event, ui) {
@@ -309,7 +306,6 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 }
 
 function generateDistGraph(title, dist) {
-	console.log(dist);
 	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
 	numC = 0, numD = 0, numF = 0, numI = 0;
 	for (var i = 0; i < dist.length; i++) {
@@ -365,10 +361,9 @@ function generateDistGraph(title, dist) {
 function generateMultipleProfGraphOptions(profGPAs) {
 	var profGraphs = new Array();
 	for (var prof in profGPAs) {
+		// console.log(prof);
 		profGraphs.push(generateDistGraph(prof, profGPAs[prof]));
 	}
-
-	console.log(profGraphs);
 
 	return profGraphs;
 }
@@ -385,12 +380,11 @@ function generateTabsList(tabNames, tabsID, defaultTabName) {
 	$("#" + tabsID + ".graphs").append($tab);
 
 	// Make tab button and chart container for each chart
-	var i = 1;
-	for (var name in tabNames) {
-		$("<li><a href='#" + tabsID + i + "'>" + name + "</a></li>").appendTo($ul);
+	for (var i = 1; i <= tabNames.length; i++) {
+		console.log(tabNames[i - 1]);
+		$("<li><a href='#" + tabsID + i + "'>" + tabNames[i - 1] + "</a></li>").appendTo($ul);
 		var $tab = $("<div></div>", { id: tabsID + i });
 		$("<div></div>", { id: tabsID + "chart" + i }).appendTo($tab);
 		$("#" + tabsID + ".graphs").append($tab);
-		i++;
 	}
 }
