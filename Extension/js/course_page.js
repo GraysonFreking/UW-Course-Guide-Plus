@@ -163,99 +163,97 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 // 			/* TERM GRAPHS */
 			var dist = response.sections;
-// 			dist.reverse();
-// 			var termGPAs = {};
-// 			for (var i = 0; i < dist.length; i++) {
-// 				if (!termGPAs[dist[i].term]) {
-// 					termGPAs[dist[i].term] = [];
-// 				}
-//
-// 				if (dist[i].avgGPA != "") {
-// 					termGPAs[dist[i].term].push(dist[i].avgGPA);
-// 				}
-// 			}
-//
-// 			var gpaDataPoints = new Array();
-// 			for (var term in termGPAs) {
-// 				var dataPoint = {};
-// 				dataPoint.label = term;
-// 				var sum = 0.0;
-// 				for (var i = 0; i < termGPAs[term].length; i++) {
-// 					sum += termGPAs[term][i];
-// 				}
-// 				var avg = sum / termGPAs[term].length;
-// 				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
-// 				gpaDataPoints.push(dataPoint);
-// 			}
-//
-// 			var allTermOptions = {
-// 				title: {
-// 					text: "Average GPA",
-//                     fontFamily: "Helvetica Neue"
-// 				},
-// 				animationEnabled: true,
-// 				data: [
-// 					{
-// 						type: "spline", //change it to line, area, bar, pie, etc
-// 						dataPoints: gpaDataPoints
-// 						// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
-// 					}
-// 				],
-// 				axisX: {
-// 					labelFontSize: 0,
-// 					title: "Term",
-// 					titleFontFamily: "Helvetica Neue"
-// 				},
-// 				axisY: {
-// 					labelFontSize: 14,
-// 					title: "GPA",
-// 					titleFontFamily: "Helvetica Neue",
-// 					minimum: 0,
-// 					maximum: 4
-// 				}
-// 			};
-//             //-------------------------------------------------------
-//             //set up the individual semester graphs
-//             dist.reverse();
-//             var indivTermGraphs = new Array();
-//             var recentTermGPAs = {};
-//
-//             //for now we'll only display 5 most recent terms
-//             for (var i = 0; i < dist.length; i++) {
-//                 if (indivTermGraphs.length < 5) {
-//                     if (!recentTermGPAs[dist[i].term]) {
-//                         recentTermGPAs[dist[i].term] = i+1;
-//                         indivSemesterDist = [];
-//                         indivSemesterDist.push(dist[i]);
-//                         indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
-//                     }
-//                 }
-//                 else {
-//                     break;
-//                 }
-//             }
-//             // console.log(recentTermGPAs);
-//             // console.log(indivTermGraphs);
-//
-//             $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
-//
-//             generateTabsList(recentTermGPAs, "terms", "All Terms");
-//
-// 			$("#terms.graphs").tabs({
-// 				create: function (event, ui) {
-// 					//Render Charts after tabs have been created.
-// //                    console.log(allTermOptions);
-// 					$("#termschart0").CanvasJSChart(allTermOptions);
-//                     var i = 1;
-//                     for (graph in indivTermGraphs) {
-//                         $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
-//                     }
-// 				},
-// 				activate: function (event, ui) {
-// 					//Updates the chart to its container's size if it has changed.
-// 					ui.newPanel.children().first().CanvasJSChart().render();
-// 				}
-// 			});
+			dist.reverse();
+			var termGPAs = {};
+			for (var i = 0; i < dist.length; i++) {
+				if (!termGPAs[dist[i].term]) {
+					termGPAs[dist[i].term] = [];
+				}
+
+				if (dist[i].avgGPA != "") {
+					termGPAs[dist[i].term].push(dist[i].avgGPA);
+				}
+			}
+
+			var gpaDataPoints = new Array();
+			for (var term in termGPAs) {
+				var dataPoint = {};
+				dataPoint.label = term;
+				var sum = 0.0;
+				for (var i = 0; i < termGPAs[term].length; i++) {
+					sum += termGPAs[term][i];
+				}
+				var avg = sum / termGPAs[term].length;
+				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
+				gpaDataPoints.push(dataPoint);
+			}
+
+			var allTermOptions = {
+				title: {
+					text: "Average GPA",
+                    fontFamily: "Helvetica Neue"
+				},
+				animationEnabled: true,
+				data: [
+					{
+						type: "spline", //change it to line, area, bar, pie, etc
+						dataPoints: gpaDataPoints
+						// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
+					}
+				],
+				axisX: {
+					labelFontSize: 0,
+					title: "Term",
+					titleFontFamily: "Helvetica Neue"
+				},
+				axisY: {
+					labelFontSize: 14,
+					title: "GPA",
+					titleFontFamily: "Helvetica Neue",
+					minimum: 0,
+					maximum: 4
+				}
+			};
+            //-------------------------------------------------------
+            //set up the individual semester graphs
+            dist.reverse();
+            var indivTermGraphs = new Array();
+            var recentTermGPAs = {};
+
+            //for now we'll only display 5 most recent terms
+            for (var i = 0; i < dist.length; i++) {
+                if (indivTermGraphs.length < 5) {
+                    if (!recentTermGPAs[dist[i].term]) {
+                        recentTermGPAs[dist[i].term] = i+1;
+                        indivSemesterDist = [];
+                        indivSemesterDist.push(dist[i]);
+                        indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
+            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
+            generateTabsList(Object.keys(recentTermGPAs), "terms", "All Terms");
+
+			$("#terms.graphs").tabs({
+				create: function (event, ui) {
+					//Render Charts after tabs have been created.
+//                    console.log(allTermOptions);
+					$("#termschart0").CanvasJSChart(allTermOptions);
+                    var i = 1;
+                    for (graph in indivTermGraphs) {
+                        $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
+						i++;
+                    }
+				},
+				activate: function (event, ui) {
+					//Updates the chart to its container's size if it has changed.
+					ui.newPanel.children().first().CanvasJSChart().render();
+				}
+			});
 
 
 			/* PROFESSOR GRAPHS */
