@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
 
 
 function getAverageGPA(course) {
-    return findAverageGPA(course);
+    return findAverageGPA(course).courseGPA;
 }
 
 
