@@ -92,21 +92,14 @@ function distributionSetup() {
                         action: "getDistribution",
                         course: courseID,
                         count: 5
-                    }, function(response) {
-                        //do response handling here & fill build/fill table
-                        console.log(response);
+                    }, function(jsonObj) {
+                        // Border radius formatting
+                        currElement.parent().toggleClass('courseResultLL courseResultLR');
 
                         //only build the table if get a good response
-                        if (response != undefined) {
-                            var jsonObj = response;
-                            //create table to populate
-                            var table = document.createElement("table");
-                            table.className = "distTable";
-                            table.border = "1px solid black";
+                        if (jsonObj != undefined) {
 
-                            //create the header row
-                            var $headerRow = $("<tr/>");
-                            //create all the table headers
+                            var $headerRow = $("<tr></tr>");
                             $("<th/>").text("Term").appendTo($headerRow);
                             $("<th/>").text("Count").appendTo($headerRow);
                             $("<th/>").text("Avg GPA").appendTo($headerRow);
@@ -118,15 +111,19 @@ function distributionSetup() {
                             $("<th/>").text("D%").appendTo($headerRow);
                             $("<th/>").text("F%").appendTo($headerRow);
                             $("<th/>").text("I%").appendTo($headerRow);
-                            //append header row to table
-                            //table.appendChild($headerRow);
-                            $headerRow.appendTo(table);
+                            var $table = $('<table><tbody></tbody></table>').addClass('sectionDetailList').html($headerRow);
+                            var $div = $('<div><div></div></div>').addClass('CGsectionTable').html($table);
+                            var $td = $('<td></td>').attr('colspan', '8').addClass('courseResultLL courseResultLR courseResultSections').html($div);
+                            var $tr = $('<tr></tr>').addClass('courseResult CG_detail').html($td);
 
                             //parse the returned JSON
                             for (var i = 0; i < jsonObj.sections.length; i++) {
 
+                                // <tr class="sectionNote ListRow inline detailsClassSection" data-enrollmentpackageid="010">
+
                                 //create row
                                 var row = document.createElement("tr");
+                                row.className = "sectionNote ListRow inline detailsClassSection";
                                 //create term column
                                 var tdTerm = document.createElement("td");
                                 tdTerm.appendChild(document.createTextNode(jsonObj.sections[i].term));
@@ -173,41 +170,39 @@ function distributionSetup() {
                                 row.appendChild(tdIPercent);
 
                                 //append row to table
-                                table.appendChild(row);
-
+                                $table.append(row);
                             }
 
                             if (!tableBuilt) {
-                                currElement.parent().append(table);
+                                // currElement.parent().append(table);
+                                currElement.parent().parent().after($tr);
+                                console.log(currElement.parent().parent());
                                 console.log("table appended...");
                             }
 
                             //keep track that we built the table
                             tableBuilt = true;
-
                         }
                         else {
                             console.log("The database returned undefined.");
                         }
                     });
 
+                } else {
+                    currElement.parent().toggleClass('courseResultLL courseResultLR');
                 }
-
-                //test
-                console.log("clicked the new link");
 
                 //switch the arrow icon
                 if (arrowIcon.src = chrome.extension.getURL('img/left-arrow.png')) {
-                    console.log("it's left arrow");
+                    console.log($(this).parent());
                     arrowIcon.src = chrome.extension.getURL('img/down-arrow.png');
                 }
                 else {
-                    console.log("it's not left arrow");
                     arrowIcon.src = chrome.extension.getURL('img/left-arrow.png');
                 }
 
                 //toggle the div
-                $(this).next().toggle();
+                $(this).parent().parent().next().toggle();
             });
 
             //append newLink to the section, below the sections link
