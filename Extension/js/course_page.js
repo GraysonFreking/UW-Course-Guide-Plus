@@ -161,9 +161,10 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			$('div#graphs.tableContents').css("height", "520px");
 
 
-// 			/* TERM GRAPHS */
+ 			/* TERM GRAPHS */
 			var dist = response.sections;
-			var allTermOptions = generateSplineGraph("Average GPA", dist);
+			dist.reverse();
+			var allTermOptions = generateSplineGraph("All Terms", dist);
             //-------------------------------------------------------
             //set up the individual semester graphs
             dist.reverse();
@@ -171,17 +172,12 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
             var recentTermGPAs = {};
 
             //for now we'll only display 5 most recent terms
-            for (var i = 0; i < dist.length; i++) {
-                if (indivTermGraphs.length < 5) {
-                    if (!recentTermGPAs[dist[i].term]) {
-                        recentTermGPAs[dist[i].term] = i+1;
-                        indivSemesterDist = [];
-                        indivSemesterDist.push(dist[i]);
-                        indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
-                    }
-                }
-                else {
-                    break;
+            for (var i = 0; i < dist.length && indivTermGraphs.length < 5; i++) {
+                if (!recentTermGPAs[dist[i].term]) {
+                    recentTermGPAs[dist[i].term] = i+1;
+                    indivSemesterDist = [];
+                    indivSemesterDist.push(dist[i]);
+                    indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
                 }
             }
 
@@ -190,8 +186,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 			$("#terms.graphs").tabs({
 				create: function (event, ui) {
-					//Render Charts after tabs have been created.
-//                    console.log(allTermOptions);
+					// Render Charts after tabs have been created
 					$("#termschart0").CanvasJSChart(allTermOptions);
                     var i = 1;
                     for (graph in indivTermGraphs) {
@@ -251,7 +246,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 function generateDistGraph(title, dist) {
 	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
-	numC = 0, numD = 0, numF = 0, numI = 0;
+						 numC = 0, numD = 0, numF = 0, numI = 0;
 	for (var i = 0; i < dist.length; i++) {
 		// Dividing by 100 to convert percentages correctly (returned from DB not as decimals)
 		totalGrades += dist[i].count;
@@ -275,14 +270,14 @@ function generateDistGraph(title, dist) {
 	dataPoints.push( { label: "F", y: numF / totalGrades * 100 } );
 	dataPoints.push( { label: "I", y: numI / totalGrades * 100 } );
 
-	var options = {
+	return {
 		title: {
 			text: title,
 			fontFamily: "Helvetica Neue"
 		},
 		animationEnabled: true,
 		data: [ {
-			type: "column", //change it to line, area, bar, pie, etc
+			type: "column",
 			dataPoints: dataPoints
 		} ],
 
@@ -298,21 +293,17 @@ function generateDistGraph(title, dist) {
 			minimum: 0
 		}
 	};
-
-	return options;
 }
 
 function generateSplineGraph(title, dist) {
-	dist.reverse();
 	var termGPAs = {};
 	for (var i = 0; i < dist.length; i++) {
+		if (dist[i].avgGPA == "") continue; // For sections with no grade data (they exist)
+
 		if (!termGPAs[dist[i].term]) {
 			termGPAs[dist[i].term] = [];
 		}
-
-		if (dist[i].avgGPA != "") {
-			termGPAs[dist[i].term].push(dist[i].avgGPA);
-		}
+		termGPAs[dist[i].term].push(dist[i].avgGPA);
 	}
 
 	var gpaDataPoints = new Array();
@@ -335,9 +326,8 @@ function generateSplineGraph(title, dist) {
 		},
 		animationEnabled: true,
 		data: [ {
-				type: "spline", //change it to line, area, bar, pie, etc
+				type: "spline",
 				dataPoints: gpaDataPoints
-				// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
 			} ],
 		axisX: {
 			labelFontSize: 0,
@@ -357,7 +347,6 @@ function generateSplineGraph(title, dist) {
 function generateMultipleProfGraphOptions(profGPAs) {
 	var profGraphs = new Array();
 	for (var prof in profGPAs) {
-		// console.log(prof);
 		profGraphs.push(generateDistGraph(prof, profGPAs[prof]));
 	}
 
