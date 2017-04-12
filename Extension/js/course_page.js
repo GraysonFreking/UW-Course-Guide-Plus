@@ -163,57 +163,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 
 // 			/* TERM GRAPHS */
 			var dist = response.sections;
-			dist.reverse();
-			var termGPAs = {};
-			for (var i = 0; i < dist.length; i++) {
-				if (!termGPAs[dist[i].term]) {
-					termGPAs[dist[i].term] = [];
-				}
-
-				if (dist[i].avgGPA != "") {
-					termGPAs[dist[i].term].push(dist[i].avgGPA);
-				}
-			}
-
-			var gpaDataPoints = new Array();
-			for (var term in termGPAs) {
-				var dataPoint = {};
-				dataPoint.label = term;
-				var sum = 0.0;
-				for (var i = 0; i < termGPAs[term].length; i++) {
-					sum += termGPAs[term][i];
-				}
-				var avg = sum / termGPAs[term].length;
-				dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
-				gpaDataPoints.push(dataPoint);
-			}
-
-			var allTermOptions = {
-				title: {
-					text: "Average GPA",
-                    fontFamily: "Helvetica Neue"
-				},
-				animationEnabled: true,
-				data: [
-					{
-						type: "spline", //change it to line, area, bar, pie, etc
-						dataPoints: gpaDataPoints
-						// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
-					}
-				],
-				axisX: {
-					labelFontSize: 0,
-					title: "Term",
-					titleFontFamily: "Helvetica Neue"
-				},
-				axisY: {
-					labelFontSize: 14,
-					title: "GPA",
-					titleFontFamily: "Helvetica Neue",
-					minimum: 0,
-					maximum: 4
-				}
-			};
+			var allTermOptions = generateSplineGraph("Average GPA", dist);
             //-------------------------------------------------------
             //set up the individual semester graphs
             dist.reverse();
@@ -261,17 +211,13 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			// Set-up for individual professor graphs + overall averages
 			var profGPAs = {};
 			for (var i = 0; i < dist.length; i++) {
-				if (!profGPAs[dist[i].professor] ) {
-					if (dist[i].professor != null)
+				if (dist[i].professor != null) { // Have professor data for a section
+					if (!profGPAs[dist[i].professor]) { // Professor not in profGPAs yet
 						profGPAs[dist[i].professor] = [];
-					else
-						profGPAs["Other"] = [];
-				}
-				if (dist[i].avgGPA != "" ) {
-					if (dist[i].professor != null)
+					}
+					if (dist[i].avgGPA != "") {
 						profGPAs[dist[i].professor].push(dist[i]);
-					else
-						profGPAs["Other"].push(dist[i]);
+					}
 				}
 			}
 
@@ -356,6 +302,58 @@ function generateDistGraph(title, dist) {
 	return options;
 }
 
+function generateSplineGraph(title, dist) {
+	dist.reverse();
+	var termGPAs = {};
+	for (var i = 0; i < dist.length; i++) {
+		if (!termGPAs[dist[i].term]) {
+			termGPAs[dist[i].term] = [];
+		}
+
+		if (dist[i].avgGPA != "") {
+			termGPAs[dist[i].term].push(dist[i].avgGPA);
+		}
+	}
+
+	var gpaDataPoints = new Array();
+	for (var term in termGPAs) {
+		var dataPoint = {};
+		dataPoint.label = term;
+		var sum = 0.0;
+		for (var i = 0; i < termGPAs[term].length; i++) {
+			sum += termGPAs[term][i];
+		}
+		var avg = sum / termGPAs[term].length;
+		dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
+		gpaDataPoints.push(dataPoint);
+	}
+
+	return {
+		title: {
+			text: title,
+			fontFamily: "Helvetica Neue"
+		},
+		animationEnabled: true,
+		data: [ {
+				type: "spline", //change it to line, area, bar, pie, etc
+				dataPoints: gpaDataPoints
+				// dataPoints: [ { label: "test", y: 4}, { label: "test2", y: 5 } ]
+			} ],
+		axisX: {
+			labelFontSize: 0,
+			title: "Term",
+			titleFontFamily: "Helvetica Neue"
+		},
+		axisY: {
+			labelFontSize: 14,
+			title: "GPA",
+			titleFontFamily: "Helvetica Neue",
+			minimum: 0,
+			maximum: 4
+		}
+	};
+}
+
 function generateMultipleProfGraphOptions(profGPAs) {
 	var profGraphs = new Array();
 	for (var prof in profGPAs) {
@@ -379,7 +377,6 @@ function generateTabsList(tabNames, tabsID, defaultTabName) {
 
 	// Make tab button and chart container for each chart
 	for (var i = 1; i <= tabNames.length; i++) {
-		console.log(tabNames[i - 1]);
 		$("<li><a href='#" + tabsID + i + "'>" + tabNames[i - 1] + "</a></li>").appendTo($ul);
 		var $tab = $("<div></div>", { id: tabsID + i });
 		$("<div></div>", { id: tabsID + "chart" + i }).appendTo($tab);
