@@ -26,7 +26,13 @@ function getAverageGPA(course) {
 
 
 function getRmpScores(profName) {
-    return searchForProf(profName);
+    var prof_info = searchForProf(profName);
+
+    if (prof_info == "professor not found" || prof_info == "bad search request") {
+        prof_info = formateName(profName);
+    }
+
+    return prof_info;
 }
 
 function searchForProf(profName) {
@@ -121,6 +127,15 @@ function makeXMLHttpRequest(url) {
     if (xmlhttp.status === 200) {
       return xmlhttp.responseText;
     }
+}
+
+function formateName(profName) {
+    var first_name = profName.split(", ")[1];
+    var last_name = profName.split(", ")[0];
+    if (last_name.indexOf("-")) {
+        last_name = last_name.split("-")[0];
+    }
+    return searchForProf(last_name + ", " + first_name);
 }
 
 
