@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(
 	        sendResponse(getRmpScores(request.professor));
 	        break;
         case "getLocationLinks":
-	        sendResponse(getLocationLinks(request.locations));
+	        sendResponse(getLocationLinks(request.locations, request.index));
 	        break;
         case "getDistribution":
 	        sendResponse(getDistribution(request.course, request.count));
@@ -139,8 +139,13 @@ function formateName(profName) {
 }
 
 
-function getLocationLinks(locations) {
-
+function getLocationLinks(locations, index) {
+    var result =  getMap(locations);
+    //Used in adding text to link.
+    result['name'] = locations;
+    //Used for adding breakpoints
+    result['index'] = index;
+    return result;
 }
 
 
