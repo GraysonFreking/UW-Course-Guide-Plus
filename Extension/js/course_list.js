@@ -216,10 +216,26 @@ function distributionSetup() {
 function sectionsListenerSetup() {
     $.initialize('table.sectionDetailList', function() {
         // All sections table actions done in here
-		$(this).find('tr').slice(1).each( function() {
-			var locations = $(this).find('td').eq(4);
-			addMapLinks(locations);
-		})
+      $(this).find('tr').slice(1).each( function() {
+        var locations = $(this).find('td').eq(4);
+        addMapLinks(locations);
+
+         $(this).find('td').eq(4).hover(function() {
+
+           href = $(this).find('a').attr('href');
+           if (href != null) {
+             name = href.split("=")[1];
+
+             img_link = "img/Map_Crops/"+name+".png";
+
+             var mapImage = document.createElement("img");
+             mapImage.src = chrome.extension.getURL(img_link);
+
+             Tipped.create($(this).find('a'), mapImage);
+           }
+         });
+
+      });
     });
 }
 
@@ -237,7 +253,7 @@ function addMapLinks(locations) {
 			var loc_str = loc_split[i].trim();
             chrome.runtime.sendMessage( {
                         action: "getLocationLinks",
-                        locations: loc_str, 
+                        locations: loc_str,
                         index: i
                     }, function(response) {
                         var map = response;
@@ -249,16 +265,17 @@ function addMapLinks(locations) {
                         if (map['index'] == 1) {
                             loc.empty();
                         }
-                        
+
                         if (map['link']) {
 			                var link = document.createElement("a");
         	                link.href = map['link'];
         	                link.className = "mapLink";
-                            link.setAttribute('target', '_blank');
+                          link.setAttribute('target', '_blank');
 			                var t = document.createTextNode(map['name']);
 
-                        
+
 			                link.append(t);
+
 			                loc.append(link);
                         }
                         //If can't find a link, just use the text

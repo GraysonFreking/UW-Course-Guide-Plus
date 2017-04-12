@@ -44,6 +44,6 @@
 
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
-  "web_accessible_resources": ["img/*.png"]
+  "web_accessible_resources": ["img/*.png", "img/Map_Crops/*.png"]
 
 }
