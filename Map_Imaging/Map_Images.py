@@ -1,26 +1,8 @@
-#import sys
-#import sqlite3
-#import json
-#
-#
-#def main(file):
-#
-#    json_data = {}
-#
-#    with open(file, 'r') as infile:
-#        json_data = json.loads(infile.read())
-#
-#
-#    for item in json_data:
-#        print item['building'] + "\t\t\t" + item['link']
-#
-#
-#main(sys.argv[1])
-
 
 import os
 import time
 import unittest
+import re
 from selenium import webdriver
 from selenium.webdriver.chrome import service
 from selenium.webdriver.chrome.options import Options
@@ -46,35 +28,9 @@ class Maps(unittest.TestCase):
         #Navigate to Building Directory
         driver = inst.driver
         driver.get('http://www.map.wisc.edu/buildings/')
-        
-#        url = 'https://login.wisc.edu/idp/profile/SAML2/Redirect/SSO'
-#        #login if not already logged in
-#        if (url in driver.current_url):
-#            inst.login(driver)
-#        try:
-#            time.sleep(5)
-#            cg_link = driver.find_element_by_link_text('Go to my course guide')
-#            #Navigate to course guide link and click it. TODO: fails sometimes
-#            time.sleep(1)
-#            ActionChains(driver).move_to_element(cg_link).perform()
-#            time.sleep(1)
-#            cg_link.click()
-#        except Exception as e:
-#            print(str(e))
-#            print("Failed to load the CG")
-#            driver.quit()
-#
-#        #Switch to the course guide        
-#        driver.switch_to_window(driver.window_handles[-1])
-#        #Check if this worked
-#        source = driver.page_source
-#        if "Go to my course guide" in source:
-#            print("Old page still")
-#            driver.quit()
-#        else:
-#            print("New page")
-
-
+    
+    
+    
     #Runs before every test
     def setUp(self):
         pass
@@ -93,12 +49,14 @@ class Maps(unittest.TestCase):
         
         while i < 5000:
             try:
-                name = driver.find_element_by_xpath("//*[@id='main']/div/table/tbody/tr["+str(i)+"]/th")
+                href = driver.find_element_by_xpath("//*[@id='main']/div/table/tbody/tr["+str(i)+"]/td[1]/a")
                 
-                if name.text == "":
-                    file_path = directory + "/Map_Images/map" + str(i) + ".png"
-                else:
-                    file_path = directory + "/Map_Images/" + name.text + ".png"
+                name = re.sub('[http://www.map.wisc.edu/?initObj=]', '', href.get_attribute('href'))
+                
+                if name != "":
+#                    file_path = directory + "/Map_Images/map" + str(i) + ".png"
+#                else:
+                    file_path = directory + "/Map_Images/" + name + ".png"
                 
                 
                 
@@ -115,20 +73,14 @@ class Maps(unittest.TestCase):
 
                 driver.save_screenshot(file_path)
                 
-                time.sleep(2)
+                time.sleep(1)
 
                 driver.execute_script("window.history.go(-1)")
-                
+
                 i += 1
             except:
                 break;
-
-#        while
-#        
-#        table = driver.find_element_by_xpath("//*tbody")
-
-
-
+    
 
     #tear down after each test
     def tearDown(self):
