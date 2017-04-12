@@ -229,39 +229,51 @@ function sectionsListenerSetup() {
 }
 
 function addMapLinks(locations) {
-	//Add map link for each location
+	//Add map links for each row
 	locations.each( function() {
 		var loc = $(this);
 		var loc_clone = $(this).clone();
 		loc_clone.find("br").replaceWith("\n");
 		loc_text = loc_clone.text();
-		//console.log(loc_text);
 		var loc_split = loc_text.split("\n");
-		//console.log(loc_split.length);
-		//skip the first all whitespace split
-		loc.empty(); //remove the text
+
+		//Go through each location in the row. Skip the first all whitespace split
 		for (var i = 1; i < loc_split.length; i++) {
-			//console.log(loc_split[i]);
-			//TODO: the event handler takes a really long time. Applies to lots of areas of the extension
+			var loc_str = loc_split[i].trim();
+            chrome.runtime.sendMessage( {
+                        action: "getLocationLinks",
+                        locations: loc_str, 
+                        index: i
+                    }, function(response) {
+                        var map = response;
+                        //Add line breaks if not the first link. Not very elegant
+       		            if (map['index'] != 1) {
+                            var linebreak = document.createElement("br");
+                            loc.append(linebreak);
+                        }
+                        if (map['index'] == 1) {
+                            loc.empty();
+                        }
+                        
+                        if (map['link']) {
+			                var link = document.createElement("a");
+        	                link.href = map['link'];
+        	                link.className = "mapLink";
+                            link.setAttribute('target', '_blank');
+			                var t = document.createTextNode(map['name']);
 
-			var loc_str = loc_split[i].trim().replace(/ /g, "+");
-			//var loc_str = loc_s.replace(/&nbsp;/g, "+");
-			var link_text = 'https://www.google.com/maps/place/' + loc_str + '+University+of+Wisconsin-Madison';
-			var link = document.createElement("a");
-        	link.href = link_text;
-        	link.className = "mapLink";
-			var tn = loc_split[i];
-            //Add linebreaks if multiple locations per row
-       		if (i != 1) {
-                var linebreak = document.createElement("br");
-                loc.append(linebreak);
-            }
-            link.setAttribute('target', '_blank');
-			var t = document.createTextNode(tn);
-			link.append(t);
-			loc.append(link);
+                        
+			                link.append(t);
+			                loc.append(link);
+                        }
+                        //If can't find a link, just use the text
+                        else {
+                            var t = document.createTextNode(map['name']);
+                            loc.append(t);
+                        }
+                })
+
 		}
-
 	});
 
 

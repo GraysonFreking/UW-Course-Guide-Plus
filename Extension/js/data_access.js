@@ -69,3 +69,12 @@ function getDistributions(course) {
 
 	return distributions;
 }
+
+function getMap(loc) {
+    var stmt = db.prepare("SELECT link FROM Map WHERE INSTR($loc, name)");
+    stmt.bind({$loc: loc});
+    stmt.step();
+    var result = stmt.getAsObject();
+    return result;
+
+}
