@@ -1,3 +1,6 @@
+//store temporary prof array
+var profArray = [];
+
 // functions to call on script injected
 listSetup();
 filteringFieldsSetup();
@@ -339,6 +342,7 @@ function pullRMPData(profNames) {
                             RMP_link = prof_info["link"];
 
                             Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor</a></div>');
+                            
                         }
 
                     }
