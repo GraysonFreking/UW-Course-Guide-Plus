@@ -341,7 +341,16 @@ function pullRMPData(profNames) {
                             level_of_difficulty = prof_info["difficulty"];
                             RMP_link = prof_info["link"];
 
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor</a></div>');
+                            var score_color;
+                            if (parseFloat(prof_info["score"]) >= 4.0) {
+                                score_color = "#B2CF35";
+                            } else if (parseFloat(prof_info["score"]) >= 3.0) {
+                                score_color = "#F7CC1E";
+                            } else {
+                                score_color = "#E01743";
+                            }
+                            curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+score_color+'; color:white; border-radius:2px">'+prof_info["score"]+'</div>');
+                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
                             
                         }
 
