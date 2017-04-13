@@ -34,8 +34,8 @@ Crop Map Images (In Mac OS):
 ```	
 1) Open an image generated from the Map_Image.py script in Photoshop
 2) In Photoshop, record a custom action (Window -> Action -> Record)
-	2a) Image -> Canvas Size (Width: 11, Height: 9) -> OK
-	2b) Image -> Image Size (Width: 5.5, Height: 4.5) -> OK 
+	2a) Image -> Canvas Size (Width: 12, Height: 9) -> OK
+	2b) Image -> Image Size (Width: 4, Height: 3) -> OK 
 	2c) File -> Save As... -> (Navigate to ./Map_Crops), (Format is PNG, save as a copy) -> Save
 	2d) Close the working image (NOT THE WINDOW)
 3) Click “stop” to stop recording action, and save as “Map_Crop”
