@@ -1,7 +1,8 @@
 import unittest
 from Map_Images import Maps
+import sys
 #Import other test cases
- 
+
 # get all tests from test classes 
 test = unittest.TestLoader().loadTestsFromTestCase(Maps)
  

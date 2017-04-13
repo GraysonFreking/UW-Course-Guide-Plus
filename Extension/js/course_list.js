@@ -222,22 +222,6 @@ function sectionsListenerSetup() {
       $(this).find('tr').slice(1).each( function() {
         var locations = $(this).find('td').eq(4);
         addMapLinks(locations);
-
-         $(this).find('td').eq(4).hover(function() {
-
-           href = $(this).find('a').attr('href');
-           if (href != null) {
-             name = href.split("=")[1];
-
-             img_link = "img/Map_Crops/"+name+".png";
-
-             var mapImage = document.createElement("img");
-             mapImage.src = chrome.extension.getURL(img_link);
-
-             Tipped.create($(this).find('a'), mapImage);
-           }
-         });
-
       });
     });
 }
@@ -254,46 +238,69 @@ function addMapLinks(locations) {
 		//Go through each location in the row. Skip the first all whitespace split
 		for (var i = 1; i < loc_split.length; i++) {
 			var loc_str = loc_split[i].trim();
-            chrome.runtime.sendMessage( {
-                        action: "getLocationLinks",
-                        locations: loc_str,
-                        index: i
-                    }, function(response) {
-                        var map = response;
-                        //Add line breaks if not the first link. Not very elegant
-       		            if (map['index'] != 1) {
-                            var linebreak = document.createElement("br");
-                            loc.append(linebreak);
-                        }
-                        if (map['index'] == 1) {
-                            loc.empty();
-                        }
 
-                        if (map['link']) {
-			                var link = document.createElement("a");
-        	                link.href = map['link'];
-        	                link.className = "mapLink";
-                          link.setAttribute('target', '_blank');
-			                var t = document.createTextNode(map['name']);
+      chrome.runtime.sendMessage( {
+        action: "getLocationLinks",
+        locations: loc_str,
+        index: i
+      }, function(response) {
+        var map = response;
+        //Add line breaks if not the first link. Not very elegant
+        if (map['index'] != 1) {
+          var linebreak = document.createElement("br");
+          loc.append(linebreak);
+        }
+        if (map['index'] == 1) {
+          loc.empty();
+        }
+
+        if (map['link']) {
+          var link = document.createElement("a");
+          link.href = map['link'];
+          link.className = "mapLink";
+          link.setAttribute('target', '_blank');
+          var t = document.createTextNode(map['name']);
 
 
-			                link.append(t);
+          link.append(t);
 
-			                loc.append(link);
-                        }
-                        //If can't find a link, just use the text
-                        else {
-                            var t = document.createTextNode(map['name']);
-                            loc.append(t);
-                        }
-                })
+          loc.append(link);
 
+
+          // Map hover
+          loc.find('a').each(function() {
+
+            href = $(this).attr('href');
+
+            if (href != null) {
+              name = href.split("=")[1];
+
+              img_link = "img/Map_Crops/"+name+".png";
+
+              var mapImage = document.createElement("img");
+              mapImage.src = chrome.extension.getURL(img_link);
+              mapImage.id = "mapHoverImage";
+
+              Tipped.create($(this), mapImage, {
+                hideOn: {
+                  element: 'mouseleave',
+                  tooltip: 'mouseenter'
+                }
+              });
+            }
+          });
+        }
+
+        //If can't find a link, just use the text
+        else {
+          var t = document.createTextNode(map['name']);
+          loc.append(t);
+        }
+      })
 		}
 	});
-
-
-
 }
+
 
 function RMPSetup() {
     // Will run for every class card inserted into DOM (including realtime insertions)
@@ -327,10 +334,20 @@ function pullRMPData(profNames) {
                         var prof_info = response;
                         if (prof_info == "professor not found" || prof_info == "bad search request") {
                             console.log("professor not found");
-                            Tipped.create(curr_prof, '<div>Professor not found</div>');
+                            Tipped.create(curr_prof, '<div>Professor not found</div>', {
+                              hideOn: {
+                                element: 'mouseleave',
+                                tooltip: 'mouseenter'
+                              }
+                            });
                         } else if (prof_info == "prof does not have scores info") {
                             console.log("Professor has not been rated yet");
-                            Tipped.create(curr_prof, '<div>Professor has not been rated yet</div>');
+                            Tipped.create(curr_prof, '<div>Professor has not been rated yet</div>', {
+                              hideOn: {
+                                element: 'mouseleave',
+                                tooltip: 'mouseenter'
+                              }
+                            });
                         } else {
                             console.log(prof_info["score"]);
                             console.log(prof_info["link"]);
@@ -350,8 +367,13 @@ function pullRMPData(profNames) {
                                 score_color = "#E01743";
                             }
                             curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+score_color+'; color:white; border-radius:2px">'+prof_info["score"]+'</div>');
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
-                            
+                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>', {
+                              hideOn: {
+                                element: 'mouseleave',
+                                tooltip: 'mouseenter'
+                              }
+                            });
+
                         }
 
                     }
