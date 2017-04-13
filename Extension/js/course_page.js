@@ -66,32 +66,47 @@ function pullRMPData(profNames) {
 
 
 
-        chrome.runtime.sendMessage( {
-                        action: "getRmpScores",
-                        professor: prof_name
-                    }, function(response) {
-                        var prof_info = response;
-                        if (prof_info == "professor not found" || prof_info == "bad search request") {
-                            console.log("professor not found");
-                            Tipped.create(curr_prof, '<div>Professor not found</div>');
-                        } else if (prof_info == "prof does not have scores info") {
-                            console.log("Professor has not been rated yet");
-                            Tipped.create(curr_prof, '<div>Professor has not been rated yet</div>');
-                        } else {
-                            console.log(prof_info["score"]);
-                            console.log(prof_info["link"]);
-                            console.log(prof_info["would_take_again"]);
-                            console.log(prof_info["difficulty"]);
-                            overall_quality = prof_info["score"];
-                            would_take_again = prof_info["would_take_again"];
-                            level_of_difficulty = prof_info["difficulty"];
-                            RMP_link = prof_info["link"];
+      chrome.runtime.sendMessage( {
+        action: "getRmpScores",
+        professor: prof_name
+      }, function(response) {
+        var prof_info = response;
+        if (prof_info == "professor not found" || prof_info == "bad search request") {
+          console.log("professor not found");
+          Tipped.create(curr_prof, '<div>Professor not found</div>', {
+            hideOn: {
+              element: 'mouseleave',
+              tooltip: 'mouseenter'
+            }
+          });
+        } else if (prof_info == "prof does not have scores info") {
+          console.log("Professor has not been rated yet");
+          Tipped.create(curr_prof, '<div>Professor has not been rated yet</div>', {
+            hideOn: {
+              element: 'mouseleave',
+              tooltip: 'mouseenter'
+            }
+          });
+        } else {
+          console.log(prof_info["score"]);
+          console.log(prof_info["link"]);
+          console.log(prof_info["would_take_again"]);
+          console.log(prof_info["difficulty"]);
+          overall_quality = prof_info["score"];
+          would_take_again = prof_info["would_take_again"];
+          level_of_difficulty = prof_info["difficulty"];
+          RMP_link = prof_info["link"];
 
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor</a></div>');
-                        }
+          Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor</a></div>', {
+            hideOn: {
+              element: 'mouseleave',
+              tooltip: 'mouseenter'
+            }
+          });
+        }
 
-                    }
-        )
+      }
+                                )
 
     });
 }
@@ -117,38 +132,62 @@ function addLocationLinks() {
 	        	for (var i = 1; i < loc_split.length; i++) {
 
 			        var loc_str = loc_split[i].trim();
-                    chrome.runtime.sendMessage( {
-                                action: "getLocationLinks",
-                                locations: loc_str, 
-                                index: i
-                            }, function(response) {
-                                var map = response;
-                                //Add line breaks if not the first link. Not very elegant
-       		                    if (map['index'] != 1) {
-                                    var linebreak = document.createElement("br");
-                                    loc.append(linebreak);
-                                }
-                                if (map['index'] == 1) {
-                                    loc.empty();
-                                }
-                                
-                                if (map['link']) {
-			                        var link = document.createElement("a");
-        	                        link.href = map['link'];
-        	                        link.className = "mapLink";
-                                    link.setAttribute('target', '_blank');
-			                        var t = document.createTextNode(map['name']);
+              chrome.runtime.sendMessage( {
+                action: "getLocationLinks",
+                locations: loc_str,
+                index: i
+              }, function(response) {
+                var map = response;
+                //Add line breaks if not the first link. Not very elegant
+                if (map['index'] != 1) {
+                  var linebreak = document.createElement("br");
+                  loc.append(linebreak);
+                }
+                if (map['index'] == 1) {
+                  loc.empty();
+                }
 
-                                
-			                        link.append(t);
-			                        loc.append(link);
-                                }
-                                //If can't find a link, just use the text
-                                else {
-                                    var t = document.createTextNode(map['name']);
-                                    loc.append(t);
-                                }
-                        })
+                if (map['link']) {
+                  var link = document.createElement("a");
+                  link.href = map['link'];
+                  link.className = "mapLink";
+                  link.setAttribute('target', '_blank');
+                  var t = document.createTextNode(map['name']);
+
+
+                  link.append(t);
+                  loc.append(link);
+
+                  // Map hover
+                  loc.find('a').each(function() {
+
+                    href = $(this).attr('href');
+
+                    if (href != null) {
+                      name = href.split("=")[1];
+
+                      img_link = "img/Map_Crops/"+name+".png";
+
+                      var mapImage = document.createElement("img");
+                      mapImage.src = chrome.extension.getURL(img_link);
+                      mapImage.id = "mapHoverImage";
+
+                      Tipped.create($(this), mapImage, {
+                        hideOn: {
+                          element: 'mouseleave',
+                          tooltip: 'mouseenter'
+                        }
+                      });
+                    }
+                  });
+
+                }
+                //If can't find a link, just use the text
+                else {
+                  var t = document.createTextNode(map['name']);
+                  loc.append(t);
+                }
+              })
 
 
 	        	}
