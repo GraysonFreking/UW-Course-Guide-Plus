@@ -201,7 +201,7 @@ function addLocationLinks() {
                   var mapIcon = document.createElement("img");
                   mapIcon.src = chrome.extension.getURL("img/mapIcon.png");
                   mapIcon.className = "mapIcon";
-                  mapIcon.setAttribute('style', 'width: 14px; height: 10px; display:inline; margin-left:5px; cursor: pointer;');
+                  mapIcon.setAttribute('style', 'width: 16px; height: 12px; margin-bottom:3px; display:inline; margin-left:5px; cursor: pointer;');
 
                   loc.append(mapIcon);
 
