@@ -109,7 +109,7 @@ function pullRMPData(profIndex, profArray) {
                                 score_color = "#E01743";
                             }
                             curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+score_color+'; color:white; border-radius:2px">'+overall_quality+'</div>');
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');                            
+                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
                             profObj.push({
                                 "name" : prof_name,
                                 "overall_quality" : overall_quality,
@@ -194,33 +194,34 @@ function addLocationLinks() {
                   link.setAttribute('target', '_blank');
                   var t = document.createTextNode(map['name']);
 
-
                   link.append(t);
+
                   loc.append(link);
 
-                  // Map hover
-                  loc.find('a').each(function() {
+                  var mapIcon = document.createElement("img");
+                  mapIcon.src = chrome.extension.getURL("img/mapIcon.png");
+                  mapIcon.className = "mapIcon";
+                  mapIcon.setAttribute('style', 'width: 14px; height: 10px; display:inline; margin-left:5px; cursor: pointer;');
 
-                    href = $(this).attr('href');
+                  loc.append(mapIcon);
 
-                    if (href != null) {
-                      name = href.split("=")[1];
+                  if (link.href != null) {
+                    name = link.href.split("=")[1];
 
-                      img_link = "img/Map_Crops/"+name+".png";
+                    img_link = "img/Map_Crops/"+name+".png";
 
-                      var mapImage = document.createElement("img");
-                      mapImage.src = chrome.extension.getURL(img_link);
-                      mapImage.id = "mapHoverImage";
+                    var mapImage = document.createElement("img");
+                    mapImage.src = chrome.extension.getURL(img_link);
+                    mapImage.id = "mapHoverImage";
 
-                      Tipped.create($(this), mapImage, {
-                        hideOn: {
-                          element: 'mouseleave',
-                          tooltip: 'mouseenter'
-                        }
-                      });
-                    }
-                  });
+                    Tipped.create(mapIcon, mapImage, {
+                      hideOn: {
+                        element: 'mouseleave',
+                        tooltip: 'mouseenter'
+                      }
+                    });
 
+                  }
                 }
                 //If can't find a link, just use the text
                 else {
