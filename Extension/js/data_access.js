@@ -1,4 +1,4 @@
-// set up db on event page loaded
+// set up db
 function dbSetup() {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/db/guideInfo.db', true);
@@ -10,8 +10,22 @@ function dbSetup() {
 	};
 	xhr.send();
 }
+
+function dbTeardown() {
+	db.close();
+	db = undefined;
+}
+
 var db;
-dbSetup();
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+	if (changeInfo.url && changeInfo.url.includes("my.wisc.edu") && !db) {
+		dbSetup();
+	}
+	if (changeInfo.url && changeInfo.url.includes("xkcd.com") && db) {
+		dbTeardown();
+	}
+});
 
 // close db connection on page suspend
 chrome.runtime.onSuspend.addListener(function() {
@@ -32,7 +46,9 @@ function findAverageGPA(course) {
 
 	stmt.bind( { $course: course } );
 	stmt.step();
-	return stmt.getAsObject();
+	var result = stmt.getAsObject();
+	stmt.free();
+	return result;
 }
 
 function getDistributions(course) {
@@ -53,6 +69,8 @@ function getDistributions(course) {
 		var row = stmt.getAsObject();
 		distributions.sections.push(row);
 	}
+	
+	stmt.free();
 
 	distributions.sections.sort(function(x, y) {
 		if (x.term === y.term)
@@ -75,6 +93,7 @@ function getMap(loc) {
     stmt.bind({$loc: loc});
     stmt.step();
     var result = stmt.getAsObject();
+	stmt.free();
     return result;
 
 }
