@@ -61,7 +61,7 @@ In Google Chrome:
 1) Enter in nav bar: chrome://extensions/
 2) Ensure "Developer Mode" is selected
 3) Click "Load Unpacked Extension..."
-	3a) Navigate to "<path_to_course-planner>/Extention"
+	3a) Navigate to "<path_to_course-planner>/Extension"
 	3b) Click "Select"
 4) When "UW Course Guide+" shows up, ensure "Enabled" is selected
 
