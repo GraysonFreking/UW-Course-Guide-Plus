@@ -261,34 +261,34 @@ function addMapLinks(locations) {
           link.setAttribute('target', '_blank');
           var t = document.createTextNode(map['name']);
 
-
           link.append(t);
 
           loc.append(link);
 
+          var mapIcon = document.createElement("img");
+          mapIcon.src = chrome.extension.getURL("img/mapIcon.png");
+          mapIcon.className = "mapIcon";
+          mapIcon.setAttribute('style', 'width: 14px; height: 10px; display:inline; margin-left:5px; cursor: pointer;');
 
-          // Map hover
-          loc.find('a').each(function() {
+          loc.append(mapIcon);
 
-            href = $(this).attr('href');
+          if (link.href != null) {
+            name = link.href.split("=")[1];
 
-            if (href != null) {
-              name = href.split("=")[1];
+            img_link = "img/Map_Crops/"+name+".png";
 
-              img_link = "img/Map_Crops/"+name+".png";
+            var mapImage = document.createElement("img");
+            mapImage.src = chrome.extension.getURL(img_link);
+            mapImage.id = "mapHoverImage";
 
-              var mapImage = document.createElement("img");
-              mapImage.src = chrome.extension.getURL(img_link);
-              mapImage.id = "mapHoverImage";
+            Tipped.create(mapIcon, mapImage, {
+              hideOn: {
+                element: 'mouseleave',
+                tooltip: 'mouseenter'
+              }
+            });
 
-              Tipped.create($(this), mapImage, {
-                hideOn: {
-                  element: 'mouseleave',
-                  tooltip: 'mouseenter'
-                }
-              });
-            }
-          });
+          }
         }
 
         //If can't find a link, just use the text
