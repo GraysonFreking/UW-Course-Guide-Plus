@@ -51,6 +51,10 @@ function distributionSetup() {
 
     // Runs for every class card in DOM -- same as averageGPA() setup
     $.initialize('a.sectionExpand', function() {
+
+        // Insert hidden table right away for each class card
+        $('<tr></tr>').addClass('gradesTableRow courseResult CG_detail hide').html('<td colspan="8" class="courseResultLL courseResultLR courseResultSections"><em>Loading grade distributions...</em></td>').insertAfter($(this).parent().parent().next());
+
         //make sure it's not one of the links we inserted
         if ($(this).attr('href') !== "javascript:void(0)") {
 
@@ -72,12 +76,48 @@ function distributionSetup() {
             //keep track of whether table is built yet
             var tableBuilt = false;
 
+            this.addEventListener('click', function() {
+                var $buttonsRow = $(this).parent().parent(),
+                    $buttonsTD = $buttonsRow.children().eq(0),
+                    $sectionsRow = $buttonsRow.next(),
+                    $sectionsTD = $sectionsRow.children().eq(0),
+                    sectionsOpen = !$sectionsRow.hasClass('hide') && $sectionsRow.is(':visible'),
+                    $gradesRow = $sectionsRow.next(),
+                    gradesOpen = !$gradesRow.hasClass('hide') && $gradesRow.is(':visible');
+
+                // Both will be closed
+                if (sectionsOpen && !gradesOpen) {
+                    addBottomBorderRadii($buttonsTD);
+                // At least one will be open
+                } else {
+                    removeBottomBorderRadii($buttonsTD);
+                }
+            })
+
             //add listener to newLink
             newLink.addEventListener('click', function () {
-                //check if the table has already been made, if not then make it
-//                if (!$(this).next().is(".distTable")) {
-                if (!tableBuilt) {
+                var $buttonsRow = $(this).parent().parent(),
+                    $buttonsTD = $buttonsRow.children().eq(0),
+                    $sectionsRow = $buttonsRow.next(),
+                    $sectionsTD = $sectionsRow.children().eq(0),
+                    sectionsOpen = !$sectionsRow.hasClass('hide') && $sectionsRow.is(':visible'),
+                    $gradesRow = $sectionsRow.next(),
+                    gradesOpen = !$gradesRow.hasClass('hide') && $gradesRow.is(':visible');
+                $gradesRow.toggleClass('hide');
 
+                if (!gradesOpen) {
+                    removeBottomBorderRadii($buttonsTD);
+                    removeBottomBorderRadii($sectionsTD);
+                } else {
+                    addBottomBorderRadii($sectionsTD);
+                    if (!sectionsOpen) {
+                        addBottomBorderRadii($buttonsTD);
+                    } else {
+                        removeBottomBorderRadii($buttonsTD);
+                    }
+                }
+
+                if (!tableBuilt) {
                     // Extracts course ID
                     var courseURL = $(this).prev().attr('href');
                     var subjectID = courseURL.match(/subjectId=([0-9]*)/)[1];
@@ -87,17 +127,14 @@ function distributionSetup() {
                     var courseNum = $(this).parent().parent().prev().prev().children('td:nth-child(4)').html().trim().match(/([0-9]*)/)[1];
 
                     //combine subjectID and courseNum into a courseID
-                    var courseID = subjectID + courseNum
+                    var courseID = subjectID + courseNum;
 
                     //call distributionExpanded which makes DB request
-                    //distributionExpanded(courseID);
                     chrome.runtime.sendMessage( {
                         action: "getDistribution",
                         course: courseID,
                         count: 5
                     }, function(jsonObj) {
-                        // Border radius formatting
-                        currElement.parent().toggleClass('courseResultLL courseResultLR');
 
                         //only build the table if get a good response
                         if (jsonObj != undefined) {
@@ -117,12 +154,9 @@ function distributionSetup() {
                             var $table = $('<table><tbody></tbody></table>').addClass('sectionDetailList').html($headerRow);
                             var $div = $('<div><div></div></div>').addClass('CGsectionTable').html($table);
                             var $td = $('<td></td>').attr('colspan', '8').addClass('courseResultLL courseResultLR courseResultSections').html($div);
-                            var $tr = $('<tr></tr>').addClass('courseResult CG_detail').html($td);
 
                             //parse the returned JSON
                             for (var i = 0; i < jsonObj.sections.length; i++) {
-
-                                // <tr class="sectionNote ListRow inline detailsClassSection" data-enrollmentpackageid="010">
 
                                 //create row
                                 var row = document.createElement("tr");
@@ -177,10 +211,7 @@ function distributionSetup() {
                             }
 
                             if (!tableBuilt) {
-                                // currElement.parent().append(table);
-                                currElement.parent().parent().after($tr);
-                                console.log(currElement.parent().parent());
-                                console.log("table appended...");
+                                $gradesRow.html($td);
                             }
 
                             //keep track that we built the table
@@ -191,21 +222,16 @@ function distributionSetup() {
                         }
                     });
 
-                } else {
-                    currElement.parent().toggleClass('courseResultLL courseResultLR');
                 }
 
                 //switch the arrow icon
                 if (arrowIcon.src = chrome.extension.getURL('img/left-arrow.png')) {
-                    console.log($(this).parent());
                     arrowIcon.src = chrome.extension.getURL('img/down-arrow.png');
                 }
                 else {
                     arrowIcon.src = chrome.extension.getURL('img/left-arrow.png');
                 }
 
-                //toggle the div
-                $(this).parent().parent().next().toggle();
             });
 
             //append newLink to the section, below the sections link
@@ -367,7 +393,7 @@ function pullRMPData(profIndex, profArray) {
                                 score_color = "#E01743";
                             }
                             curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+score_color+'; color:white; border-radius:2px">'+overall_quality+'</div>');
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');                            
+                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
                             profObj.push({
                                 "name" : prof_name,
                                 "overall_quality" : overall_quality,
@@ -429,3 +455,14 @@ function distributionExpanded(course) {
 
 }
 
+/***** helper functions *****/
+
+function removeBottomBorderRadii($element) {
+    $element.css("border-bottom-right-radius", "0");
+    $element.css("border-bottom-left-radius", "0");
+}
+
+function addBottomBorderRadii($element) {
+    $element.css("border-bottom-right-radius", "20px");
+    $element.css("border-bottom-left-radius", "20px");
+}
