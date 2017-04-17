@@ -6,7 +6,7 @@ Our main database at this point is named: guideInfo.db
 
 initDB.py and restoreDB.py do essentially the same thing, they create a database. 
 
-However, initDB.py takes in what you want to name the database, then constructs it up and creates a backup of the commands used to create that database in <arg>Backup.sql. By contrast, that backup.sql file gets fed to restoreDB.py, and it will create a database from it. This is just in case things go FUBAR, and we need to restore.
+However, initDB.py takes in what you want to name the database, then constructs it up and creates a backup of the commands used to create that database in <arg>Backup.sql.gz. By contrast, that backup.sql.gz file gets fed to restoreDB.py, and it will create a database from it. This is just in case things go FUBAR, and we need to restore.
 
 Both should be run with **python 2.7**, python 3 does *not* work. If you're on linux, or some other computer with python at /usr/bin/python, then you can just run them as a script, './' style.
 
@@ -30,7 +30,9 @@ We have 5 tables, and I'm about to walk you through their contents, and what sho
 
             course INT,                 // this is the course number as we know it. e.g. 577
 
-            name TEXT                   // this is the Class's name. e.g. Algorithms
+            name TEXT,                  // this is the Class's name. e.g. Algorithms
+
+            courseGPA REAL              // this is the Class's average GPA across semesters. e.g. 3.000
 
 
 #### Department: 
@@ -39,6 +41,8 @@ We have 5 tables, and I'm about to walk you through their contents, and what sho
             name TEXT,                  // this is the full name of the department. e.g. Computer Sciences
             
             shortName TEXT              // this is the abbreviation of the department. e.g. Comp Sci
+
+            school TEXT                 // this is the school that contains the department e.g. L&S
 
 
 #### Grades:     
@@ -94,4 +98,4 @@ We have 5 tables, and I'm about to walk you through their contents, and what sho
 
 
 
-Thanks for reading. Sorry if this document sounds snippy. I am very very tired.
+Thanks for reading.
