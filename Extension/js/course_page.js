@@ -331,7 +331,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					//Render Charts after tabs have been created.
                     $("<canvas></canvas>", {id: "chart",  "class": "myProfChart0", "width": 400, "height": 400}).appendTo($("#professorschart0"));
                     var ctx = $("#chart.myProfChart0");
-                    var myChart = new Chart(ctx, indivTermCharts[0]);
+                    var myChart = new Chart(ctx, allProfsGraph);
                     var i = 1;
                     
                     for (chart in indvProfCharts) {
