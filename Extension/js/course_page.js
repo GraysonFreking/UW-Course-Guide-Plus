@@ -256,46 +256,53 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			// Expand new div to make room
 			$('div#graphs.tableContents').css("height", "520px");
 
+			var dist = response.sections;
+
+            /************ Add chart.js graphs*************/
+            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
 
  			/* TERM GRAPHS */
-			var dist = response.sections;
-			dist.reverse();
-			var allTermOptions = generateSplineGraph("All Terms", dist);
-            //-------------------------------------------------------
-            //set up the individual semester graphs
-            dist.reverse();
-            var indivTermGraphs = new Array();
-            var recentTermGPAs = {};
 
-            //for now we'll only display 5 most recent terms
-            for (var i = 0; i < dist.length && indivTermGraphs.length < 5; i++) {
+            dist.reverse();
+			var allTermOptions = generateNewSplineGraph("All Terms", dist);
+            dist.reverse();
+            var dataPoints = [];
+            var recentTermGPAs = {};
+            var indivTermCharts = new Array();
+            var term;
+            //create 5 bar graphs for 5 most recent semesters
+            for (var i = 0; i < dist.length && indivTermCharts.length < 5; i++) {
                 if (!recentTermGPAs[dist[i].term]) {
                     recentTermGPAs[dist[i].term] = i+1;
                     indivSemesterDist = [];
                     indivSemesterDist.push(dist[i]);
-                    indivTermGraphs.push(generateDistGraph(dist[i].term, indivSemesterDist));
+                    term = dist[i].term;
+                    indivTermCharts.push(generateChartJSGraph(dist[i].term, indivSemesterDist));
                 }
             }
 
-            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
-            generateTabsList(Object.keys(recentTermGPAs), "terms", "All Terms");
 
+            generateTabsList(Object.keys(recentTermGPAs), "terms", "All Terms");
 			$("#terms.graphs").tabs({
 				create: function (event, ui) {
 					// Render Charts after tabs have been created
-					$("#termschart0").CanvasJSChart(allTermOptions);
+
+                    $("<canvas></canvas>", {id: "chart",  "class": "myChart0", "width": 400, "height": 400}).appendTo($("#termschart0"));
+                    var ctx = $("#chart.myChart0");
+                    var myChart = new Chart(ctx, allTermOptions);
                     var i = 1;
-                    for (graph in indivTermGraphs) {
-                        $("#termschart" + i).CanvasJSChart(indivTermGraphs[graph]);
-						i++;
+                    for (chart in indivTermCharts) {
+                        $("<canvas></canvas>", {id: "chart",  "class": "myChart" + i, "width": 400, "height": 400}).appendTo($("#termschart" + i));
+                        var ctx = $("#chart.myChart" + i);
+                        var myChart = new Chart(ctx, indivTermCharts[chart]);
+                        i++;
                     }
 				},
 				activate: function (event, ui) {
 					//Updates the chart to its container's size if it has changed.
-					ui.newPanel.children().first().CanvasJSChart().render();
-				}
+					//ui.newPanel.children().first().CanvasJSChart().render();
+            	}
 			});
-
 
 			/* PROFESSOR GRAPHS */
 
@@ -312,8 +319,8 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				}
 			}
 
-			var allProfsGraph = generateDistGraph("All Professors", dist);
-			var indvProfGraphs = generateMultipleProfGraphOptions(profGPAs);
+			var allProfsGraph = generateChartJSGraph("All Professors", dist);
+			var indvProfCharts = generateMultipleProfGraphOptions(profGPAs);
 
 			$("<div></div>", { id: "professors", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
 
@@ -322,16 +329,22 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			$("#professors.graphs").tabs({
 				create: function (event, ui) {
 					//Render Charts after tabs have been created.
-					$("#professorschart0").CanvasJSChart(allProfsGraph);
-					var i = 1;
-					for (graph in indvProfGraphs) {
-						$("#professorschart" + i).CanvasJSChart(indvProfGraphs[graph]);
-						i++;
-					}
+                    $("<canvas></canvas>", {id: "chart",  "class": "myProfChart0", "width": 400, "height": 400}).appendTo($("#professorschart0"));
+                    var ctx = $("#chart.myProfChart0");
+                    var myChart = new Chart(ctx, indivTermCharts[0]);
+                    var i = 1;
+                    
+                    for (chart in indvProfCharts) {
+                        $("<canvas></canvas>", {id: "chart",  "class": "myProfChart" + i, "width": 400, "height": 400}).appendTo($("#professorschart" + i));
+                        var ctx = $("#chart.myProfChart" + i);
+                        var myChart = new Chart(ctx, indvProfCharts[chart]);
+                        i++;
+                    }
+                    
 				},
 				activate: function (event, ui) {
 					//Updates the chart to its container's size if it has changed.
-					ui.newPanel.children().first().CanvasJSChart().render();
+					//ui.newPanel.children().first().CanvasJSChart().render();
 				}
 			});
 		} else { // No sections returned
@@ -340,7 +353,8 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 	})
 }
 
-function generateDistGraph(title, dist) {
+
+function generateChartJSGraph(title, dist) {
 	var totalGrades = 0, numA = 0, numAB = 0, numB = 0, numBC = 0,
 						 numC = 0, numD = 0, numF = 0, numI = 0;
 	for (var i = 0; i < dist.length; i++) {
@@ -357,41 +371,56 @@ function generateDistGraph(title, dist) {
 	}
 
 	var dataPoints = new Array();
-	dataPoints.push( { label: "A", y: numA / totalGrades * 100 } );
-	dataPoints.push( { label: "AB", y: numAB / totalGrades * 100 } );
-	dataPoints.push( { label: "B", y: numB / totalGrades * 100 } );
-	dataPoints.push( { label: "BC", y: numBC / totalGrades * 100 } );
-	dataPoints.push( { label: "C", y: numC / totalGrades * 100 } );
-	dataPoints.push( { label: "D", y: numD / totalGrades * 100 } );
-	dataPoints.push( { label: "F", y: numF / totalGrades * 100 } );
-	dataPoints.push( { label: "I", y: numI / totalGrades * 100 } );
+	dataPoints.push( numA / totalGrades * 100 );
+	dataPoints.push( numAB / totalGrades * 100 );
+	dataPoints.push(numB / totalGrades * 100 );
+	dataPoints.push(numBC / totalGrades * 100 );
+	dataPoints.push( numC / totalGrades * 100 );
+	dataPoints.push( numD / totalGrades * 100 );
+	dataPoints.push( numF / totalGrades * 100 );
+	dataPoints.push( numI / totalGrades * 100 );
 
-	return {
-		title: {
-			text: title,
-			fontFamily: "Helvetica Neue"
-		},
-		animationEnabled: true,
-		data: [ {
-			type: "column",
-			dataPoints: dataPoints
-		} ],
-
-		axisX: {
-			labelFontSize: 14,
-			labelFontFamily: "Helvetica Neue"
-		},
-		axisY: {
-			labelFontSize: 14,
-			labelFontFamily: "Helvetica Neue",
-			title: "%",
-			titleFontFamily: "Helvetica Neue",
-			minimum: 0
-		}
-	};
+    var chart = {
+        type: 'bar',
+        data: {
+            labels: ["A", "AB", "B", "BC", "C", "D", "F", "I"],
+            datasets: [{
+                label: title,
+                data: dataPoints,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    '#0000FF',
+                    '#000'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            padding: 30,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            }
+        }
+    };
+    return chart;
 }
 
-function generateSplineGraph(title, dist) {
+
+function generateNewSplineGraph(title, dist) {
 	var termGPAs = {};
 	for (var i = 0; i < dist.length; i++) {
 		if (dist[i].avgGPA == "") continue; // For sections with no grade data (they exist)
@@ -403,6 +432,8 @@ function generateSplineGraph(title, dist) {
 	}
 
 	var gpaDataPoints = new Array();
+    var terms = new Array();
+    var gpas = new Array();
 	for (var term in termGPAs) {
 		var dataPoint = {};
 		dataPoint.label = term;
@@ -413,37 +444,51 @@ function generateSplineGraph(title, dist) {
 		var avg = sum / termGPAs[term].length;
 		dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
 		gpaDataPoints.push(dataPoint);
+        gpas.push(dataPoint.y);
+        terms.push(dataPoint.label);
 	}
 
-	return {
-		title: {
-			text: title,
-			fontFamily: "Helvetica Neue"
-		},
-		animationEnabled: true,
-		data: [ {
-				type: "spline",
-				dataPoints: gpaDataPoints
-			} ],
-		axisX: {
-			labelFontSize: 0,
-			title: "Term",
-			titleFontFamily: "Helvetica Neue"
-		},
-		axisY: {
-			labelFontSize: 14,
-			title: "GPA",
-			titleFontFamily: "Helvetica Neue",
-			minimum: 0,
-			maximum: 4
-		}
-	};
+    var chart = {
+        type: 'line',
+        data: {
+            labels: terms,
+            datasets: [{
+                label: title,
+                fill: false,
+                data: gpas,
+                //backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                borderColor: 'rgba(75, 192, 192, 0.8)',
+            }]
+        },
+        options: {
+            responsive: false,
+            padding: 30,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'GPA'
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Term'
+                    }
+                }]
+            }
+        }
+    };
+    return chart;
 }
 
 function generateMultipleProfGraphOptions(profGPAs) {
 	var profGraphs = new Array();
 	for (var prof in profGPAs) {
-		profGraphs.push(generateDistGraph(prof, profGPAs[prof]));
+		profGraphs.push(generateChartJSGraph(prof, profGPAs[prof]));
 	}
 
 	return profGraphs;
