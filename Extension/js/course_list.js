@@ -296,7 +296,7 @@ function addMapLinks(locations) {
           mapIcon.className = "mapIcon";
           mapIcon.setAttribute('style', 'width: 14px; height: 10px; display:inline; margin-left:5px;');
 
-          loc.append(mapIcon);
+          link.append(mapIcon);
 
           if (link.href != null) {
             name = link.href.split("=")[1];

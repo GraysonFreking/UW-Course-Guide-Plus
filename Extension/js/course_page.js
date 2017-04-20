@@ -203,7 +203,7 @@ function addLocationLinks() {
                   mapIcon.className = "mapIcon";
                   mapIcon.setAttribute('style', 'width: 16px; height: 12px; margin-bottom:3px; display:inline; margin-left:5px;');
 
-                  loc.append(mapIcon);
+                  link.append(mapIcon);
 
                   if (link.href != null) {
                     name = link.href.split("=")[1];
@@ -333,14 +333,14 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
                     var ctx = $("#chart.myProfChart0");
                     var myChart = new Chart(ctx, allProfsGraph);
                     var i = 1;
-                    
+
                     for (chart in indvProfCharts) {
                         $("<canvas></canvas>", {id: "chart",  "class": "myProfChart" + i, "width": 400, "height": 400}).appendTo($("#professorschart" + i));
                         var ctx = $("#chart.myProfChart" + i);
                         var myChart = new Chart(ctx, indvProfCharts[chart]);
                         i++;
                     }
-                    
+
 				},
 				activate: function (event, ui) {
 					//Updates the chart to its container's size if it has changed.
