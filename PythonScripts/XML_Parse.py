@@ -121,7 +121,7 @@ def xml_parse(in_file):
 #        print line # Prints line to console
         line = ''
 
-    for item in text_data: # For each newly created line, parse
+    for item in text_data: # For each newly created line, parse that shit
         if item[0] == 'Course': # If Course Total is the line, merge into one value
             item[0:2] = [' '.join(item[0:2])]
 
