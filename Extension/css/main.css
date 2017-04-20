@@ -38,3 +38,12 @@ a.gradesExpand img.expandCollapseIcon {
 ul.tabs {
   height: 63px;
 }
+
+div.CGDetailTitleWrap {
+  z-index: 1;
+  margin-left: 0 !important;
+}
+
+div.CGDetailTitle {
+  width: 967px !important;
+}
