@@ -6,13 +6,13 @@
   "version": "1.0",
 
   "icons": {
-    "16": "img/icon16.png",
-    "48": "img/icon48.png",
-    "128": "img/icon128.png"
+    "16": "img/icon-plus16.png",
+    "48": "img/icon-plus48.png",
+    "128": "img/icon-plus128.png"
   },
 
   "browser_action": {
-    "default_icon": "img/icon16.png",
+    "default_icon": "img/icon-plus128.png",
     "default_title": "Go to UW Course Guide"
   },
 
