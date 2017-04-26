@@ -194,7 +194,7 @@ function addLocationLinks() {
                   link.setAttribute('target', '_blank');
                   var t = document.createTextNode(map['name']);
 
-                  link.append(t);
+                  link.appendChild(t);
 
                   loc.append(link);
 
