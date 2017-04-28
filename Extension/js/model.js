@@ -30,7 +30,9 @@ function getRmpScores(profName) {
 
     if (prof_info == "professor not found" || prof_info == "bad search request") {
         if (profName.indexOf("-") > 0) {
-            prof_info = formatName(profName);
+            prof_info = formatNameWithDash(profName);
+        } else if (profName.split(", ")[1].indexOf(" ") > 0) {
+            prof_info = formatNameWithSpace(profName);
         } else {
             prof_info = tryNickNames(profName);
         }
@@ -133,13 +135,40 @@ function makeXMLHttpRequest(url) {
     }
 }
 
-function formatName(profName) {
+function formatNameWithDash(profName) {
     var first_name = profName.split(", ")[1];
     var last_name = profName.split(", ")[0];
     if (last_name.indexOf("-")) {
         last_name = last_name.split("-")[0];
     }
     return searchForProf(last_name + ", " + first_name);
+}
+
+function formatNameWithSpace(profName) {
+    var first_name = profName.split(", ")[1];
+    var last_name = profName.split(", ")[0];
+
+    var tempInfo = searchForProf(last_name + ", " + first_name.split(" ")[0]);
+    if (tempInfo != "professor not found" && tempInfo != "bad search request") {
+        return tempInfo;
+    }
+
+    tempInfo = searchForProf(last_name + ", " + first_name.split(" ")[1]);
+    if (tempInfo != "professor not found" && tempInfo != "bad search request") {
+        return tempInfo;
+    }
+
+    tempInfo = searchForProf(last_name + ", " + last_name.split(" ")[1]);
+    if (tempInfo != "professor not found" && tempInfo != "bad search request") {
+        return tempInfo;
+    }
+
+    tempInfo = searchForProf(last_name + ", " + last_name.split(" ")[1]);
+    if (tempInfo != "professor not found" && tempInfo != "bad search request") {
+        return tempInfo;
+    }
+
+    return "professor not found";
 }
 
 function tryNickNames(profName) {
