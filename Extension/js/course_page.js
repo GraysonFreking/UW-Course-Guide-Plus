@@ -20,8 +20,10 @@ function setUpCourseKey() {
 function distributionInfoSetup() {
 	var $newDiv = $("<div></div>", { "class": "detail_container", id: "grade_distributions" } );
 	$("<div class='tableHeader'><h2>Grade Distribution Information</h2></div>").appendTo($newDiv);
-	$("<div></div>", { "class": "tableContents", id: "graphs" }).appendTo($newDiv);
+	$("<div></div>", { "class": "tableContents", id: "graphsTC" }).appendTo($newDiv);
 	$('div.detail_container').parent().append($newDiv);
+	$('<div>', { 'id': 'graphs' }).appendTo($('#graphsTC'));
+	$('<p id="graphs-note"><em>Loading grade distributions</em>').appendTo($('#graphsTC'));
 
 	/* Broken currently (crashes on course pages that have no such table to clone) */
 	//Adds table structure, but no rows
@@ -256,13 +258,11 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 		course: subjectID + courseNum
 	}, function(response) {
 		if (response != undefined && response.sections.length > 0) {
-			// Expand new div to make room
-			$('div#graphs.tableContents').css("height", "620px");
 
 			var dist = response.sections;
 
             /************ Add chart.js graphs*************/
-            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
+            $("<div></div>", { id: "terms", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents div#graphs"));
 
  			/* TERM GRAPHS */
 
@@ -325,7 +325,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 			var allProfsGraph = generateChartJSGraph("All Professors", dist);
 			var indvProfCharts = generateMultipleProfGraphOptions(profGPAs);
 
-			$("<div></div>", { id: "professors", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents"));
+			$("<div></div>", { id: "professors", "class": "graphs" }).appendTo($(".detail_container#grade_distributions .tableContents div#graphs"));
 
 			generateTabsList(Object.keys(profGPAs), "professors", "All Professors");
 
@@ -351,10 +351,10 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				}
 			});
 
-			$('div#graphs.tableContents').append("<p><em>Note: Some ancillary grade classifications (U, CR, etc.) are omitted, so not all distributions will necessary sum to 100%.")
+			$('#graphs-note').html("<em>Note: Some ancillary grade classifications (U, CR, etc.) are omitted, so not all distributions will necessary sum to 100%.</em>")
 
 		} else { // No sections returned
-			$("div#graphs.tableContents").html("<p>No historical data was found for this course.</p>");
+			$("#graphs-note").html("<em>No historical data was found for this course.</em>");
 		}
 	})
 }

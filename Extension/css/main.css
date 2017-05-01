@@ -16,19 +16,24 @@ a.gradesExpand img.expandCollapseIcon {
   margin-top: 1px !important;
 }
 
+#graphsTC {
+  padding: 10px 20px;
+}
+
+div#graphs {
+  display: flex;
+  justify-content: space-between;
+}
+
+#graphs-note {
+  margin-top: 20px;
+}
+
 .graphs {
-  width: 46%;
-  height: 500px;
-}
-
-#terms.graphs {
-  float: left;
-  margin-left: 2%;
-}
-
-#professors.graphs {
-  float: right;
-  margin-right: 2%;
+  flex-basis: 48%;
+  /*height: 500px;*/
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .tabs a {
@@ -36,7 +41,9 @@ a.gradesExpand img.expandCollapseIcon {
 }
 
 ul.tabs {
-  height: 63px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items:flex-end;
 }
 
 div.CGDetailTitleWrap {
