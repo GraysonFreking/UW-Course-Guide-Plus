@@ -44,6 +44,8 @@ ul.tabs {
   display: flex;
   flex-wrap: wrap;
   align-items:flex-end;
+  width: 100%;
+  min-height: 62px;
 }
 
 div.CGDetailTitleWrap {

@@ -351,7 +351,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 				}
 			});
 
-			$('#graphs-note').html("<em>Note: Some ancillary grade classifications (U, CR, etc.) are omitted, so not all distributions will necessary sum to 100%.</em>")
+			$('#graphs-note').html("<em>Note: Some ancillary grade classifications (U, CR, etc.) are omitted, so not all distributions will necessarily sum to 100%.</em>")
 
 		} else { // No sections returned
 			$("#graphs-note").html("<em>No historical data was found for this course.</em>");
@@ -377,14 +377,15 @@ function generateChartJSGraph(title, dist) {
 	}
 
 	var dataPoints = new Array();
-	dataPoints.push( numA / totalGrades * 100 );
-	dataPoints.push( numAB / totalGrades * 100 );
-	dataPoints.push(numB / totalGrades * 100 );
-	dataPoints.push(numBC / totalGrades * 100 );
-	dataPoints.push( numC / totalGrades * 100 );
-	dataPoints.push( numD / totalGrades * 100 );
-	dataPoints.push( numF / totalGrades * 100 );
-	dataPoints.push( numI / totalGrades * 100 );
+	// Rounds numbers to two decimal places
+	dataPoints.push( Number(Math.round((numA  / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numAB / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numB  / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numBC / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numC  / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numD  / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numF  / totalGrades * 100) + 'e2') + 'e-2') );
+	dataPoints.push( Number(Math.round((numI  / totalGrades * 100) + 'e2') + 'e-2') );
 
     var chart = {
         type: 'bar',
@@ -407,6 +408,14 @@ function generateChartJSGraph(title, dist) {
             }]
         },
         options: {
+			title: {
+				display: true,
+				text: title,
+				fontSize: 20
+			},
+			legend: {
+				display: false
+			},
             responsive: false,
             padding: 30,
             scales: {
@@ -448,7 +457,7 @@ function generateNewSplineGraph(title, dist) {
 			sum += termGPAs[term][i];
 		}
 		var avg = sum / termGPAs[term].length;
-		dataPoint.y = Number(Math.round(avg+'e3')+'e-3');
+		dataPoint.y = Number(Math.round(avg+'e2')+'e-2');
 		gpaDataPoints.push(dataPoint);
         gpas.push(dataPoint.y);
         terms.push(dataPoint.label);
@@ -467,6 +476,14 @@ function generateNewSplineGraph(title, dist) {
             }]
         },
         options: {
+			title: {
+				display: true,
+				text: title,
+				fontSize: 20
+			},
+			legend: {
+				display: false
+			},
             responsive: false,
             padding: 30,
             scales: {
