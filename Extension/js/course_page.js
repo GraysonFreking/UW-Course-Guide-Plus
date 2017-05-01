@@ -377,21 +377,20 @@ function generateChartJSGraph(title, dist) {
 	}
 
 	var dataPoints = new Array();
-	dataPoints.push( numA / totalGrades * 100 );
-	dataPoints.push( numAB / totalGrades * 100 );
-	dataPoints.push(numB / totalGrades * 100 );
-	dataPoints.push(numBC / totalGrades * 100 );
-	dataPoints.push( numC / totalGrades * 100 );
-	dataPoints.push( numD / totalGrades * 100 );
-	dataPoints.push( numF / totalGrades * 100 );
-	dataPoints.push( numI / totalGrades * 100 );
+	dataPoints.push(Number(numA / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numAB / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numB / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numBC / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numC / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numD / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numF / totalGrades * 100).toFixed(2));
+	dataPoints.push(Number(numI / totalGrades * 100).toFixed(2));
 
     var chart = {
         type: 'bar',
         data: {
             labels: ["A", "AB", "B", "BC", "C", "D", "F", "I"],
             datasets: [{
-                label: title,
                 data: dataPoints,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.8)',
@@ -419,6 +418,21 @@ function generateChartJSGraph(title, dist) {
                         labelString: '%'
                     }
                 }]
+            },
+            //hide dataset labels
+            title: {
+                display: true,
+                text: title
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.yLabel;
+                    }
+                }
             }
         }
     };
@@ -459,10 +473,8 @@ function generateNewSplineGraph(title, dist) {
         data: {
             labels: terms,
             datasets: [{
-                label: title,
                 fill: false,
                 data: gpas,
-                //backgroundColor: 'rgba(255, 99, 132, 0.8)',
                 borderColor: 'rgba(75, 192, 192, 0.8)',
             }]
         },
@@ -485,6 +497,21 @@ function generateNewSplineGraph(title, dist) {
                         labelString: 'Term'
                     }
                 }]
+            },
+            //hide dataset labels
+            title: {
+                display: true,
+                text: title
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.yLabel;
+                    }
+                }
             }
         }
     };
