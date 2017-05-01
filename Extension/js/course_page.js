@@ -392,7 +392,6 @@ function generateChartJSGraph(title, dist) {
         data: {
             labels: ["A", "AB", "B", "BC", "C", "D", "F", "I"],
             datasets: [{
-                label: title,
                 data: dataPoints,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.8)',
@@ -428,6 +427,21 @@ function generateChartJSGraph(title, dist) {
                         labelString: '%'
                     }
                 }]
+            },
+            //hide dataset labels
+            title: {
+                display: true,
+                text: title
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.yLabel;
+                    }
+                }
             }
         }
     };
@@ -468,10 +482,8 @@ function generateNewSplineGraph(title, dist) {
         data: {
             labels: terms,
             datasets: [{
-                label: title,
                 fill: false,
                 data: gpas,
-                //backgroundColor: 'rgba(255, 99, 132, 0.8)',
                 borderColor: 'rgba(75, 192, 192, 0.8)',
             }]
         },
@@ -502,6 +514,21 @@ function generateNewSplineGraph(title, dist) {
                         labelString: 'Term'
                     }
                 }]
+            },
+            //hide dataset labels
+            title: {
+                display: true,
+                text: title
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.yLabel;
+                    }
+                }
             }
         }
     };
