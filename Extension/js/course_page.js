@@ -257,7 +257,7 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 	}, function(response) {
 		if (response != undefined && response.sections.length > 0) {
 			// Expand new div to make room
-			$('div#graphs.tableContents').css("height", "520px");
+			$('div#graphs.tableContents').css("height", "620px");
 
 			var dist = response.sections;
 
@@ -350,6 +350,9 @@ function addDistributionGraphs(courseDistributions, professorsDistributions) {
 					//ui.newPanel.children().first().CanvasJSChart().render();
 				}
 			});
+
+			$('div#graphs.tableContents').append("<p><em>Note: Some ancillary grade classifications (U, CR, etc.) are omitted, so not all distributions will necessary sum to 100%.")
+
 		} else { // No sections returned
 			$("div#graphs.tableContents").html("<p>No historical data was found for this course.</p>");
 		}
