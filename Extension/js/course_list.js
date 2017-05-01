@@ -156,58 +156,63 @@ function distributionSetup() {
                             var $td = $('<td></td>').attr('colspan', '8').addClass('courseResultLL courseResultLR courseResultSections').html($div);
 
                             //parse the returned JSON
+                            var termsInTable = {};
                             for (var i = 0; i < jsonObj.sections.length; i++) {
 
-                                //create row
-                                var row = document.createElement("tr");
-                                row.className = "sectionNote ListRow inline detailsClassSection";
-                                //create term column
-                                var tdTerm = document.createElement("td");
-                                tdTerm.appendChild(document.createTextNode(jsonObj.sections[i].term));
-                                row.appendChild(tdTerm);
-                                //create count column
-                                var tdCount = document.createElement("td");
-                                tdCount.appendChild(document.createTextNode(jsonObj.sections[i].count));
-                                row.appendChild(tdCount);
-                                //create avg GPA column
-                                var tdAvgGpa = document.createElement("td");
-                                tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[i].avgGPA));
-                                row.appendChild(tdAvgGpa);
-                                //create aPercent column
-                                var tdAPercent = document.createElement("td");
-                                tdAPercent.appendChild(document.createTextNode(jsonObj.sections[i].aPercent));
-                                row.appendChild(tdAPercent);
-                                //create abPercent column
-                                var tdABPercent = document.createElement("td");
-                                tdABPercent.appendChild(document.createTextNode(jsonObj.sections[i].abPercent));
-                                row.appendChild(tdABPercent);
-                                //create bPercent column
-                                var tdBPercent = document.createElement("td");
-                                tdBPercent.appendChild(document.createTextNode(jsonObj.sections[i].bPercent));
-                                row.appendChild(tdBPercent);
-                                //create bcPercent column
-                                var tdBCPercent = document.createElement("td");
-                                tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[i].bcPercent));
-                                row.appendChild(tdBCPercent);
-                                //create cPercent column
-                                var tdCPercent = document.createElement("td");
-                                tdCPercent.appendChild(document.createTextNode(jsonObj.sections[i].cPercent));
-                                row.appendChild(tdCPercent);
-                                //create dPercent column
-                                var tdDPercent = document.createElement("td");
-                                tdDPercent.appendChild(document.createTextNode(jsonObj.sections[i].dPercent));
-                                row.appendChild(tdDPercent);
-                                //create fPercent column
-                                var tdFPercent = document.createElement("td");
-                                tdFPercent.appendChild(document.createTextNode(jsonObj.sections[i].fPercent));
-                                row.appendChild(tdFPercent);
-                                //create iPercent column
-                                var tdIPercent = document.createElement("td");
-                                tdIPercent.appendChild(document.createTextNode(jsonObj.sections[i].iPercent));
-                                row.appendChild(tdIPercent);
+                                if (!termsInTable[jsonObj.sections[i].term]) {
+                                    termsInTable[jsonObj.sections[i].term] = i+1;
+                                
+                                    //create row
+                                    var row = document.createElement("tr");
+                                    row.className = "sectionNote ListRow inline detailsClassSection";
+                                    //create term column
+                                    var tdTerm = document.createElement("td");
+                                    tdTerm.appendChild(document.createTextNode(jsonObj.sections[i].term));
+                                    row.appendChild(tdTerm);
+                                    //create count column
+                                    var tdCount = document.createElement("td");
+                                    tdCount.appendChild(document.createTextNode(jsonObj.sections[i].count));
+                                    row.appendChild(tdCount);
+                                    //create avg GPA column
+                                    var tdAvgGpa = document.createElement("td");
+                                    tdAvgGpa.appendChild(document.createTextNode(jsonObj.sections[i].avgGPA));
+                                    row.appendChild(tdAvgGpa);
+                                    //create aPercent column
+                                    var tdAPercent = document.createElement("td");
+                                    tdAPercent.appendChild(document.createTextNode(jsonObj.sections[i].aPercent));
+                                    row.appendChild(tdAPercent);
+                                    //create abPercent column
+                                    var tdABPercent = document.createElement("td");
+                                    tdABPercent.appendChild(document.createTextNode(jsonObj.sections[i].abPercent));
+                                    row.appendChild(tdABPercent);
+                                    //create bPercent column
+                                    var tdBPercent = document.createElement("td");
+                                    tdBPercent.appendChild(document.createTextNode(jsonObj.sections[i].bPercent));
+                                    row.appendChild(tdBPercent);
+                                    //create bcPercent column
+                                    var tdBCPercent = document.createElement("td");
+                                    tdBCPercent.appendChild(document.createTextNode(jsonObj.sections[i].bcPercent));
+                                    row.appendChild(tdBCPercent);
+                                    //create cPercent column
+                                    var tdCPercent = document.createElement("td");
+                                    tdCPercent.appendChild(document.createTextNode(jsonObj.sections[i].cPercent));
+                                    row.appendChild(tdCPercent);
+                                    //create dPercent column
+                                    var tdDPercent = document.createElement("td");
+                                    tdDPercent.appendChild(document.createTextNode(jsonObj.sections[i].dPercent));
+                                    row.appendChild(tdDPercent);
+                                    //create fPercent column
+                                    var tdFPercent = document.createElement("td");
+                                    tdFPercent.appendChild(document.createTextNode(jsonObj.sections[i].fPercent));
+                                    row.appendChild(tdFPercent);
+                                    //create iPercent column
+                                    var tdIPercent = document.createElement("td");
+                                    tdIPercent.appendChild(document.createTextNode(jsonObj.sections[i].iPercent));
+                                    row.appendChild(tdIPercent);
 
-                                //append row to table
-                                $table.append(row);
+                                    //append row to table
+                                    $table.append(row);
+                                }
                             }
 
                             if (!tableBuilt) {
