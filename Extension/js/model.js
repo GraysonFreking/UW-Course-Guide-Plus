@@ -111,10 +111,20 @@ function scrapeProfInfo(link) {
         var difficulty_end_index = search_response.indexOf('<', difficulty_start_index);
         var difficulty = search_response.substring(difficulty_start_index, difficulty_end_index);
 
+        var number_of_ratings_start_index = search_response.indexOf('rating-count') + 56;
+        var number_of_ratings_end_index = search_response.indexOf(' ', number_of_ratings_start_index);
+        var number_of_ratings = search_response.substring(number_of_ratings_start_index, number_of_ratings_end_index);
+
+        var stub1 = search_response.indexOf('rating-count') + 57;
+        var stub2 = search_response.indexOf('Student Ratings') - 1;
+        var number_of_ratings = search_response.substring(stub1, stub2);
+        //console.log(number_of_ratings + "length is " + number_of_ratings.length);
+
         prof_info["error"] = "none";
         prof_info["score"] = score;
         prof_info["would_take_again"] = would_take_again;
         prof_info["difficulty"] = difficulty;
+        prof_info["number_of_ratings"] = number_of_ratings;
         prof_info["link"] = link;
         prof_info["test1"] = "N/A";
         return prof_info;

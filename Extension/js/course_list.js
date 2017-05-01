@@ -348,6 +348,7 @@ function pullRMPData(profIndex, profArray) {
         var overall_quality;
         var would_take_again;
         var level_of_difficulty;
+        var number_of_ratings;
         var RMP_link;
 
         //console.log($(this).text());
@@ -383,6 +384,7 @@ function pullRMPData(profIndex, profArray) {
                             would_take_again = prof_info["would_take_again"];
                             level_of_difficulty = prof_info["difficulty"];
                             RMP_link = prof_info["link"];
+                            number_of_ratings = prof_info["number_of_ratings"];
 
                             var score_color;
                             if (parseFloat(prof_info["score"]) >= 3.5) {
@@ -393,12 +395,13 @@ function pullRMPData(profIndex, profArray) {
                                 score_color = "#E01743";
                             }
                             curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+score_color+'; color:white; border-radius:2px">'+overall_quality+'</div>');
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
+                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><h5>Number of ratings: <p style="display:inline">'+number_of_ratings+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
                             profObj.push({
                                 "name" : prof_name,
                                 "overall_quality" : overall_quality,
                                 "would_take_again" : would_take_again,
                                 "level_of_difficulty" : level_of_difficulty,
+                                "number_of_ratings" : number_of_ratings,
                                 "RMP_link" : RMP_link,
                                 "score_color" : score_color,
                                 //"not_found" : "false"
@@ -421,7 +424,7 @@ function checkIfQueried(profIndex, profArray) {
                 if (profObj[i].name == curr_prof.text()) {
                     console.log(curr_prof.text()+" found in profObj")
                     curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+profObj[i].score_color+'; color:white; border-radius:2px">'+profObj[i].overall_quality+'</div>');
-                    Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+profObj[i].score_color+'">'+profObj[i].overall_quality+'</p><h5>Would take again: <p style="display:inline">'+profObj[i].would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+profObj[i].level_of_difficulty+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+profObj[i].RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
+                    Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+profObj[i].score_color+'">'+profObj[i].overall_quality+'</p><h5>Would take again: <p style="display:inline">'+profObj[i].would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+profObj[i].level_of_difficulty+'</p></h5><h5>Number of ratings: <p style="display:inline">'+profObj[i].number_of_ratings+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+profObj[i].RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
                     found = true;
                     break;
                 }
