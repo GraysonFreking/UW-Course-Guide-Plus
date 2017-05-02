@@ -59,7 +59,7 @@ class GradeDistribution(unittest.TestCase):
 
     #Tests
         
-    def test_cg_loaded(self): #Not passing
+    def test_cg_loaded(self): #Passing
         driver = self.driver
         source = driver.page_source
         #Make sure do not have old page
@@ -67,10 +67,10 @@ class GradeDistribution(unittest.TestCase):
         #And have the new page
         self.assertTrue("CG_Home" in source)
         #Make sure can get elements
-        cg = driver.find_element_by_id('CG_browsePluto_29_u360303l1n15_118316_tw_')
+        cg = driver.find_element_by_class_name('CG_browse')
         self.assertEqual("CG_browse", cg.get_attribute("class"))
 
-    def test_ave_gpa(self):
+    def test_ave_gpa(self): #Passing
         driver = self.driver
         #driver.refresh()
         #TODO: Issue, without the sleep delay, throwing staleelement exception
@@ -86,7 +86,7 @@ class GradeDistribution(unittest.TestCase):
         self.assertIn("2.971", aveGPA.text)    
 
 
-    def test_grades_dropdown(self): #Not passing
+    def test_grades_dropdown(self): #Passing
         driver = self.driver
         time.sleep(3)
         #Go to computer science page
@@ -97,12 +97,12 @@ class GradeDistribution(unittest.TestCase):
         dropdown.click()
         time.sleep(5)
         #Add assertion for grades dropdown
-        gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
+        gradeTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
         fall2016gpa = gradeTable.find_element_by_xpath("tr[2]/td[3]")
         self.assertEqual("3.104", fall2016gpa.text)
 
 
-    def test_grades_dropdown_long_wait(self):
+    def test_grades_dropdown_long_wait(self): #Passing
         driver = self.driver
         time.sleep(3)
         #Go to computer science page
@@ -113,11 +113,11 @@ class GradeDistribution(unittest.TestCase):
         dropdown.click()
         time.sleep(20)
         #Add assertion for grades dropdown
-        gradeTable = driver.find_element_by_xpath("//table[@class='distTable']")
+        gradeTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
         fall2016gpa = gradeTable.find_element_by_xpath("tr[2]/td[3]")
         self.assertEqual("3.104", fall2016gpa.text)
 
-    def test_map_links(self):
+    def test_map_links(self): #Passing
         driver = self.driver
         time.sleep(3)
         #Go to computer science page
@@ -129,10 +129,10 @@ class GradeDistribution(unittest.TestCase):
 
         sectionTable = driver.find_element_by_xpath("//table[@class='sectionDetailList']")
         loc = sectionTable.find_element_by_xpath("tbody/tr[2]/td[5]/a")
-        self.assertEqual("https://www.google.com/maps/place/B239%C2%A0Van+Vleck+Hall+University+of+Wisconsin-Madison", loc.get_attribute("href"))
+        self.assertEqual("http://maps.wisc.edu/?initObj=0048", loc.get_attribute("href"))
 
     
-    def test_rmp_popup_displays(self): #Not passing
+    def test_rmp_popup_displays(self): #Passing
         driver = self.driver
         time.sleep(3)
         #Go to computer science page
@@ -146,12 +146,12 @@ class GradeDistribution(unittest.TestCase):
         prof = sectionTable.find_element_by_xpath("tbody/tr[2]/td[6]/a")
         ActionChains(driver).move_to_element(prof).perform()
         time.sleep(3)
-        popupRating = driver.find_element_by_xpath("//div[@class='hover']/p[@class='highlight']")
+        popupRating = driver.find_element_by_xpath("//a[@class='CG_instructorDetailsLink']")
         
-        self.assertEqual('3.9', popupRating.text)
-    
+        self.assertEqual('MORROW, Katherine3.9', popupRating.text)
 
-    def test_rmp_popup_displays_long_wait(self):
+
+    def test_rmp_popup_displays_long_wait(self): #Not Passing
         driver = self.driver
         time.sleep(3)
         #Go to computer science page
@@ -176,7 +176,7 @@ class GradeDistribution(unittest.TestCase):
 
 
     
-    def test_class_page(self):
+    def test_class_page(self): #Passing
         driver = self.driver
         #driver.refresh()
         #TODO: Issue, without the sleep delay, throwing staleelement exception
@@ -204,7 +204,7 @@ class GradeDistribution(unittest.TestCase):
         hover.perform()
         
         time.sleep(5)
-        self.assertEqual("CHAWLA, SHUCHI", prof_link.text)
+        self.assertEqual("CHAWLA, SHUCHI2.6", prof_link.text)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(5)
         terms = driver.find_element_by_xpath("//*[@id='terms']")
