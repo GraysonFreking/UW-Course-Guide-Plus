@@ -49,114 +49,14 @@ function addAverageGpa() {
 
 function RMPSetup() {
 	$('table.sectionDetailList', function() {
-        var profArray = [];
         $(this).find('tr').slice(1).each( function() {
             $(this).find('td').eq(5).find('a').each( function() {
-                profArray.push($(this));
+                var prof_name = $(this).text();
+                Tipped.create($(this), '<a href="http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=University+of+Wisconsin+-+Madison&schoolID=1256&query='+ prof_name +'" target="_blank">Link to RMP</a>');
             })
         })
-        console.log(profArray.length)
-        pullRMPData(0, profArray);
     })
 }
-
-function pullRMPData(profIndex, profArray) {
-    if (profArray.length != 0) {
-
-        var overall_quality;
-        var would_take_again;
-        var level_of_difficulty;
-        var number_of_ratings;
-        var RMP_link;
-
-        //console.log($(this).text());
-        var prof_name = profArray[profIndex].text();
-        var curr_prof = profArray[profIndex];
-
-        chrome.runtime.sendMessage( {
-                        action: "getRmpScores",
-                        professor: prof_name
-                    }, function(response) {
-                        var prof_info = response;
-                        if (prof_info == "professor not found" || prof_info == "bad search request") {
-                            console.log("professor not found");
-                            Tipped.create(curr_prof, '<div>Professor not found</div>');
-                            /*profObj.push({
-                                "name" : prof_name,
-                                "not_found" : "true"
-                            })*/
-                        } else if (prof_info == "prof does not have scores info") {
-                            console.log("Professor has not been rated yet");
-                            Tipped.create(curr_prof, '<div>Professor has not been rated yet</div>');
-                            /*profObj.push({
-                                "name" : prof_name,
-                                "not_found" : "true"
-                            })*/
-                        } else {
-                            //console.log(prof_info["score"]);
-                            //console.log(prof_info["link"]);
-                            //console.log(prof_info["would_take_again"]);
-                            //console.log(prof_info["difficulty"]);
-                            console.log(prof_name + " professor found!");
-                            overall_quality = prof_info["score"];
-                            would_take_again = prof_info["would_take_again"];
-                            level_of_difficulty = prof_info["difficulty"];
-                            RMP_link = prof_info["link"];
-                            number_of_ratings = prof_info["number_of_ratings"];
-
-                            var score_color;
-                            if (parseFloat(prof_info["score"]) >= 3.5) {
-                                score_color = "#B2CF35";
-                            } else if (parseFloat(prof_info["score"]) >= 2.5) {
-                                score_color = "#F7CC1E";
-                            } else {
-                                score_color = "#E01743";
-                            }
-                            curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+score_color+'; color:white; border-radius:2px">'+overall_quality+'</div>');
-                            Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+score_color+'">'+overall_quality+'</p><h5>Would take again: <p style="display:inline">'+would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+level_of_difficulty+'</p></h5><h5>Number of ratings: <p style="display:inline">'+number_of_ratings+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
-                            profObj.push({
-                                "name" : prof_name,
-                                "overall_quality" : overall_quality,
-                                "would_take_again" : would_take_again,
-                                "level_of_difficulty" : level_of_difficulty,
-                                "number_of_ratings" : number_of_ratings,
-                                "RMP_link" : RMP_link,
-                                "score_color" : score_color,
-                                //"not_found" : "false"
-                            });
-                        }
-                        if (profIndex+1 < profArray.length) {
-                            checkIfQueried(profIndex+1, profArray);
-                        }
-      })
-    }
-}
-
-function checkIfQueried(profIndex, profArray) {
-        if (profObj.length == 0) {
-            pullRMPData(profIndex, profArray);
-        } else {
-            var curr_prof = profArray[profIndex];
-            var found = false;
-            for (var i=0; i<profObj.length; i++) {
-                if (profObj[i].name == curr_prof.text()) {
-                    console.log(curr_prof.text()+" found in profObj")
-                    curr_prof.append('<div style="display:inline; margin:2px; padding:2px; background-color:'+profObj[i].score_color+'; color:white; border-radius:2px">'+profObj[i].overall_quality+'</div>');
-                    Tipped.create(curr_prof, '<div class="hover"><h3>Overall Rating:</h3><p class="hover_highlight" style="background-color:'+profObj[i].score_color+'">'+profObj[i].overall_quality+'</p><h5>Would take again: <p style="display:inline">'+profObj[i].would_take_again+'</p></h5><h5>Level of difficulty: <p style="display:inline">'+profObj[i].level_of_difficulty+'</p></h5><h5>Number of ratings: <p style="display:inline">'+profObj[i].number_of_ratings+'</p></h5><p class="insert"></p><hr><a target="_blank" href="'+profObj[i].RMP_link+'">Link to this professor&#39s Rate My Professor Page</a></div>');
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                if (profIndex+1 < profArray.length) {
-                    checkIfQueried(profIndex+1, profArray);
-                }
-            } else {
-                pullRMPData(profIndex, profArray);
-            }
-        }
-}
-
 
 function addLocationLinks() {
 
