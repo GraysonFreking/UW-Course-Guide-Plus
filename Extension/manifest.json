@@ -3,7 +3,7 @@
 
   "name": "UW Course Guide+",
   "description": "View additional information in the UW-Madison Course Guide, like Rate My Professor data and historical grade distributions.",
-  "version": "1.0",
+  "version": "1.0.1",
 
   "icons": {
     "16": "img/uw_course_guide_logo_16.png",
